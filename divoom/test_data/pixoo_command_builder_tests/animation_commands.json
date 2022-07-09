@@ -1,0 +1,56 @@
+{
+  "Command": "Draw/CommandList",
+  "CommandList": [
+    {
+      "Command": "Device/PlayTFGif",
+      "FileName": "https://example.com/some_gif.gif",
+      "FileType": 2
+    },
+    {
+      "Command": "Draw/GetHttpGifId"
+    },
+    {
+      "Command": "Draw/ResetHttpGifId"
+    },
+    {
+      "Command": "Draw/SendHttpGif",
+      "PicData": "MockFirstBase64EncodedString",
+      "PicId": 1,
+      "PicNum": 5,
+      "PicOffset": 0,
+      "PicSpeed": 100,
+      "PicWidth": 64
+    },
+    {
+      "Command": "Draw/SendHttpGif",
+      "PicData": "MockAnotherBase64EncodedString",
+      "PicId": 1,
+      "PicNum": 5,
+      "PicOffset": 3,
+      "PicSpeed": 100,
+      "PicWidth": 64
+    },
+    {
+      "Command": "Draw/ClearHttpText"
+    },
+    {
+      "Command": "Draw/SendHttpText",
+      "TextId": 1,
+      "TextString": "The quick brown fox jumps over the lazy dog",
+      "TextWidth": 24,
+      "align": 3,
+      "color": "#326496",
+      "dir": 1,
+      "font": 3,
+      "speed": 100,
+      "x": 10,
+      "y": 20
+    },
+    {
+      "ActiveTimeInCycle": 10,
+      "Command": "Device/PlayBuzzer",
+      "OffTimeInCycle": 10,
+      "PlayTotalTime": 100
+    }
+  ]
+}

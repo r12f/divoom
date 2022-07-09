@@ -1,0 +1,9 @@
+{
+  "Command": "Draw/CommandList",
+  "CommandList": [
+    {
+      "Command": "Draw/UseHTTPCommandSource",
+      "CommandUrl": "http://example.com/commands.txt"
+    }
+  ]
+}

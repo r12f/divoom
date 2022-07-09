@@ -1,0 +1,30 @@
+[package]
+name = "divoom"
+version = "0.1.0"
+authors = ["r12f <r12f.code@gmail.com>"]
+edition = "2021"
+description = "Rust API for controlling divoom devices, like pixoo."
+license = "Apache-2.0"
+keywords = ["divoom", "pixoo"]
+categories = ["api-bindings"]
+repository = "https://github.com/r12f/divoom"
+exclude = [
+    "test_data/*",
+]
+
+[dependencies]
+reqwest = "0.11.11"
+log = "0.4.14"
+tracing = { version = "0.1.29", features = ["log"] }
+env_logger = "0.9.0"
+contracts = "0.6.3"
+tokio = { version = "1.13.0", features = ["rt-multi-thread", "time", "sync", "macros", "net", "io-util"] }
+thiserror = "1.0.30"
+async-trait = "0.1.51"
+serde = { version = "1.0.130", features = ["derive"] }
+serde_json = "1.0.70"
+rgb = "0.8.33"
+
+[dev-dependencies]
+pretty_assertions = "1.0.0"
+mockito = "0.31.0"

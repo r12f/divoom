@@ -1,0 +1,58 @@
+{
+  "Command": "Draw/CommandList",
+  "CommandList": [
+    {
+      "Command": "Channel/GetAllConf"
+    },
+    {
+      "Command": "Device/GetDeviceTime"
+    },
+    {
+      "Brightness": 100,
+      "Command": "Channel/SetBrightness"
+    },
+    {
+      "Command": "Device/SetUTC",
+      "Utc": 1000000
+    },
+    {
+      "Command": "Device/SetHighLightMode",
+      "Mode": 1
+    },
+    {
+      "Command": "Device/SetTime24Flag",
+      "Mode": 1
+    },
+    {
+      "Command": "Device/SetMirrorMode",
+      "Mode": 1
+    },
+    {
+      "Command": "Device/SetScreenRotationAngle",
+      "Mode": 3
+    },
+    {
+      "Command": "Channel/OnOffScreen",
+      "OnOff": 1
+    },
+    {
+      "Command": "Device/SetDisTempMode",
+      "Mode": 1
+    },
+    {
+      "Command": "Sys/TimeZone",
+      "TimeZoneValue": "UTC"
+    },
+    {
+      "Command": "Sys/LogAndLat",
+      "Latitude": "20.02",
+      "Longitude": "10.01"
+    },
+    {
+      "BValue": 3,
+      "Command": "Device/SetWhiteBalance",
+      "GValue": 2,
+      "RValue": 1
+    }
+  ]
+}

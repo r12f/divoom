@@ -1,0 +1,25 @@
+[package]
+name = "divoom-cli"
+version = "0.1.0"
+authors = ["r12f <r12f.code@gmail.com>"]
+edition = "2021"
+description = "Command line tool built on top of divoom APIs for controlling divoom devices, like pixoo."
+license = "Apache-2.0"
+keywords = ["divoom", "pixoo"]
+categories = ["command-line-utilities"]
+repository = "https://github.com/r12f/divoom"
+
+[dependencies]
+log = "0.4.14"
+tracing = { version = "0.1.29", features = ["log"] }
+env_logger = "0.9.0"
+tokio = { version = "1.13.0", features = ["rt-multi-thread", "time", "sync", "macros", "net", "io-util"] }
+thiserror = "1.0.30"
+serde = { version = "1.0.130", features = ["derive"] }
+rgb = "0.8.33"
+structopt = "0.3.26"
+divoom = { version = "0.1", path = "../divoom" }
+
+[dev-dependencies]
+pretty_assertions = "1.0.0"
+mockito = "0.31.0"

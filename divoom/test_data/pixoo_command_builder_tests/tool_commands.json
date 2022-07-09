@@ -1,0 +1,24 @@
+{
+  "Command": "Draw/CommandList",
+  "CommandList": [
+    {
+      "Command": "Tools/SetTimer",
+      "Minute": 10,
+      "Second": 20,
+      "Status": 1
+    },
+    {
+      "Command": "Tools/SetNoiseStatus",
+      "NoiseStatus": 1
+    },
+    {
+      "BlueScore": 5,
+      "Command": "Tools/SetScoreBoard",
+      "RedScore": 15
+    },
+    {
+      "Command": "Tools/SetStopWatch",
+      "Status": 2
+    }
+  ]
+}

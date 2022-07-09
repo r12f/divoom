@@ -1,0 +1,31 @@
+{
+  "Command": "Draw/CommandList",
+  "CommandList": [
+    {
+      "Command": "Channel/SetIndex",
+      "SelectIndex": 2
+    },
+    {
+      "Command": "Channel/GetIndex"
+    },
+    {
+      "ClockId": 1,
+      "Command": "Channel/SetClockSelectId"
+    },
+    {
+      "Command": "Channel/GetClockInfo"
+    },
+    {
+      "Command": "Channel/CloudIndex",
+      "Index": 1
+    },
+    {
+      "Command": "Channel/SetEqPosition",
+      "EqPosition": 2
+    },
+    {
+      "Command": "Channel/SetCustomPageIndex",
+      "CustomPageIndex": 3
+    }
+  ]
+}
