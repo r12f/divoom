@@ -3,7 +3,7 @@
 set windows-shell := ["pwsh.exe", "-NoLogo", "-Command"]
 
 # Build environment settings
-BUILD_TARGET := os_family() + "-" + (if os() != "macos" { "" } else { "macos-" }) + env_var_or_default("BUILD_TARGET", "x86_64")
+BUILD_TARGET := os_family() + "-" + (if os() != "macos" { "" } else { "macos-" }) + env_var_or_default("BUILD_TARGET", arch())
 BUILD_TOOL_TARGET := if BUILD_TARGET == "windows-x86" {
     "i686-pc-windows-msvc"
   } else if BUILD_TARGET == "windows-x86_64" {
