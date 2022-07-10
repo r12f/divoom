@@ -122,8 +122,26 @@ stages:
             displayName: Install cargo make binary on Linux/MAC
             condition: and(succeeded(), ne(variables['target_os'], 'windows'))
 
-          - script: just init
-            displayName: Install build tools
+          #
+          # Install build tools
+          #
+          - script: just init-win
+            displayName: Install build tools on windows
+            condition: and(succeeded(), eq(variables['target_os'], 'windows'))
+            env:
+              BUILD_TARGET: $(target_arch)
+
+          - script: just init-linux
+            displayName: Install build tools on linux
+            condition: and(succeeded(), eq(variables['target_os'], 'linux'))
+            env:
+              BUILD_TARGET: $(target_arch)
+
+          - script: just init-mac
+            displayName: Install build tools on macos
+            condition: and(succeeded(), eq(variables['target_os'], 'macos'))
+            env:
+              BUILD_TARGET: $(target_arch)
 
           #
           # Build
