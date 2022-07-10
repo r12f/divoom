@@ -9,47 +9,49 @@ use crate::divoom_contracts::pixoo::tool::*;
 use crate::*;
 use crate::{DivoomAPIError, DivoomAPIResult};
 use serde::de::DeserializeOwned;
+use std::rc::Rc;
 
 /// Pixoo command builder for creating the JSON payload of Pixoo commands.
 pub struct PixooCommandBuilder {
     command_store: Box<dyn PixooCommandStore>,
+    client: Rc<DivoomRestAPIClient>,
 }
 
 /// Constructors, builder and executor
 impl PixooCommandBuilder {
-    pub(crate) fn start() -> PixooCommandBuilder {
+    pub(crate) fn start(client: Rc<DivoomRestAPIClient>) -> PixooCommandBuilder {
         PixooCommandBuilder {
             command_store: Box::new(PixooSingleCommandStore::new()),
+            client,
         }
     }
 
-    pub(crate) fn start_batch() -> PixooCommandBuilder {
+    pub(crate) fn start_batch(client: Rc<DivoomRestAPIClient>) -> PixooCommandBuilder {
         PixooCommandBuilder {
             command_store: Box::new(PixooBatchedCommandStore::new()),
+            client,
         }
     }
 
-    pub(crate) fn build(self) -> (usize, String) {
-        self.command_store.to_payload()
+    pub(crate) fn build(self) -> (Rc<DivoomRestAPIClient>, usize, String) {
+        let (command_count, request_body) = self.command_store.to_payload();
+        (self.client, command_count, request_body)
     }
 
-    pub(crate) async fn execute_raw<TResp: DeserializeOwned>(
-        self,
-        rest_client: &DivoomRestAPIClient,
-    ) -> DivoomAPIResult<TResp> {
-        let (command_count, request_body) = self.build();
+    pub(crate) async fn execute_raw<TResp: DeserializeOwned>(self) -> DivoomAPIResult<TResp> {
+        let (client, command_count, request_body) = self.build();
         if command_count == 0 {
             return Err(DivoomAPIError::ParameterError(
                 "No command is built yet!".to_string(),
             ));
         }
 
-        rest_client
+        client
             .send_request_with_body::<TResp>("/post", request_body)
             .await
     }
 
-    pub async fn execute(self, rest_client: &DivoomRestAPIClient) -> DivoomAPIResult<()> {
+    pub async fn execute(self) -> DivoomAPIResult<()> {
         if self.command_store.mode() == PixooCommandStoreMode::Single {
             return Err(DivoomAPIError::ParameterError(
                 "Command builder is not running in batch mode. Please use start_batch() instead."
@@ -58,7 +60,7 @@ impl PixooCommandBuilder {
         }
 
         let response = self
-            .execute_raw::<DivoomPixooCommandBatchExecuteCommandsResponse>(rest_client)
+            .execute_raw::<DivoomPixooCommandBatchExecuteCommandsResponse>()
             .await?;
         if response.error_code() != 0 {
             return Err(DivoomAPIError::ServerError(
@@ -374,7 +376,8 @@ mod tests {
 
     #[test]
     fn pixoo_command_builder_should_work_with_channel_commands_in_batch_mode() {
-        let builder = PixooCommandBuilder::start_batch()
+        let client = Rc::new(DivoomRestAPIClient::new("http://192.168.0.123".to_string()));
+        let builder = PixooCommandBuilder::start_batch(client)
             .select_channel(DivoomChannelType::Visualizer)
             .get_current_channel()
             .select_clock(1)
@@ -392,7 +395,8 @@ mod tests {
 
     #[test]
     fn pixoo_command_builder_should_work_with_system_commands_in_batch_mode() {
-        let builder = PixooCommandBuilder::start_batch()
+        let client = Rc::new(DivoomRestAPIClient::new("http://192.168.0.123".to_string()));
+        let builder = PixooCommandBuilder::start_batch(client)
             .get_device_settings()
             .get_device_time()
             .set_device_brightness(100)
@@ -416,7 +420,8 @@ mod tests {
 
     #[test]
     fn pixoo_command_builder_should_work_with_tool_commands_in_batch_mode() {
-        let builder = PixooCommandBuilder::start_batch()
+        let client = Rc::new(DivoomRestAPIClient::new("http://192.168.0.123".to_string()));
+        let builder = PixooCommandBuilder::start_batch(client)
             .set_countdown_tool(10, 20, DivoomToolCountdownAction::Start)
             .set_noise_tool(DivoomToolNoiseAction::Start)
             .set_scoreboard_tool(5, 15)
@@ -463,7 +468,8 @@ mod tests {
             .frames
             .insert(3, "MockAnotherBase64EncodedString".to_string());
 
-        let builder = PixooCommandBuilder::start_batch()
+        let client = Rc::new(DivoomRestAPIClient::new("http://192.168.0.123".to_string()));
+        let builder = PixooCommandBuilder::start_batch(client)
             .play_gif_file(
                 DivoomFileAnimationSourceType::Url,
                 "https://example.com/some_gif.gif".to_string(),
@@ -484,7 +490,8 @@ mod tests {
 
     #[test]
     fn pixoo_command_builder_should_work_with_batch_commands_in_batch_mode() {
-        let builder = PixooCommandBuilder::start_batch()
+        let client = Rc::new(DivoomRestAPIClient::new("http://192.168.0.123".to_string()));
+        let builder = PixooCommandBuilder::start_batch(client)
             .execute_commands_from_url("http://example.com/commands.txt".to_string());
 
         run_pixoo_command_builder_test(
@@ -499,7 +506,7 @@ mod tests {
         expected_command_count: usize,
         reference_file_path: &str,
     ) {
-        let (command_count, request_body) = builder.build();
+        let (_, command_count, request_body) = builder.build();
         assert_eq!(command_count, expected_command_count);
 
         let actual: serde_json::Value =

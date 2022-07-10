@@ -7,6 +7,7 @@ use crate::divoom_contracts::pixoo::common::*;
 use crate::divoom_contracts::pixoo::system::*;
 use crate::divoom_contracts::pixoo::tool::*;
 use crate::dto::*;
+use std::rc::Rc;
 
 /// Pixoo device client
 ///
@@ -19,7 +20,7 @@ use crate::dto::*;
 /// // println!("{:?}", result);
 /// ```
 pub struct PixooClient {
-    client: DivoomRestAPIClient,
+    client: Rc<DivoomRestAPIClient>,
 }
 
 macro_rules! impl_pixoo_client_api {
@@ -28,9 +29,9 @@ macro_rules! impl_pixoo_client_api {
     ) => (
         #[doc = include_str!($api_doc_path)]
         pub async fn $api_name(&self) -> DivoomAPIResult<$resp_return_type> {
-            let response: $resp_type = PixooCommandBuilder::start()
+            let response: $resp_type = PixooCommandBuilder::start(self.client.clone())
                 .$api_name()
-                .execute_raw::<$resp_type>(&self.client)
+                .execute_raw::<$resp_type>()
                 .await?;
 
             let error_code = response.error_code();
@@ -47,9 +48,9 @@ macro_rules! impl_pixoo_client_api {
     ) => (
         #[doc = include_str!($api_doc_path)]
         pub async fn $api_name(&self, $($api_arg: $api_arg_type),*) -> DivoomAPIResult<$resp_return_type> {
-            let response: $resp_type = PixooCommandBuilder::start()
+            let response: $resp_type = PixooCommandBuilder::start(self.client.clone())
                 .$api_name($($api_arg),*)
-                .execute_raw::<$resp_type>(&self.client)
+                .execute_raw::<$resp_type>()
                 .await?;
 
             let error_code = response.error_code();
@@ -66,10 +67,7 @@ macro_rules! impl_pixoo_client_api {
 impl PixooClient {
     pub fn new(device_ip: &str) -> PixooClient {
         PixooClient {
-            client: DivoomRestAPIClient {
-                server_url_base: format!("http://{}", device_ip),
-                http_client: reqwest::Client::new(),
-            },
+            client: Rc::new(DivoomRestAPIClient::new(format!("http://{}", device_ip))),
         }
     }
 }
@@ -305,9 +303,9 @@ impl PixooClient {
         animation: DivoomImageAnimation,
     ) -> DivoomAPIResult<()> {
         let response: DivoomPixooCommandBatchExecuteCommandsResponse =
-            PixooCommandBuilder::start_batch()
+            PixooCommandBuilder::start_batch(self.client.clone())
                 .send_image_animation(animation)
-                .execute_raw::<DivoomPixooCommandBatchExecuteCommandsResponse>(&self.client)
+                .execute_raw::<DivoomPixooCommandBatchExecuteCommandsResponse>()
                 .await?;
 
         let error_code = response.error_code();

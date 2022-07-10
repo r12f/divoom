@@ -9,6 +9,13 @@ pub struct DivoomRestAPIClient {
 }
 
 impl DivoomRestAPIClient {
+    pub fn new(server_url_base: String) -> DivoomRestAPIClient {
+        DivoomRestAPIClient {
+            server_url_base,
+            http_client: reqwest::Client::new(),
+        }
+    }
+
     pub async fn send_request<TResp: DeserializeOwned>(
         &self,
         url_path: &str,
