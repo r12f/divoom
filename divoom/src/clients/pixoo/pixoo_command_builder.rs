@@ -515,8 +515,12 @@ mod tests {
         if env::var("DIVOOM_API_GENERATE_TEST_DATA").is_ok() {
             let formatted_request_body =
                 serde_json::to_string_pretty(&actual).expect("Serialize commands failed!");
-            fs::write(reference_file_path, formatted_request_body).unwrap_or_else(|_| panic!("Generate test data file failed! Path = {}",
-                reference_file_path));
+            fs::write(reference_file_path, formatted_request_body).unwrap_or_else(|_| {
+                panic!(
+                    "Generate test data file failed! Path = {}",
+                    reference_file_path
+                )
+            });
             return;
         }
 

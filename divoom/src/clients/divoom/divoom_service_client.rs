@@ -134,7 +134,6 @@ impl DivoomServiceClient {
 #[cfg(test)]
 mod tests {
     use super::*;
-    
 
     #[test]
     fn divoom_service_should_have_default_server_url_base() {

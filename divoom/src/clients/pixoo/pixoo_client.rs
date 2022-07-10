@@ -365,7 +365,6 @@ impl PixooClient {
 #[cfg(test)]
 mod tests {
     use super::*;
-    
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
     async fn pixoo_client_batch_mode_should_work() {
