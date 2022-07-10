@@ -33,6 +33,10 @@ async fn main() -> DivoomAPIResult<()> {
             let _ = handle_channel_api(&opts.common, channel_command).await?;
         }
 
+        DivoomCliSubCommand::System(system_command) => {
+            let _ = handle_system_api(&opts.common, system_command).await?;
+        }
+
         DivoomCliSubCommand::Animation(animation_command) => {
             let _ = handle_animation_api(&opts.common, animation_command).await?;
         }
@@ -78,6 +82,71 @@ async fn handle_channel_api(
 
         DivoomCliChannelCommand::SetVisualizer { visualizer_index } => {
             pixoo.select_visualizer(visualizer_index).await?;
+        }
+    }
+
+    Ok(())
+}
+
+async fn handle_system_api(
+    common: &DivoomCliDeviceCommandCommonOpts,
+    system_command: DivoomCliSystemCommand,
+) -> DivoomAPIResult<()> {
+    let pixoo = PixooClient::new(&common.device_ip.as_ref().expect("Device IP is not set!"));
+
+    match system_command {
+        DivoomCliSystemCommand::GetSettings => {
+            let result = pixoo.get_device_settings().await?;
+            println!("{:?}", result);
+        }
+
+        DivoomCliSystemCommand::GetTime => {
+            let result = pixoo.get_device_time().await?;
+            println!("{:?}", result);
+        }
+
+        DivoomCliSystemCommand::SetTime { utc } => {
+            pixoo.set_device_time(utc).await?;
+        }
+
+        DivoomCliSystemCommand::SetBrightness { brightness } => {
+            pixoo.set_device_brightness(brightness).await?;
+        }
+
+        DivoomCliSystemCommand::SetHourMode { mode } => {
+            pixoo.set_device_hour_mode(mode).await?;
+        }
+
+        DivoomCliSystemCommand::SetHighLightMode { mode } => {
+            pixoo.set_device_high_light_mode(mode).await?;
+        }
+
+        DivoomCliSystemCommand::SetMirrorMode { mode } => {
+            pixoo.set_device_mirror_mode(mode).await?;
+        }
+
+        DivoomCliSystemCommand::SetRotationAngle { mode } => {
+            pixoo.set_device_rotation_angle(mode).await?;
+        }
+
+        DivoomCliSystemCommand::SetScreenPowerState { power_state } => {
+            pixoo.set_device_screen_power_state(power_state).await?;
+        }
+
+        DivoomCliSystemCommand::SetTemperatureUnit { unit } => {
+            pixoo.set_device_temperature_unit(unit).await?;
+        }
+
+        DivoomCliSystemCommand::SetTimeZone { time_zone } => {
+            pixoo.set_device_time_zone(time_zone).await?;
+        }
+
+        DivoomCliSystemCommand::SetWeatherArea { longitude, latitude } => {
+            pixoo.set_device_weather_area(longitude, latitude).await?;
+        }
+
+        DivoomCliSystemCommand::SetWhiteBalance { r, g, b } => {
+            pixoo.set_device_white_balance(r, g, b).await?;
         }
     }
 

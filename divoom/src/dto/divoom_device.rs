@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 /// Divoom device information returned from Divoom backend service
 #[derive(Debug, PartialOrd, PartialEq)]
 pub struct DivoomDeviceInfo {
@@ -25,11 +27,28 @@ pub struct DivoomPixooDeviceSettings {
     pub light_switch: i32,
 }
 
+/// High light mode
 #[derive(Debug, PartialOrd, PartialEq)]
 pub enum DivoomDeviceHighLightMode {
     Off,
     On,
     Raw(i32),
+}
+
+impl FromStr for DivoomDeviceHighLightMode {
+    type Err = String;
+    fn from_str(v: &str) -> Result<Self, Self::Err> {
+        match v {
+            "off" => Ok(DivoomDeviceHighLightMode::Off),
+            "on" => Ok(DivoomDeviceHighLightMode::On),
+            _ => {
+                let parsed = v
+                    .parse::<i32>()
+                    .map_err(|x| format!("Invalid value for DivoomDeviceHighLightMode: {}", x))?;
+                Ok(DivoomDeviceHighLightMode::Raw(parsed))
+            }
+        }
+    }
 }
 
 /// Hour mode, 12-hours o 24-hours.
@@ -40,6 +59,22 @@ pub enum DivoomDeviceHourMode {
     Raw(i32),
 }
 
+impl FromStr for DivoomDeviceHourMode {
+    type Err = String;
+    fn from_str(v: &str) -> Result<Self, Self::Err> {
+        match v {
+            "12h" => Ok(DivoomDeviceHourMode::Hour12),
+            "24h" => Ok(DivoomDeviceHourMode::Hour24),
+            _ => {
+                let parsed = v
+                    .parse::<i32>()
+                    .map_err(|x| format!("Invalid value for DivoomDeviceHourMode: {}", x))?;
+                Ok(DivoomDeviceHourMode::Raw(parsed))
+            }
+        }
+    }
+}
+
 /// Mirror mode.
 #[derive(Debug, PartialOrd, PartialEq)]
 pub enum DivoomDeviceMirrorMode {
@@ -48,12 +83,44 @@ pub enum DivoomDeviceMirrorMode {
     Raw(i32),
 }
 
+impl FromStr for DivoomDeviceMirrorMode {
+    type Err = String;
+    fn from_str(v: &str) -> Result<Self, Self::Err> {
+        match v {
+            "off" => Ok(DivoomDeviceMirrorMode::Disable),
+            "on" => Ok(DivoomDeviceMirrorMode::Enable),
+            _ => {
+                let parsed = v
+                    .parse::<i32>()
+                    .map_err(|x| format!("Invalid value for DivoomDeviceMirrorMode: {}", x))?;
+                Ok(DivoomDeviceMirrorMode::Raw(parsed))
+            }
+        }
+    }
+}
+
 /// Temperature unit. Used in weather report.
 #[derive(Debug, PartialOrd, PartialEq)]
 pub enum DivoomDeviceTemperatureUnit {
     Celsius,
     Fahrenheit,
     Raw(i32),
+}
+
+impl FromStr for DivoomDeviceTemperatureUnit {
+    type Err = String;
+    fn from_str(v: &str) -> Result<Self, Self::Err> {
+        match v {
+            "c" => Ok(DivoomDeviceTemperatureUnit::Celsius),
+            "f" => Ok(DivoomDeviceTemperatureUnit::Fahrenheit),
+            _ => {
+                let parsed = v
+                    .parse::<i32>()
+                    .map_err(|x| format!("Invalid value for DivoomDeviceTemperatureUnit: {}", x))?;
+                Ok(DivoomDeviceTemperatureUnit::Raw(parsed))
+            }
+        }
+    }
 }
 
 /// Device screen rotation angle.
@@ -66,10 +133,44 @@ pub enum DivoomDeviceRotationAngle {
     Raw(i32),
 }
 
+impl FromStr for DivoomDeviceRotationAngle {
+    type Err = String;
+    fn from_str(v: &str) -> Result<Self, Self::Err> {
+        match v {
+            "0" => Ok(DivoomDeviceRotationAngle::None),
+            "90" => Ok(DivoomDeviceRotationAngle::Rotate90),
+            "180" => Ok(DivoomDeviceRotationAngle::Rotate180),
+            "270" => Ok(DivoomDeviceRotationAngle::Rotate270),
+            _ => {
+                let parsed = v
+                    .parse::<i32>()
+                    .map_err(|x| format!("Invalid value for DivoomDeviceRotationAngle: {}", x))?;
+                Ok(DivoomDeviceRotationAngle::Raw(parsed))
+            }
+        }
+    }
+}
+
 /// Device screen power state.
 #[derive(Debug, PartialOrd, PartialEq)]
 pub enum DivoomDeviceScreenPowerState {
     Off,
     On,
     Raw(i32),
+}
+
+impl FromStr for DivoomDeviceScreenPowerState {
+    type Err = String;
+    fn from_str(v: &str) -> Result<Self, Self::Err> {
+        match v {
+            "off" => Ok(DivoomDeviceScreenPowerState::Off),
+            "on" => Ok(DivoomDeviceScreenPowerState::On),
+            _ => {
+                let parsed = v
+                    .parse::<i32>()
+                    .map_err(|x| format!("Invalid value for DivoomDeviceScreenPowerState: {}", x))?;
+                Ok(DivoomDeviceScreenPowerState::Raw(parsed))
+            }
+        }
+    }
 }

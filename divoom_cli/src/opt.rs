@@ -88,7 +88,88 @@ pub enum DivoomCliChannelCommand {
 }
 
 #[derive(StructOpt, Debug)]
-pub enum DivoomCliSystemCommand {}
+pub enum DivoomCliSystemCommand {
+    #[structopt(about = "Get all settings")]
+    GetSettings,
+
+    #[structopt(about = "Get device time")]
+    GetTime,
+
+    #[structopt(about = "Set device brightness")]
+    SetBrightness {
+        #[structopt(help = "Brightness (0-100)")]
+        brightness: i32
+    },
+
+    #[structopt(about = "Set device time by UTC timestamp")]
+    SetTime {
+        #[structopt(help = "Unix timestamp in UTC (in seconds)")]
+        utc: u64
+    },
+
+    #[structopt(about = "Set device high light mode")]
+    SetHighLightMode {
+        #[structopt(help = "High light mode. Can be on or off")]
+        mode: DivoomDeviceHighLightMode
+    },
+
+    #[structopt(about = "Set device hour mode")]
+    SetHourMode {
+        #[structopt(help = "Hour mode. Can be 12h or 24h")]
+        mode: DivoomDeviceHourMode
+    },
+
+    #[structopt(about = "Set device mirror mode")]
+    SetMirrorMode {
+        #[structopt(help = "Mirror mode. Can be disabled or enabled")]
+        mode: DivoomDeviceMirrorMode
+    },
+
+    #[structopt(about = "Set device rotation angle")]
+    SetRotationAngle {
+        #[structopt(help = "Screen rotation angle. Can be 0, 90, 180 and 270")]
+        mode: DivoomDeviceRotationAngle
+    },
+
+    #[structopt(about = "Set device screen power state")]
+    SetScreenPowerState {
+        #[structopt(help = "Screen power state, can be on or off")]
+        power_state: DivoomDeviceScreenPowerState
+    },
+
+    #[structopt(about = "Set device temperature unit")]
+    SetTemperatureUnit {
+        #[structopt(help = "Screen power state, can be c or f")]
+        unit: DivoomDeviceTemperatureUnit
+    },
+
+    #[structopt(about = "Set device time zone")]
+    SetTimeZone {
+        #[structopt(help = "Name of time zone")]
+        time_zone: String
+    },
+
+    #[structopt(about = "Set device weather area")]
+    SetWeatherArea {
+        #[structopt(help = "longitude")]
+        longitude: String,
+
+        #[structopt(help = "latitude")]
+        latitude: String
+    },
+
+    #[structopt(about = "Set device white balance")]
+    SetWhiteBalance {
+        #[structopt(help = "Red, 0-255")]
+        r: i32,
+
+        #[structopt(help = "Green, 0-255")]
+        g: i32,
+
+        #[structopt(help = "Blue, 0-255")]
+        b: i32
+    },
+}
 
 #[derive(StructOpt, Debug)]
 pub enum DivoomCliToolCommand {}
