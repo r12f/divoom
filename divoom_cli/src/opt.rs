@@ -223,12 +223,20 @@ pub enum DivoomCliAnimationCommand {
         #[structopt(default_value = "1000", help = "Total time to play in milliseconds")]
         play_total_time: i32,
 
-        #[structopt(short, default_value = "50", help = "Time to play in every buzz cycle in milliseconds")]
+        #[structopt(
+            short,
+            default_value = "50",
+            help = "Time to play in every buzz cycle in milliseconds"
+        )]
         active_time_in_cycle: i32,
 
-        #[structopt(short, default_value = "100", help = "Time to off after every buzz in milliseconds")]
-        off_time_in_cycle: i32
-    }
+        #[structopt(
+            short,
+            default_value = "100",
+            help = "Time to off after every buzz in milliseconds"
+        )]
+        off_time_in_cycle: i32,
+    },
 }
 
 #[derive(StructOpt, Debug)]

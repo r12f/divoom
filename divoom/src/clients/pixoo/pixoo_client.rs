@@ -376,10 +376,13 @@ mod tests {
             .create();
 
         let pixoo = PixooClient::new(&mockito::server_address().to_string());
-        pixoo.start_batch()
+        pixoo
+            .start_batch()
             .set_device_rotation_angle(DivoomDeviceRotationAngle::Rotate90)
             .set_device_mirror_mode(DivoomDeviceMirrorMode::On)
             .set_device_brightness(30)
-            .execute().await.expect("Request should succeed.");
+            .execute()
+            .await
+            .expect("Request should succeed.");
     }
 }

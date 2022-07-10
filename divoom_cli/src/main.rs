@@ -191,9 +191,16 @@ async fn handle_animation_api(
             handle_text_animation_api(common, text_animation_command).await
         }
 
-        DivoomCliAnimationCommand::Buzzer { play_total_time, active_time_in_cycle, off_time_in_cycle } => {
-            let pixoo = PixooClient::new(&common.device_ip.as_ref().expect("Device IP is not set!"));
-            pixoo.play_buzzer(play_total_time, active_time_in_cycle, off_time_in_cycle).await
+        DivoomCliAnimationCommand::Buzzer {
+            play_total_time,
+            active_time_in_cycle,
+            off_time_in_cycle,
+        } => {
+            let pixoo =
+                PixooClient::new(&common.device_ip.as_ref().expect("Device IP is not set!"));
+            pixoo
+                .play_buzzer(play_total_time, active_time_in_cycle, off_time_in_cycle)
+                .await
         }
     }
 }
@@ -242,9 +249,7 @@ async fn handle_image_animation_api(
             Ok(())
         }
 
-        DivoomCliImageAnimationCommand::ResetId => {
-            pixoo.reset_next_animation_id().await
-        }
+        DivoomCliImageAnimationCommand::ResetId => pixoo.reset_next_animation_id().await,
     }
 }
 
