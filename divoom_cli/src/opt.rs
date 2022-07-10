@@ -212,8 +212,23 @@ pub enum DivoomCliAnimationCommand {
     #[structopt(about = "Play GIF from Internet")]
     Gif(DivoomCliGifAnimationCommand),
 
+    #[structopt(about = "Create image animation")]
+    Image(DivoomCliImageAnimationCommand),
+
     #[structopt(about = "Create text animation")]
     Text(DivoomCliTextAnimationCommand),
+
+    #[structopt(about = "Play buzzer")]
+    Buzzer {
+        #[structopt(default_value = "1000", help = "Total time to play in milliseconds")]
+        play_total_time: i32,
+
+        #[structopt(short, default_value = "50", help = "Time to play in every buzz cycle in milliseconds")]
+        active_time_in_cycle: i32,
+
+        #[structopt(short, default_value = "100", help = "Time to off after every buzz in milliseconds")]
+        off_time_in_cycle: i32
+    }
 }
 
 #[derive(StructOpt, Debug)]
@@ -232,6 +247,15 @@ pub struct DivoomCliPlayGifAnimationOpts {
 
     #[structopt(long, help = "Specify a URL from Internet")]
     pub url: Option<String>,
+}
+
+#[derive(StructOpt, Debug)]
+pub enum DivoomCliImageAnimationCommand {
+    #[structopt(about = "Get next animation id")]
+    GetNextId,
+
+    #[structopt(about = "Reset next animation id")]
+    ResetId,
 }
 
 #[derive(StructOpt, Debug)]

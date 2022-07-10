@@ -11,3 +11,8 @@ This API will generate requests like below:
   "PlayTotalTime": 3000
 }
 ```
+
+**NOTE**: For Pixoo-64 device, every buzz is about 50ms long and the device cannot handle request <100ms very well. Hence:
+
+* For active time longer than 100ms, it will play buzz in each cycle multiple times.
+* If we set active time smaller than 50ms or off time smaller than 100ms, it might not buzz or off at all.
