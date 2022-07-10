@@ -38,6 +38,12 @@ BUILD_SIGNING_CERT_NAME := env_var_or_default("BUILD_SIGNING_CERT_NAME", "")
 PUBLISH_DIR := "./publish"
 
 #
+# Default task:
+#
+default profile=BUILD_PROFILE_DEFAULT: format lint (build profile) (test profile)
+
+
+#
 # Init tasks: Installing build tools and etc
 #
 init-win:
@@ -86,11 +92,6 @@ init-mac:
     brew install binutils
 
 #
-# Default task:
-#
-default profile=BUILD_PROFILE_DEFAULT: format lint (build profile) (test profile)
-
-#
 # Format task:
 #
 format:
@@ -100,7 +101,10 @@ format:
 # Lint task:
 #
 lint:
-    cargo clippy --fix
+    cargo clippy
+
+lint-fix:
+    cargo clippy --fix --allow-dirty
 
 #
 # Build task:

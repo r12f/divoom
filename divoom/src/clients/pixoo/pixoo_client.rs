@@ -315,7 +315,8 @@ impl PixooClient {
             ));
         }
 
-        Ok(response.destructive_into())
+        response.destructive_into();
+        Ok(())
     }
 
     impl_pixoo_client_api!(
@@ -364,7 +365,7 @@ impl PixooClient {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use mockito;
+    
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
     async fn pixoo_client_batch_mode_should_work() {

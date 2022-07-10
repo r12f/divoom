@@ -35,7 +35,7 @@ impl DivoomPixooCommandAnimationSendImageAnimationFrameRequestPayload {
                     pic_offset: entry.0,
                     pic_id: animation.id,
                     pic_speed: animation.speed_in_ms,
-                    pic_data: entry.1.clone(),
+                    pic_data: entry.1,
                 },
             )
             .collect()

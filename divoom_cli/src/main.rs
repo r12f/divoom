@@ -13,7 +13,7 @@ async fn main() -> DivoomAPIResult<()> {
         DivoomCliSubCommand::Discover => {
             let divoom = DivoomServiceClient::new();
             let devices = divoom.get_same_lan_devices().await?;
-            if devices.len() == 0 {
+            if devices.is_empty() {
                 println!("No device is found!");
                 return Ok(());
             }
@@ -57,7 +57,7 @@ async fn handle_channel_api(
     common: &DivoomCliDeviceCommandCommonOpts,
     channel_command: DivoomCliChannelCommand,
 ) -> DivoomAPIResult<()> {
-    let pixoo = PixooClient::new(&common.device_ip.as_ref().expect("Device IP is not set!"));
+    let pixoo = PixooClient::new(common.device_ip.as_ref().expect("Device IP is not set!"));
 
     match channel_command {
         DivoomCliChannelCommand::Get => {
@@ -94,7 +94,7 @@ async fn handle_system_api(
     common: &DivoomCliDeviceCommandCommonOpts,
     system_command: DivoomCliSystemCommand,
 ) -> DivoomAPIResult<()> {
-    let pixoo = PixooClient::new(&common.device_ip.as_ref().expect("Device IP is not set!"));
+    let pixoo = PixooClient::new(common.device_ip.as_ref().expect("Device IP is not set!"));
 
     match system_command {
         DivoomCliSystemCommand::GetSettings => {
@@ -154,7 +154,7 @@ async fn handle_tool_api(
     common: &DivoomCliDeviceCommandCommonOpts,
     tool_command: DivoomCliToolCommand,
 ) -> DivoomAPIResult<()> {
-    let pixoo = PixooClient::new(&common.device_ip.as_ref().expect("Device IP is not set!"));
+    let pixoo = PixooClient::new(common.device_ip.as_ref().expect("Device IP is not set!"));
 
     match tool_command {
         DivoomCliToolCommand::Countdown {
@@ -197,7 +197,7 @@ async fn handle_animation_api(
             off_time_in_cycle,
         } => {
             let pixoo =
-                PixooClient::new(&common.device_ip.as_ref().expect("Device IP is not set!"));
+                PixooClient::new(common.device_ip.as_ref().expect("Device IP is not set!"));
             pixoo
                 .play_buzzer(play_total_time, active_time_in_cycle, off_time_in_cycle)
                 .await
@@ -209,7 +209,7 @@ async fn handle_gif_animation_api(
     common: &DivoomCliDeviceCommandCommonOpts,
     gif_animation_command: DivoomCliGifAnimationCommand,
 ) -> DivoomAPIResult<()> {
-    let pixoo = PixooClient::new(&common.device_ip.as_ref().expect("Device IP is not set!"));
+    let pixoo = PixooClient::new(common.device_ip.as_ref().expect("Device IP is not set!"));
 
     match gif_animation_command {
         DivoomCliGifAnimationCommand::Play(gif) => {
@@ -240,7 +240,7 @@ async fn handle_image_animation_api(
     common: &DivoomCliDeviceCommandCommonOpts,
     image_animation_command: DivoomCliImageAnimationCommand,
 ) -> DivoomAPIResult<()> {
-    let pixoo = PixooClient::new(&common.device_ip.as_ref().expect("Device IP is not set!"));
+    let pixoo = PixooClient::new(common.device_ip.as_ref().expect("Device IP is not set!"));
 
     match image_animation_command {
         DivoomCliImageAnimationCommand::GetNextId => {
@@ -257,7 +257,7 @@ async fn handle_text_animation_api(
     common: &DivoomCliDeviceCommandCommonOpts,
     text_animation_command: DivoomCliTextAnimationCommand,
 ) -> DivoomAPIResult<()> {
-    let pixoo = PixooClient::new(&common.device_ip.as_ref().expect("Device IP is not set!"));
+    let pixoo = PixooClient::new(common.device_ip.as_ref().expect("Device IP is not set!"));
 
     match text_animation_command {
         DivoomCliTextAnimationCommand::Clear => pixoo.clear_all_text_area().await,
@@ -272,7 +272,7 @@ async fn handle_batch_api(
     common: &DivoomCliDeviceCommandCommonOpts,
     batch_command: DivoomCliBatchCommand,
 ) -> DivoomAPIResult<()> {
-    let pixoo = PixooClient::new(&common.device_ip.as_ref().expect("Device IP is not set!"));
+    let pixoo = PixooClient::new(common.device_ip.as_ref().expect("Device IP is not set!"));
 
     match batch_command {
         DivoomCliBatchCommand::RunUrl { command_url } => {

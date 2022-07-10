@@ -1,7 +1,7 @@
 use crate::clients::common::*;
 use crate::divoom_contracts::divoom::*;
 use crate::dto::*;
-use reqwest;
+
 use serde::de::DeserializeOwned;
 use serde::Serialize;
 
@@ -19,6 +19,12 @@ use serde::Serialize;
 /// ```
 pub struct DivoomServiceClient {
     client: DivoomRestAPIClient,
+}
+
+impl Default for DivoomServiceClient {
+    fn default() -> Self {
+        DivoomServiceClient::new()
+    }
 }
 
 impl DivoomServiceClient {
@@ -128,7 +134,7 @@ impl DivoomServiceClient {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use mockito;
+    
 
     #[test]
     fn divoom_service_should_have_default_server_url_base() {
@@ -145,7 +151,7 @@ mod tests {
             .with_body("{\"ReturnCode\":0,\"ReturnMessage\":\"\",\"DeviceList\":[{\"DeviceName\":\"Pixoo\",\"DeviceId\":300000001,\"DevicePrivateIP\":\"192.168.0.2\"}]}")
             .create();
 
-        let divoom = DivoomServiceClient::with_server_url_base(mockito::server_url().to_string());
+        let divoom = DivoomServiceClient::with_server_url_base(mockito::server_url());
         let devices = divoom.get_same_lan_devices().await.unwrap();
         assert_eq!(
             devices,
@@ -166,7 +172,7 @@ mod tests {
             .with_body("{\"ReturnCode\":0,\"ReturnMessage\":\"\",\"DialTypeList\":[\"Social\",\"financial\",\"Game\",\"normal\",\"HOLIDAYS\",\"TOOLS\",\"Sport\",\"Custom\",\"self\"]}")
             .create();
 
-        let divoom = DivoomServiceClient::with_server_url_base(mockito::server_url().to_string());
+        let divoom = DivoomServiceClient::with_server_url_base(mockito::server_url());
         let devices = divoom.get_clock_type().await.unwrap();
         assert_eq!(
             devices,
@@ -193,7 +199,7 @@ mod tests {
             .with_body("{ \"ReturnCode\": 0, \"ReturnMessage\": \"\", \"TotalNum\": 100, \"DialList\": [ { \"ClockId\": 10, \"Name\": \"Classic Digital Clock\" } ]}")
             .create();
 
-        let divoom = DivoomServiceClient::with_server_url_base(mockito::server_url().to_string());
+        let divoom = DivoomServiceClient::with_server_url_base(mockito::server_url());
         let devices = divoom.get_clock_list("Social".into(), 1).await.unwrap();
         assert_eq!(
             devices,
@@ -216,7 +222,7 @@ mod tests {
             .with_body("{\"ReturnCode\":0,\"ReturnMessage\":\"\",\"FontList\":[{\"id\":2,\"name\":\"16*16 English letters, Arabic figures,punctuation\",\"width\":\"16\",\"high\":\"16\",\"charset\":\"\",\"type\":0}]}")
             .create();
 
-        let divoom = DivoomServiceClient::with_server_url_base(mockito::server_url().to_string());
+        let divoom = DivoomServiceClient::with_server_url_base(mockito::server_url());
         let devices = divoom.get_font_list().await.unwrap();
         assert_eq!(
             devices,
