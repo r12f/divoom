@@ -1,6 +1,7 @@
 mod divoom_api_error;
 mod divoom_channel;
 mod divoom_device;
+mod divoom_dto_common;
 mod divoom_image_animation;
 mod divoom_text_animation;
 mod divoom_tool;

@@ -399,7 +399,7 @@ mod tests {
             .set_device_time(1000000)
             .set_device_high_light_mode(DivoomDeviceHighLightMode::On)
             .set_device_hour_mode(DivoomDeviceHourMode::Hour24)
-            .set_device_mirror_mode(DivoomDeviceMirrorMode::Enable)
+            .set_device_mirror_mode(DivoomDeviceMirrorMode::On)
             .set_device_rotation_angle(DivoomDeviceRotationAngle::Rotate270)
             .set_device_screen_power_state(DivoomDeviceScreenPowerState::On)
             .set_device_temperature_unit(DivoomDeviceTemperatureUnit::Fahrenheit)

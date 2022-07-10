@@ -27,24 +27,30 @@ async fn main() -> DivoomAPIResult<()> {
             }
 
             println!();
+
+            Ok(())
         }
 
         DivoomCliSubCommand::Channel(channel_command) => {
-            let _ = handle_channel_api(&opts.common, channel_command).await?;
+            handle_channel_api(&opts.common, channel_command).await
         }
 
         DivoomCliSubCommand::System(system_command) => {
-            let _ = handle_system_api(&opts.common, system_command).await?;
+            handle_system_api(&opts.common, system_command).await
+        }
+
+        DivoomCliSubCommand::Tool(tool_command) => {
+            handle_tool_api(&opts.common, tool_command).await
         }
 
         DivoomCliSubCommand::Animation(animation_command) => {
-            let _ = handle_animation_api(&opts.common, animation_command).await?;
+            handle_animation_api(&opts.common, animation_command).await
         }
 
-        _ => {}
+        DivoomCliSubCommand::Batch(batch_command) => {
+            handle_batch_api(&opts.common, batch_command).await
+        }
     }
-
-    Ok(())
 }
 
 async fn handle_channel_api(
@@ -57,35 +63,31 @@ async fn handle_channel_api(
         DivoomCliChannelCommand::Get => {
             let result = pixoo.get_current_channel().await?;
             println!("{:?}", result);
+            Ok(())
         }
 
         DivoomCliChannelCommand::GetClock => {
             let result = pixoo.get_selected_clock_info().await?;
             println!("{:?}", result);
+            Ok(())
         }
 
-        DivoomCliChannelCommand::Set { channel_type } => {
-            pixoo.select_channel(channel_type).await?;
-        }
+        DivoomCliChannelCommand::Set { channel_type } => pixoo.select_channel(channel_type).await,
 
-        DivoomCliChannelCommand::SetClock { clock_id } => {
-            pixoo.select_clock(clock_id).await?;
-        }
+        DivoomCliChannelCommand::SetClock { clock_id } => pixoo.select_clock(clock_id).await,
 
         DivoomCliChannelCommand::SetCloudChannel { channel_type } => {
-            pixoo.select_cloud_channel(channel_type).await?;
+            pixoo.select_cloud_channel(channel_type).await
         }
 
         DivoomCliChannelCommand::SetCustomPage { page_index } => {
-            pixoo.select_custom_page(page_index).await?;
+            pixoo.select_custom_page(page_index).await
         }
 
         DivoomCliChannelCommand::SetVisualizer { visualizer_index } => {
-            pixoo.select_visualizer(visualizer_index).await?;
+            pixoo.select_visualizer(visualizer_index).await
         }
     }
-
-    Ok(())
 }
 
 async fn handle_system_api(
@@ -98,59 +100,78 @@ async fn handle_system_api(
         DivoomCliSystemCommand::GetSettings => {
             let result = pixoo.get_device_settings().await?;
             println!("{:?}", result);
+            Ok(())
         }
 
         DivoomCliSystemCommand::GetTime => {
             let result = pixoo.get_device_time().await?;
             println!("{:?}", result);
+            Ok(())
         }
 
-        DivoomCliSystemCommand::SetTime { utc } => {
-            pixoo.set_device_time(utc).await?;
-        }
+        DivoomCliSystemCommand::SetTime { utc } => pixoo.set_device_time(utc).await,
 
         DivoomCliSystemCommand::SetBrightness { brightness } => {
-            pixoo.set_device_brightness(brightness).await?;
+            pixoo.set_device_brightness(brightness).await
         }
 
-        DivoomCliSystemCommand::SetHourMode { mode } => {
-            pixoo.set_device_hour_mode(mode).await?;
-        }
+        DivoomCliSystemCommand::SetHourMode { mode } => pixoo.set_device_hour_mode(mode).await,
 
         DivoomCliSystemCommand::SetHighLightMode { mode } => {
-            pixoo.set_device_high_light_mode(mode).await?;
+            pixoo.set_device_high_light_mode(mode).await
         }
 
-        DivoomCliSystemCommand::SetMirrorMode { mode } => {
-            pixoo.set_device_mirror_mode(mode).await?;
-        }
+        DivoomCliSystemCommand::SetMirrorMode { mode } => pixoo.set_device_mirror_mode(mode).await,
 
         DivoomCliSystemCommand::SetRotationAngle { mode } => {
-            pixoo.set_device_rotation_angle(mode).await?;
+            pixoo.set_device_rotation_angle(mode).await
         }
 
         DivoomCliSystemCommand::SetScreenPowerState { power_state } => {
-            pixoo.set_device_screen_power_state(power_state).await?;
+            pixoo.set_device_screen_power_state(power_state).await
         }
 
         DivoomCliSystemCommand::SetTemperatureUnit { unit } => {
-            pixoo.set_device_temperature_unit(unit).await?;
+            pixoo.set_device_temperature_unit(unit).await
         }
 
         DivoomCliSystemCommand::SetTimeZone { time_zone } => {
-            pixoo.set_device_time_zone(time_zone).await?;
+            pixoo.set_device_time_zone(time_zone).await
         }
 
-        DivoomCliSystemCommand::SetWeatherArea { longitude, latitude } => {
-            pixoo.set_device_weather_area(longitude, latitude).await?;
-        }
+        DivoomCliSystemCommand::SetWeatherArea {
+            longitude,
+            latitude,
+        } => pixoo.set_device_weather_area(longitude, latitude).await,
 
         DivoomCliSystemCommand::SetWhiteBalance { r, g, b } => {
-            pixoo.set_device_white_balance(r, g, b).await?;
+            pixoo.set_device_white_balance(r, g, b).await
         }
     }
+}
 
-    Ok(())
+async fn handle_tool_api(
+    common: &DivoomCliDeviceCommandCommonOpts,
+    tool_command: DivoomCliToolCommand,
+) -> DivoomAPIResult<()> {
+    let pixoo = PixooClient::new(&common.device_ip.as_ref().expect("Device IP is not set!"));
+
+    match tool_command {
+        DivoomCliToolCommand::Countdown {
+            minute,
+            second,
+            action,
+        } => pixoo.set_countdown_tool(minute, second, action).await,
+
+        DivoomCliToolCommand::Noise { action } => pixoo.set_noise_tool(action).await,
+
+        DivoomCliToolCommand::Scoreboard {
+            blue_score,
+            red_score,
+        } => pixoo.set_scoreboard_tool(blue_score, red_score).await,
+
+        DivoomCliToolCommand::Stopwatch { action } => pixoo.set_stopwatch_tool(action).await,
+    }
 }
 
 async fn handle_animation_api(
@@ -159,15 +180,13 @@ async fn handle_animation_api(
 ) -> DivoomAPIResult<()> {
     match animation_command {
         DivoomCliAnimationCommand::Gif(gif_animation_command) => {
-            let _ = handle_gif_animation_api(common, gif_animation_command).await?;
+            handle_gif_animation_api(common, gif_animation_command).await
         }
 
         DivoomCliAnimationCommand::Text(text_animation_command) => {
-            let _ = handle_text_animation_api(common, text_animation_command).await?;
+            handle_text_animation_api(common, text_animation_command).await
         }
     }
-
-    Ok(())
 }
 
 async fn handle_gif_animation_api(
@@ -195,10 +214,10 @@ async fn handle_gif_animation_api(
                     "The source of GIF is not set!".into(),
                 ));
             }
+
+            Ok(())
         }
     }
-
-    Ok(())
 }
 
 async fn handle_text_animation_api(
@@ -208,14 +227,23 @@ async fn handle_text_animation_api(
     let pixoo = PixooClient::new(&common.device_ip.as_ref().expect("Device IP is not set!"));
 
     match text_animation_command {
-        DivoomCliTextAnimationCommand::Clear => {
-            pixoo.clear_all_text_area().await?;
-        }
+        DivoomCliTextAnimationCommand::Clear => pixoo.clear_all_text_area().await,
 
         DivoomCliTextAnimationCommand::Set(text_animation) => {
-            pixoo.send_text_animation(text_animation.into()).await?;
+            pixoo.send_text_animation(text_animation.into()).await
         }
     }
+}
 
-    Ok(())
+async fn handle_batch_api(
+    common: &DivoomCliDeviceCommandCommonOpts,
+    batch_command: DivoomCliBatchCommand,
+) -> DivoomAPIResult<()> {
+    let pixoo = PixooClient::new(&common.device_ip.as_ref().expect("Device IP is not set!"));
+
+    match batch_command {
+        DivoomCliBatchCommand::RunUrl { command_url } => {
+            pixoo.execute_commands_from_url(command_url).await
+        }
+    }
 }

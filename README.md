@@ -97,6 +97,7 @@ Currently, we have these APIs supported:
     - [x] Clear all text area
     - [x] Play buzzer
 - Batch APIs
+    - [ ] Batching commands
     - [x] Execute commands from url
 
 #### Image Animation
@@ -148,7 +149,7 @@ With the command tool (covered below soon), on windows:
 And on linux:
 
 ```bash
-RUST_LOG=debug .\divoom-cli.exe 192.168.0.123 channel get
+RUST_LOG=debug ./divoom-cli.exe 192.168.0.123 channel get
 ```
 
 Then we will see the output log like below:

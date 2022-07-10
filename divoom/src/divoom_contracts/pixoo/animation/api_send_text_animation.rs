@@ -52,6 +52,7 @@ impl DivoomPixooCommandAnimationSendTextAnimationRequestPayload {
             dir: match text.scroll_direction {
                 DivoomTextAnimationScrollDirection::Left => 0,
                 DivoomTextAnimationScrollDirection::Right => 1,
+                DivoomTextAnimationScrollDirection::Raw(n) => n,
             },
             font: text.font_index,
             text_width: text.text_width,
@@ -65,6 +66,7 @@ impl DivoomPixooCommandAnimationSendTextAnimationRequestPayload {
                 DivoomTextAnimationAlign::Left => 1,
                 DivoomTextAnimationAlign::Middle => 2,
                 DivoomTextAnimationAlign::Right => 3,
+                DivoomTextAnimationAlign::Raw(n) => n,
             },
         }
     }

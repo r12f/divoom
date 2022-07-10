@@ -1,4 +1,6 @@
+use super::divoom_dto_common::*;
 use rgb::RGB8;
+use std::fmt;
 use std::str::FromStr;
 
 /// Font types
@@ -9,21 +11,7 @@ pub enum DivoomFontType {
     Raw(i32),
 }
 
-impl FromStr for DivoomFontType {
-    type Err = String;
-    fn from_str(v: &str) -> Result<Self, Self::Err> {
-        match v {
-            "scroll" => Ok(DivoomFontType::Scrollable),
-            "noscroll" => Ok(DivoomFontType::NotScrollable),
-            _ => {
-                let parsed = v
-                    .parse::<i32>()
-                    .map_err(|x| format!("Invalid value for DivoomFontType: {}", x))?;
-                Ok(DivoomFontType::Raw(parsed))
-            }
-        }
-    }
-}
+impl_divoom_dto_enum_traits!(DivoomFontType, Scrollable: "scroll", NotScrollable: "noscroll");
 
 /// Font info
 #[derive(Debug, PartialOrd, PartialEq)]
@@ -41,21 +29,10 @@ pub struct DivoomFontInfo {
 pub enum DivoomTextAnimationScrollDirection {
     Left,
     Right,
+    Raw(i32),
 }
 
-impl FromStr for DivoomTextAnimationScrollDirection {
-    type Err = String;
-    fn from_str(v: &str) -> Result<Self, Self::Err> {
-        match v {
-            "left" => Ok(DivoomTextAnimationScrollDirection::Left),
-            "right" => Ok(DivoomTextAnimationScrollDirection::Right),
-            _ => Err(format!(
-                "Invalid value for DivoomTextAnimationScrollDirection: {}",
-                v
-            )),
-        }
-    }
-}
+impl_divoom_dto_enum_traits!(DivoomTextAnimationScrollDirection, Left: "left", Right: "right");
 
 /// Text animation text alignment
 #[derive(Debug, PartialOrd, PartialEq)]
@@ -63,19 +40,10 @@ pub enum DivoomTextAnimationAlign {
     Left,
     Middle,
     Right,
+    Raw(i32),
 }
 
-impl FromStr for DivoomTextAnimationAlign {
-    type Err = String;
-    fn from_str(v: &str) -> Result<Self, Self::Err> {
-        match v {
-            "left" => Ok(DivoomTextAnimationAlign::Left),
-            "middle" => Ok(DivoomTextAnimationAlign::Middle),
-            "right" => Ok(DivoomTextAnimationAlign::Right),
-            _ => Err(format!("Invalid value for DivoomTextAnimationAlign: {}", v)),
-        }
-    }
-}
+impl_divoom_dto_enum_traits!(DivoomTextAnimationAlign, Left: "left", Middle: "middle", Right: "right");
 
 /// Text animation definition
 #[derive(Debug, PartialOrd, PartialEq)]

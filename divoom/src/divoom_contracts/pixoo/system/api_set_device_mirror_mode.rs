@@ -23,8 +23,8 @@ impl DivoomPixooCommandSystemSetMirrorModeRequestPayload {
     ) -> DivoomPixooCommandSystemSetMirrorModeRequestPayload {
         DivoomPixooCommandSystemSetMirrorModeRequestPayload {
             mode: match mode {
-                DivoomDeviceMirrorMode::Disable => 0,
-                DivoomDeviceMirrorMode::Enable => 1,
+                DivoomDeviceMirrorMode::Off => 0,
+                DivoomDeviceMirrorMode::On => 1,
                 DivoomDeviceMirrorMode::Raw(n) => n,
             },
         }
