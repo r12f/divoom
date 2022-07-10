@@ -8,7 +8,7 @@ BUILD_TOOL_TARGET := if BUILD_TARGET == "windows-x86" {
     "i686-pc-windows-msvc"
   } else if BUILD_TARGET == "windows-x86_64" {
     "x86_64-pc-windows-msvc"
-  } else if BUILD_TARGET == "windows-arm64" {
+  } else if BUILD_TARGET == "windows-aarch64" {
     "aarch64-pc-windows-msvc"
   } else if BUILD_TARGET == "unix-x86" {
     "i686-unknown-linux-gnu"
