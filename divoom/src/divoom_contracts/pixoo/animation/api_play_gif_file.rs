@@ -28,6 +28,7 @@ impl DivoomPixooCommandAnimationPlayGifRequestPayload {
                 DivoomFileAnimationSourceType::LocalFile => 0,
                 DivoomFileAnimationSourceType::LocalFolder => 1,
                 DivoomFileAnimationSourceType::Url => 2,
+                DivoomFileAnimationSourceType::Raw(n) => n,
             },
             file_name,
         }

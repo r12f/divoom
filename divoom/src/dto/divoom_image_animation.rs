@@ -1,4 +1,7 @@
+use super::divoom_dto_common::*;
 use std::collections::BTreeMap;
+use std::fmt;
+use std::str::FromStr;
 
 /// Definition of image animations.
 #[derive(Debug, PartialEq)]
@@ -37,4 +40,7 @@ pub enum DivoomFileAnimationSourceType {
     LocalFile,
     LocalFolder,
     Url,
+    Raw(i32),
 }
+
+impl_divoom_dto_enum_traits!(DivoomFileAnimationSourceType, LocalFile: "file", LocalFolder: "folder", Url: "url");

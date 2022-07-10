@@ -92,6 +92,14 @@ init-mac:
     brew install binutils
 
 #
+# Development tasks:
+#
+commit m: format lint build test
+    git add .
+    git commit -m "{{m}}"
+    git push
+
+#
 # Format task:
 #
 format:
