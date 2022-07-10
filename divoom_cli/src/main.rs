@@ -62,7 +62,7 @@ async fn handle_channel_api(
     match channel_command {
         DivoomCliChannelCommand::Get => {
             let result = pixoo.get_current_channel().await?;
-            println!("{:?}", result);
+            println!("{}", result);
             Ok(())
         }
 
@@ -105,7 +105,7 @@ async fn handle_system_api(
 
         DivoomCliSystemCommand::GetTime => {
             let result = pixoo.get_device_time().await?;
-            println!("{:?}", result);
+            println!("{}", result);
             Ok(())
         }
 
