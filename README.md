@@ -2,6 +2,7 @@
 
 Rust Library for controlling divoom devices that support REST APIs, such as pixoo-64 (and from how divoom's api/doc organizes, maybe more in the future).
 
+![Crates.io](https://img.shields.io/crates/v/divoom)
 [![Documentation](https://docs.rs/divoom/badge.svg)](https://docs.rs/divoom/)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE-APACHE)
 
