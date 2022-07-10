@@ -353,4 +353,33 @@ impl PixooClient {
         (),
         command_url: String
     );
+
+    /// ## Batch mode
+    /// This function returns the command builder, which allows us to build multiple commands and execute them at once.
+    pub fn start_batch(&self) -> PixooCommandBuilder {
+        PixooCommandBuilder::start_batch(self.client.clone())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use mockito;
+
+    #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
+    async fn pixoo_client_batch_mode_should_work() {
+        let _m = mockito::mock("POST", "/post")
+            .with_status(200)
+            .with_header("Content-Type", "application/json; charset=UTF-8")
+            .with_header("Server", "nginx")
+            .with_body("{\"error_code\": 0}")
+            .create();
+
+        let pixoo = PixooClient::new(&mockito::server_address().to_string());
+        pixoo.start_batch()
+            .set_device_rotation_angle(DivoomDeviceRotationAngle::Rotate90)
+            .set_device_mirror_mode(DivoomDeviceMirrorMode::On)
+            .set_device_brightness(30)
+            .execute().await.expect("Request should succeed.");
+    }
 }

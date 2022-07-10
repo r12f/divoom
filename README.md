@@ -97,8 +97,8 @@ Currently, we have these APIs supported:
     - [x] Clear all text area
     - [x] Play buzzer
 - Batch APIs
-    - [ ] Batching commands
-    - [x] Execute commands from url
+    - [X] Batching commands
+    - [X] Execute commands from url
 
 #### Image Animation
 
@@ -128,7 +128,17 @@ pixoo.send_text_animation(animation).await?;
 
 In certain cases, we might want to run a lot of commands at the same time, such as initialize the settings. Pixoo devices supports batching all commands into a single request, but with only 1 single result being returned for indicating if everything succeeded or not.
 
-> Under development.
+Here is an example that we batch executed multiple commands to update the device settings:
+
+```rust
+use divoom::*;
+let pixoo = PixooClient::new("192.168.0.123");
+pixoo.start_batch()
+  .set_device_rotation_angle(DivoomDeviceRotationAngle::Rotate90)
+  .set_device_mirror_mode(DivoomDeviceMirrorMode::On)
+  .set_device_brightness(30)
+  .execute().await.expect("Request should succeed.");
+```
 
 ## Debugging
 
