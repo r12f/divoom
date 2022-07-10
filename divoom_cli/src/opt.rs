@@ -55,19 +55,36 @@ pub enum DivoomCliChannelCommand {
     GetClock,
 
     #[structopt(about = "Set current channel")]
-    Set,
+    Set {
+        #[structopt(
+            help = "Channel type. It can be clock, cloud-channel, visualizer and custom-page."
+        )]
+        channel_type: DivoomChannelType,
+    },
 
     #[structopt(about = "Set current channel to clock")]
-    SetClock,
+    SetClock {
+        #[structopt(help = "Clock id.")]
+        clock_id: i32,
+    },
 
     #[structopt(about = "Set current channel to cloud channel")]
-    SetCloudChannel,
+    SetCloudChannel {
+        #[structopt(help = "Cloud channel type. It can be gallery, fav and artist.")]
+        channel_type: DivoomCloudChannelType,
+    },
 
     #[structopt(about = "Set current channel to custom page")]
-    SetCustomPage,
+    SetCustomPage {
+        #[structopt(help = "Custom page index. Can be 0-2.")]
+        page_index: i32,
+    },
 
     #[structopt(about = "Set current channel to visualizer")]
-    SetVisualizer,
+    SetVisualizer {
+        #[structopt(help = "Visualizer index. Starting from 0.")]
+        visualizer_index: i32,
+    },
 }
 
 #[derive(StructOpt, Debug)]

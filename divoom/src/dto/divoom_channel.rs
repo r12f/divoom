@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 /// Divoom device channel types.
 ///
 /// It can be Clock, CloudChannel, Visualizer, CustomPage. And in case we didn't have things covered, we provided `Raw(i32)` to allow us to set it
@@ -9,6 +11,24 @@ pub enum DivoomChannelType {
     Visualizer,
     CustomPage,
     Raw(i32),
+}
+
+impl FromStr for DivoomChannelType {
+    type Err = String;
+    fn from_str(v: &str) -> Result<Self, Self::Err> {
+        match v {
+            "clock" => Ok(DivoomChannelType::Clock),
+            "cloud-channel" => Ok(DivoomChannelType::CloudChannel),
+            "visualizer" => Ok(DivoomChannelType::Visualizer),
+            "custom-page" => Ok(DivoomChannelType::CustomPage),
+            _ => {
+                let parsed = v
+                    .parse::<i32>()
+                    .map_err(|x| format!("Invalid value for DivoomChannelType: {}", x))?;
+                Ok(DivoomChannelType::Raw(parsed))
+            }
+        }
+    }
 }
 
 /// Clock info list that returned from Divoom service (not device).
@@ -41,4 +61,21 @@ pub enum DivoomCloudChannelType {
     Fav,
     Artist,
     Raw(i32),
+}
+
+impl FromStr for DivoomCloudChannelType {
+    type Err = String;
+    fn from_str(v: &str) -> Result<Self, Self::Err> {
+        match v {
+            "gallery" => Ok(DivoomCloudChannelType::Gallery),
+            "fav" => Ok(DivoomCloudChannelType::Fav),
+            "artist" => Ok(DivoomCloudChannelType::Artist),
+            _ => {
+                let parsed = v
+                    .parse::<i32>()
+                    .map_err(|x| format!("Invalid value for DivoomCloudChannelType: {}", x))?;
+                Ok(DivoomCloudChannelType::Raw(parsed))
+            }
+        }
+    }
 }

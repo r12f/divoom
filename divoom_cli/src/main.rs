@@ -60,7 +60,25 @@ async fn handle_channel_api(
             println!("{:?}", result);
         }
 
-        _ => (),
+        DivoomCliChannelCommand::Set { channel_type } => {
+            pixoo.select_channel(channel_type).await?;
+        }
+
+        DivoomCliChannelCommand::SetClock { clock_id } => {
+            pixoo.select_clock(clock_id).await?;
+        }
+
+        DivoomCliChannelCommand::SetCloudChannel { channel_type } => {
+            pixoo.select_cloud_channel(channel_type).await?;
+        }
+
+        DivoomCliChannelCommand::SetCustomPage { page_index } => {
+            pixoo.select_custom_page(page_index).await?;
+        }
+
+        DivoomCliChannelCommand::SetVisualizer { visualizer_index } => {
+            pixoo.select_visualizer(visualizer_index).await?;
+        }
     }
 
     Ok(())
