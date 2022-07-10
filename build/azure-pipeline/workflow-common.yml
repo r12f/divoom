@@ -112,10 +112,10 @@ stages:
               rustup update stable
             displayName: rustup update default toolchain
 
-          - task: PowerShell@2
+          - script: choco install just -y
             displayName: Install make tool on Windows
             condition: and(succeeded(), eq(variables['target_os'], 'windows'))
-            script: choco install just -y
+
 
           - bash: |
               curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to /usr/local/bin
