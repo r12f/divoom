@@ -241,19 +241,28 @@ pub enum DivoomCliAnimationCommand {
 
 #[derive(StructOpt, Debug)]
 pub enum DivoomCliGifAnimationCommand {
-    #[structopt(about = "Play gif file")]
+    #[structopt(about = "Play gif file. Only supports 16x16, 32x32, 64x64 gifs")]
     Play(DivoomCliPlayGifAnimationOpts),
 }
 
 #[derive(StructOpt, Debug)]
 pub struct DivoomCliPlayGifAnimationOpts {
-    #[structopt(long, help = "Specify a local file on *pixoo device*")]
+    #[structopt(
+        long,
+        help = "Specify a local file on *pixoo device*. Only supports 16x16, 32x32, 64x64 gifs"
+    )]
     pub file: Option<String>,
 
-    #[structopt(long, help = "Specify a local folder on *pixoo device*")]
+    #[structopt(
+        long,
+        help = "Specify a local folder on *pixoo device*. Only supports 16x16, 32x32, 64x64 gifs"
+    )]
     pub folder: Option<String>,
 
-    #[structopt(long, help = "Specify a URL from Internet")]
+    #[structopt(
+        long,
+        help = "Specify a URL from Internet. Only supports 16x16, 32x32, 64x64 gifs"
+    )]
     pub url: Option<String>,
 }
 
@@ -271,7 +280,7 @@ pub enum DivoomCliTextAnimationCommand {
     #[structopt(about = "Clear all text area")]
     Clear,
 
-    #[structopt(about = "Send text animation")]
+    #[structopt(about = "Send text animation.")]
     Set(DivoomCliTextAnimationOpts),
 }
 
