@@ -107,14 +107,14 @@ lint-fix:
     cargo clippy --fix --allow-dirty
 
 #
-# Build task:
+# Build / test tasks:
 #
 build profile=BUILD_PROFILE_DEFAULT:
     cargo build --profile {{profile}} --target {{BUILD_TOOL_TARGET}}
 
-#
-# Test task:
-#
+doc:
+    cargo doc
+
 test profile=BUILD_PROFILE_DEFAULT:
     cargo test --profile {{profile}} --target {{BUILD_TOOL_TARGET}}
 
@@ -139,3 +139,15 @@ sign profile=BUILD_PROFILE_DEFAULT:
 #
 install:
     cargo install --profile release --path ./divoom_cli
+
+#
+# Publish tasks
+#
+publish-dry package="divoom":
+    cargo publish --dry-run -p {{package}}
+
+    echo "Files in package:"
+    cargo package --list -p {{package}}
+
+publish package="divoom":
+    cargo publish -p {{package}}
