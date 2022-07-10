@@ -214,6 +214,9 @@ DivoomSelectedClockInfo { clock_id: 168, brightness: 67 }
 
 # Create a text animation
 > .\divoom-cli.exe 192.168.0.123 animation text set 1 "The gray fox jumped over the lazy dog"
+
+# Play a gif from Internet
+> .\divoom-cli.exe 192.168.0.123 animation gif play --url https://www.gifandgif.eu/animated_gif/Planets/Animated%20Gif%20Planets%20(16).GIF
 ```
 
 ### Help

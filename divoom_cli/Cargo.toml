@@ -18,7 +18,7 @@ thiserror = "1.0.30"
 serde = { version = "1.0.130", features = ["derive"] }
 rgb = "0.8.33"
 structopt = "0.3.26"
-divoom = { version = "0.1", path = "../divoom" }
+divoom = { version = "0.1.2", path = "../divoom" }
 
 [dev-dependencies]
 pretty_assertions = "1.0.0"
