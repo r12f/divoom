@@ -2,15 +2,19 @@
 
 Rust Library for controlling divoom devices that support REST APIs, such as pixoo-64 (and from how divoom's api/doc organizes, maybe more in the future).
 
-![Crates.io](https://img.shields.io/crates/v/divoom)
+[![Crates.io](https://img.shields.io/crates/v/divoom)](https://crates.io/crates/divoom)
 [![Documentation](https://docs.rs/divoom/badge.svg)](https://docs.rs/divoom/)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE-APACHE)
 
 ```rust
+// Get current channel
 use divoom::*;
+println!(
+    "{:?}",
+    PixooClient::new("192.168.0.123").get_current_channel().await?
+);
 
 // Output: Clock
-println!("{:?}", PixooClient::new("192.168.0.123").get_current_channel().await?);
 ```
 
 ## How to use
@@ -58,42 +62,42 @@ Clock
 Currently, we have these APIs supported:
 
 - Channel APIs
-    - Select channel
-    - Get current channel
-    - Select clock
-    - Get selected clock info
-    - Select cloud channel
-    - Select visualizer
-    - Select custom page
+    - [x] Select channel
+    - [x] Get current channel
+    - [x] Select clock
+    - [x] Get selected clock info
+    - [x] Select cloud channel
+    - [x] Select visualizer
+    - [x] Select custom page
 - System/Device APIs
-    - Get device settings
-    - Get device time
-    - Set device brightness
-    - Set device time
-    - Set device high light mode
-    - Set device hour mode
-    - Set device mirror mode
-    - Set device rotation angle
-    - Set device screen power state
-    - Set device temperature unit
-    - Set device time zone
-    - Set device weather area
-    - Set device white balance
+    - [x] Get device settings
+    - [x] Get device time
+    - [x] Set device brightness
+    - [x] Set device time
+    - [x] Set device high light mode
+    - [x] Set device hour mode
+    - [x] Set device mirror mode
+    - [x] Set device rotation angle
+    - [x] Set device screen power state
+    - [x] Set device temperature unit
+    - [x] Set device time zone
+    - [x] Set device weather area
+    - [x] Set device white balance
 - Tools APIs
-    - Set countdown tool
-    - Set noise tool
-    - Set scoreboard tool
-    - Set stopwatch tool
+    - [x] Set countdown tool
+    - [x] Set noise tool
+    - [x] Set scoreboard tool
+    - [x] Set stopwatch tool
 - Animation APIs
-    - Play gif from file
-    - Get next animation id
-    - Reset next animation id
-    - Send image animation
-    - Send text animation
-    - Clear all text area
-    - Play buzzer
+    - [x] Play gif from file
+    - [x] Get next animation id
+    - [x] Reset next animation id
+    - [x] Send image animation
+    - [x] Send text animation
+    - [x] Clear all text area
+    - [x] Play buzzer
 - Batch APIs
-    - Execute commands from url
+    - [x] Execute commands from url
 
 #### Image Animation
 
