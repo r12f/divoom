@@ -1,0 +1,42 @@
+#
+# Triggers
+#
+
+# No CI trigger
+trigger: none
+
+# PR merge validations
+pr:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - build
+      - divoom/src
+      - divoom/Cargo.toml
+      - divoom_cli/src
+      - divoom_cli/Cargo.toml
+
+#
+# Version and jobs
+#
+variables:
+  - group: BuildCodeSign
+  - name: buildVersionMajor
+    value: 0
+  - name: buildVersionMinor
+    value: 1
+  - name: buildVersionRevision
+    value: $[counter(format('{0}.{1}.{2}', variables['Build.SourceBranch'], variables['buildVersionMajor'], variables['buildVersionMinor']), 0)]
+
+# Run
+name: '$(buildVersionMajor).$(buildVersionMinor).$(buildVersionRevision)'
+
+extends:
+  template: workflow-common.yml
+  parameters:
+    buildVersionMajor: $(buildVersionMajor)
+    buildVersionMinor: $(buildVersionMinor)
+    buildVersionRevision: $(buildVersionRevision)
+    isPRWorkflow: true
