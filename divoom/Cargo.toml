@@ -1,6 +1,6 @@
 [package]
 name = "divoom"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["r12f <r12f.code@gmail.com>"]
 edition = "2021"
 description = "Rust API for controlling divoom devices, like pixoo."
