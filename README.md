@@ -9,6 +9,7 @@ Rust Library for controlling divoom devices that support REST APIs, such as pixo
 ```rust
 // Get current channel
 use divoom::*;
+
 println!(
     "{:?}",
     PixooClient::new("192.168.0.123").get_current_channel().await?

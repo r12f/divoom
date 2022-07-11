@@ -24,9 +24,7 @@ macro_rules! impl_divoom_dto_enum_traits {
                     $dto_name::$enum_value => { return write!(f, "{}", $enum_string); },
                 )*
                     $dto_name::Raw(n) => { return write!(f, "{}", n); },
-                    _ => {}
                 }
-                panic!("Unsupported value! Please avoid using Raw if possible.");
             }
         }
     )
