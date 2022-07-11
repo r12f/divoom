@@ -1,6 +1,6 @@
 [package]
 name = "divoom-cli"
-version = "0.1.1"
+version = "0.0.1"
 authors = ["r12f <r12f.code@gmail.com>"]
 edition = "2021"
 description = "Command line tool built on top of divoom APIs for controlling divoom devices, like pixoo."
@@ -18,7 +18,7 @@ thiserror = "1.0.30"
 serde = { version = "1.0.130", features = ["derive"] }
 rgb = "0.8.33"
 structopt = "0.3.26"
-divoom = { version = "0.1.2", path = "../divoom" }
+divoom = { version = "0.0.1", path = "../divoom" }
 
 [dev-dependencies]
 pretty_assertions = "1.0.0"

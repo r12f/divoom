@@ -4,22 +4,37 @@
 set shell := ["pwsh", "-NoLogo", "-Command"]
 
 # Build environment settings
-BUILD_TARGET := os_family() + "-" + (if os() != "macos" { "" } else { "macos-" }) + env_var_or_default("BUILD_TARGET", arch())
+BUILD_OS := if os_family() == "windows" {
+    "windows"
+  } else if os() == "macos" {
+    "macos"
+  } else {
+    "linux"
+  }
+
+BUILD_ARCH := if env_var_or_default("BUILD_ARCH", arch()) == "x86_64" {
+    "x64"
+  } else {
+    env_var_or_default("BUILD_ARCH", arch())
+  }
+
+BUILD_TARGET := BUILD_OS + "-" + BUILD_ARCH
+
 BUILD_TOOL_TARGET := if BUILD_TARGET == "windows-x86" {
     "i686-pc-windows-msvc"
-  } else if BUILD_TARGET == "windows-x86_64" {
+  } else if BUILD_TARGET == "windows-x64" {
     "x86_64-pc-windows-msvc"
   } else if BUILD_TARGET == "windows-aarch64" {
     "aarch64-pc-windows-msvc"
   } else if BUILD_TARGET == "unix-x86" {
     "i686-unknown-linux-gnu"
-  } else if BUILD_TARGET == "unix-x86_64" {
+  } else if BUILD_TARGET == "unix-x64" {
     "x86_64-unknown-linux-gnu"
   } else if BUILD_TARGET == "unix-arm" {
     "arm-unknown-linux-gnueabi"
   } else if BUILD_TARGET == "unix-aarch64" {
     "aarch64-unknown-linux-gnu"
-  } else if BUILD_TARGET == "unix-macos-x86_64" {
+  } else if BUILD_TARGET == "macos-x64" {
     "x86_64-apple-darwin"
   } else {
     error("Unsupported platform")
@@ -28,6 +43,8 @@ BUILD_TOOL_TARGET := if BUILD_TARGET == "windows-x86" {
 BUILD_PROFILE := env_var_or_default("BUILD_PROFILE", "dev")
 BUILD_FLAVOR := if BUILD_PROFILE == "dev" { "debug" } else { "release" }
 BUILD_OUTPUT_FOLDER := "target/" + BUILD_TOOL_TARGET + "/" + BUILD_FLAVOR
+BUILD_VERSION := trim(`gc ./build/version.txt | Select-String '\d+\.\d+\.\d+' | % { $_.Matches[0].Value }`)
+
 BIN_FILE_PATH_DIVOOM_CLI := BUILD_OUTPUT_FOLDER + "/divoom-cli.exe"
 
 # Signing settings
@@ -58,7 +75,7 @@ init-win:
     # dotnet tool update is now the better (or more expected) way to install the tools. For details, please see the PR and issue below:
     # - https://github.com/dotnet/cli/pull/10205
     # - https://github.com/dotnet/sdk/issues/9500
-    echo "Installing AzureSignTool."
+    @echo "Installing AzureSignTool."
     dotnet tool update --global azuresigntool
 
 init-linux:
@@ -68,7 +85,7 @@ init-linux:
     sudo apt update
 
     # Install GCC and required libs/tools
-    echo "Installing build tools and required libs."
+    @echo "Installing build tools and required libs."
     sudo apt install -y build-essential libssl-dev p7zip-full
 
     case "{{BUILD_TOOL_TARGET}}" in
@@ -87,7 +104,7 @@ init-linux:
     esac
 
     # Install toolchains for cross builds
-    echo "Installing rust target: {{BUILD_TOOL_TARGET}}"
+    @echo "Installing rust target: {{BUILD_TOOL_TARGET}}"
     rustup default stable
     rustup target install {{BUILD_TOOL_TARGET}}
 
@@ -158,8 +175,49 @@ install:
 #
 # Pack tasks:
 #
-pack:
+pack-prepare package="divoom_cli":
+    if (Test-Path "{{PUBLISH_DIR}}/{{package}}") { Remove-Item -Path "{{PUBLISH_DIR}}/{{package}}" -Recurse -Force }
+    New-Item -ItemType Directory -Path "{{PUBLISH_DIR}}/{{package}}" -Force | Out-Null
 
+pack-bin package="divoom_cli": (pack-binary package) (pack-symbol package)
+
+pack-binary package="divoom_cli":
+    if (Test-Path "{{PUBLISH_DIR}}/{{package}}/bin") { Remove-Item -Path "{{PUBLISH_DIR}}/{{package}}/bin" -Recurse -Force }
+    New-Item -ItemType Directory -Path "{{PUBLISH_DIR}}/{{package}}/bin" -Force | Out-Null
+
+    $fileNames = @("{{replace(package, '_', '-')}}.exe", "{{replace(package, '_', '-')}}" ); \
+    foreach ($fileName in $fileNames) { \
+      $filePath = "{{BUILD_OUTPUT_FOLDER}}/$fileName"; if (Test-Path $filePath) { Write-Host "Copy binary file: $filePath"; Copy-Item -Path $filePath -Destination "{{PUBLISH_DIR}}/{{package}}/bin" } \
+    }
+
+pack-symbol package="divoom_cli":
+    if (Test-Path "{{PUBLISH_DIR}}/{{package}}/symbols") { Remove-Item -Path "{{PUBLISH_DIR}}/{{package}}/symbols" -Recurse -Force }
+    New-Item -ItemType Directory -Path "{{PUBLISH_DIR}}/{{package}}/symbols" -Force | Out-Null
+
+    $fileNames = @("{{package}}.pdb", "{{package}}.debug" ); \
+    foreach ($fileName in $fileNames) { \
+      $filePath = "{{BUILD_OUTPUT_FOLDER}}/$fileName"; if (Test-Path $filePath) { Write-Host "Copy symbol file: $filePath"; Copy-Item -Path $filePath -Destination "{{PUBLISH_DIR}}/{{package}}/symbols" } \
+    }
+
+pack-binary-zip package="divoom_cli":
+    if (-not (Test-Path "{{PUBLISH_DIR}}/{{package}}/zip")) { New-Item -ItemType Directory -Path "{{PUBLISH_DIR}}/{{package}}/zip" -Force | Out-Null }
+
+    if ("{{BUILD_OS}}" -eq "windows") { \
+        $packageName = "{{replace(package, '_', '-')}}.{{BUILD_VERSION}}.{{BUILD_OS}}.{{BUILD_ARCH}}.zip"; \
+        7z -tzip a "{{PUBLISH_DIR}}/{{package}}/zip/$packageName" "{{PUBLISH_DIR}}/{{package}}/bin/*"; \
+    } else { \
+        $packageName = "{{replace(package, '_', '-')}}.{{BUILD_VERSION}}.{{BUILD_OS}}.{{BUILD_ARCH}}.tar"; \
+        7z -ttar a "{{PUBLISH_DIR}}/{{package}}/zip/$packageName" "{{PUBLISH_DIR}}/{{package}}/bin/*"; \
+        7z -tgzip a "{{PUBLISH_DIR}}/{{package}}/zip/$packageName.gz" "{{PUBLISH_DIR}}/{{package}}/zip/$packageName"; \
+        Remove-Item "{{PUBLISH_DIR}}/{{package}}/zip/$packageName"; \
+    }
+
+pack-source:
+    if (Test-Path "{{PUBLISH_DIR}}/temp/source") { Remove-Item -Path "{{PUBLISH_DIR}}/temp/source" -Recurse -Force }
+    New-Item -ItemType Directory -Path "{{PUBLISH_DIR}}/temp/source" -Force | Out-Null
+
+    if (Test-Path "{{PUBLISH_DIR}}/source") { Remove-Item -Path "{{PUBLISH_DIR}}/source" -Recurse -Force }
+    New-Item -ItemType Directory -Path "{{PUBLISH_DIR}}/source" -Force | Out-Null
 
 #
 # Publish tasks:
@@ -167,7 +225,7 @@ pack:
 publish-dry package="divoom":
     cargo publish --dry-run -p {{package}}
 
-    echo "Files in package:"
+    @echo "Files in package:"
     cargo package --list -p {{package}}
 
 publish package="divoom":
