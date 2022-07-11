@@ -1,6 +1,7 @@
 #!/usr/bin/env just --justfile
 
-set windows-shell := ["pwsh.exe", "-NoLogo", "-Command"]
+# Use powershell 7 on all platforms.
+set shell := ["pwsh", "-NoLogo", "-Command"]
 
 # Build environment settings
 BUILD_TARGET := os_family() + "-" + (if os() != "macos" { "" } else { "macos-" }) + env_var_or_default("BUILD_TARGET", arch())
@@ -24,7 +25,10 @@ BUILD_TOOL_TARGET := if BUILD_TARGET == "windows-x86" {
     error("Unsupported platform")
   }
 
-BUILD_PROFILE_DEFAULT := "dev"
+BUILD_PROFILE := env_var_or_default("BUILD_PROFILE", "dev")
+BUILD_FLAVOR := if BUILD_PROFILE == "dev" { "debug" } else { "release" }
+BUILD_OUTPUT_FOLDER := "target/" + BUILD_TOOL_TARGET + "/" + BUILD_FLAVOR
+BIN_FILE_PATH_DIVOOM_CLI := BUILD_OUTPUT_FOLDER + "/divoom-cli.exe"
 
 # Signing settings
 BUILD_SIGNING_URL := env_var_or_default("BUILD_SIGNING_URL", "")
@@ -40,7 +44,7 @@ PUBLISH_DIR := "./publish"
 #
 # Default task:
 #
-default profile=BUILD_PROFILE_DEFAULT: format lint (build profile) (test profile)
+default: format lint build test
 
 
 #
@@ -91,6 +95,7 @@ init-mac:
     echo "Installing build tools: binutils"
     brew install binutils
 
+
 #
 # Development tasks:
 #
@@ -99,11 +104,13 @@ commit m: format lint build test
     git commit -m "{{m}}"
     git push
 
+
 #
 # Format task:
 #
 format:
     cargo fmt -- --emit files
+
 
 #
 # Lint task:
@@ -114,25 +121,24 @@ lint:
 lint-fix:
     cargo clippy --fix --allow-dirty
 
+
 #
 # Build / test tasks:
 #
-build profile=BUILD_PROFILE_DEFAULT:
-    cargo build --profile {{profile}} --target {{BUILD_TOOL_TARGET}}
+build:
+    cargo build --profile {{BUILD_PROFILE}} --target {{BUILD_TOOL_TARGET}}
 
 doc:
     cargo doc
 
-test profile=BUILD_PROFILE_DEFAULT:
-    cargo test --profile {{profile}} --target {{BUILD_TOOL_TARGET}}
+test:
+    cargo test --profile {{BUILD_PROFILE}} --target {{BUILD_TOOL_TARGET}}
+
 
 #
 # Sign task:
 #
-sign profile=BUILD_PROFILE_DEFAULT:
-    $BIN_FLAVOR = if ("{{profile}}" -eq "dev") { "debug" } else { "release" }; \
-    $BIN_FOLDER = "target\{{BUILD_TOOL_TARGET}}\\$BIN_FLAVOR"; \
-    $BIN_FILE_PATH = Join-Path $BIN_FOLDER "divoom-cli.exe"; \
+sign:
     AzureSignTool sign \
         -du "{{BUILD_SIGNING_URL}}" \
         -kvu "{{BUILD_SIGNING_VAULT_URL}}" \
@@ -140,7 +146,8 @@ sign profile=BUILD_PROFILE_DEFAULT:
         -kvi "{{BUILD_SIGNING_CLIENT_ID}}" \
         -kvs "{{BUILD_SIGNING_CLIENT_SECRET}}" \
         -kvc "{{BUILD_SIGNING_CERT_NAME}}" \
-        -v "$BIN_FILE_PATH"
+        -v "{{BIN_FILE_PATH_DIVOOM_CLI}}"
+
 
 #
 # Install task:
@@ -149,7 +156,13 @@ install:
     cargo install --profile release --path ./divoom_cli
 
 #
-# Publish tasks
+# Pack tasks:
+#
+pack:
+
+
+#
+# Publish tasks:
 #
 publish-dry package="divoom":
     cargo publish --dry-run -p {{package}}

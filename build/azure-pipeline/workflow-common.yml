@@ -146,9 +146,10 @@ stages:
           #
           # Build
           #
-          - script: just build release
+          - script: just build
             displayName: Build release
             env:
+              BUILD_PROFILE: "release"
               BUILD_SIGNING_URL: $(BuildSigningURL)
               BUILD_SIGNING_VAULT_URL: $(BuildSigningVaultURL)
               BUILD_SIGNING_TENANT_ID: $(BuildSigningTenantId)
@@ -159,9 +160,10 @@ stages:
           #
           # Running all tests
           #
-          - bash: just test release
+          - bash: just test
             displayName: Run tests
             condition: and(succeeded(), eq(variables['is_cross_compile'], false))
             env:
+              BUILD_PROFILE: "release"
               RUST_LOG: debug
               RUST_BACKTRACE: full
