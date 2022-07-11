@@ -48,12 +48,12 @@ BUILD_VERSION := trim(`gc ./build/version.txt | Select-String '\d+\.\d+\.\d+' | 
 BIN_FILE_PATH_DIVOOM_CLI := BUILD_OUTPUT_FOLDER + "/divoom-cli.exe"
 
 # Signing settings
-BUILD_SIGNING_URL := env_var_or_default("BUILD_SIGNING_URL", "")
-BUILD_SIGNING_VAULT_URL := env_var_or_default("BUILD_SIGNING_VAULT_URL", "")
-BUILD_SIGNING_TENANT_ID := env_var_or_default("BUILD_SIGNING_TENANT_ID", "")
-BUILD_SIGNING_CLIENT_ID := env_var_or_default("BUILD_SIGNING_CLIENT_ID", "")
-BUILD_SIGNING_CLIENT_SECRET := env_var_or_default("BUILD_SIGNING_CLIENT_SECRET", "")
-BUILD_SIGNING_CERT_NAME := env_var_or_default("BUILD_SIGNING_CERT_NAME", "")
+export BUILD_SIGNING_URL := env_var_or_default("BUILD_SIGNING_URL", "")
+export BUILD_SIGNING_VAULT_URL := env_var_or_default("BUILD_SIGNING_VAULT_URL", "")
+export BUILD_SIGNING_TENANT_ID := env_var_or_default("BUILD_SIGNING_TENANT_ID", "")
+export BUILD_SIGNING_CLIENT_ID := env_var_or_default("BUILD_SIGNING_CLIENT_ID", "")
+export BUILD_SIGNING_CLIENT_SECRET := env_var_or_default("BUILD_SIGNING_CLIENT_SECRET", "")
+export BUILD_SIGNING_CERT_NAME := env_var_or_default("BUILD_SIGNING_CERT_NAME", "")
 
 # Publish
 PUBLISH_DIR := "./publish"
@@ -157,12 +157,12 @@ test:
 #
 sign:
     AzureSignTool sign \
-        -du "{{BUILD_SIGNING_URL}}" \
-        -kvu "{{BUILD_SIGNING_VAULT_URL}}" \
-        -kvt "{{BUILD_SIGNING_TENANT_ID}}" \
-        -kvi "{{BUILD_SIGNING_CLIENT_ID}}" \
-        -kvs "{{BUILD_SIGNING_CLIENT_SECRET}}" \
-        -kvc "{{BUILD_SIGNING_CERT_NAME}}" \
+        -du "$BUILD_SIGNING_URL" \
+        -kvu "$BUILD_SIGNING_VAULT_URL" \
+        -kvt "$BUILD_SIGNING_TENANT_ID" \
+        -kvi "$BUILD_SIGNING_CLIENT_ID" \
+        -kvs "$BUILD_SIGNING_CLIENT_SECRET" \
+        -kvc "$BUILD_SIGNING_CERT_NAME" \
         -v "{{BIN_FILE_PATH_DIVOOM_CLI}}"
 
 
