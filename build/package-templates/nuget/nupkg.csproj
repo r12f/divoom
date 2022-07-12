@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>{binary.name}.{build.os}.{build.arch}</PackageId>
+    <Title>{binary.name} {build.os}.{build.arch} ({build.target})</Title>
+    <Version>{build.version}</Version>
+    <Authors>r12f</Authors>
+    <Company>r12f</Company>
+    <Copyright>Copyright (c)2021 r12f</Copyright>
+    <PackageTags>{package.tags}</PackageTags>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <ProjectUrl>http://github.com/r12f/divoom</ProjectUrl>
+    <Description>{package.description}</Description>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="content\*">
+      <PackagePath>content</PackagePath>
+    </Content>
+    <Content Include="content\README.md">
+      <PackagePath>content</PackagePath>
+    </Content>
+    <Content Include="content\LICENSE">
+      <PackagePath>content</PackagePath>
+    </Content>
+  </ItemGroup>
+</Project>

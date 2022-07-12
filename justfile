@@ -57,6 +57,8 @@ export BUILD_SIGNING_CERT_NAME := env_var_or_default("BUILD_SIGNING_CERT_NAME", 
 
 # Publish
 PUBLISH_DIR := "./publish"
+PUBLISH_PACKAGES_DIR := PUBLISH_DIR + "/packages"
+PUBLISH_CHECKSUMS_DIR := PUBLISH_DIR + "/checksums"
 
 #
 # Default task:
@@ -175,58 +177,175 @@ install:
 #
 # Pack tasks:
 #
-pack-prepare package="divoom_cli":
-    if (Test-Path "{{PUBLISH_DIR}}/{{package}}") { Remove-Item -Path "{{PUBLISH_DIR}}/{{package}}" -Recurse -Force }
-    New-Item -ItemType Directory -Path "{{PUBLISH_DIR}}/{{package}}" -Force | Out-Null
+pack-prepare PACKAGE="divoom_cli":
+    if (Test-Path "{{PUBLISH_DIR}}/{{PACKAGE}}") { Remove-Item -Path "{{PUBLISH_DIR}}/{{PACKAGE}}" -Recurse -Force }
+    New-Item -ItemType Directory -Path "{{PUBLISH_DIR}}/{{PACKAGE}}" -Force | Out-Null
+    New-Item -ItemType Directory -Path "{{PUBLISH_DIR}}/{{PACKAGE}}//template-parameters" -Force | Out-Null
 
-pack-bin package="divoom_cli": (pack-binary package) (pack-symbol package)
+    if (Test-Path "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters/parameters.txt") { Remove-Item -ItemType File -Path "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters/parameters.txt" }
+    echo "build.os={{BUILD_OS}}" >> "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters/parameters.txt"
+    echo "build.arch={{BUILD_ARCH}}" >> "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters/parameters.txt"
+    echo "build.target={{BUILD_TOOL_TARGET}}" >> "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters/parameters.txt"
+    echo "build.version={{BUILD_VERSION}}" >> "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters/parameters.txt"
+    echo "build.out_dir={{BUILD_OUTPUT_FOLDER}}" >> "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters/parameters.txt"
+    echo "binary.name={{replace(PACKAGE, '_', '-')}}" >> "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters/parameters.txt"
+    echo "package.name.pascal_case=$([regex]::Replace("{{PACKAGE}}", '(?i)(?:^|_)(\p{L})', { $args[0].Groups[1].Value.ToUpper() }))" >> "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters/parameters.txt"
+    echo "package.description=$(gc {{justfile_directory()}}/{{PACKAGE}}/Cargo.toml | sls 'description = "(..+)"' | % { $_.Matches[0].Groups[1].Value })" >> "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters/parameters.txt"
+    echo "package.tags=divoom;pixoo;pixoo64" >> "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters/parameters.txt"
 
-pack-binary package="divoom_cli":
-    if (Test-Path "{{PUBLISH_DIR}}/{{package}}/bin") { Remove-Item -Path "{{PUBLISH_DIR}}/{{package}}/bin" -Recurse -Force }
-    New-Item -ItemType Directory -Path "{{PUBLISH_DIR}}/{{package}}/bin" -Force | Out-Null
+pack-bin PACKAGE="divoom_cli": (pack-binary PACKAGE) (pack-symbols PACKAGE)
 
-    $fileNames = @("{{replace(package, '_', '-')}}.exe", "{{replace(package, '_', '-')}}" ); \
+pack-binary PACKAGE="divoom_cli":
+    if (Test-Path "{{PUBLISH_DIR}}/{{PACKAGE}}/bin") { Remove-Item -Path "{{PUBLISH_DIR}}/{{PACKAGE}}/bin" -Recurse -Force }
+    New-Item -ItemType Directory -Path "{{PUBLISH_DIR}}/{{PACKAGE}}/bin" -Force | Out-Null
+
+    $fileNames = @("{{replace(PACKAGE, '_', '-')}}.exe", "{{replace(PACKAGE, '_', '-')}}"); \
     foreach ($fileName in $fileNames) { \
-      $filePath = "{{BUILD_OUTPUT_FOLDER}}/$fileName"; if (Test-Path $filePath) { Write-Host "Copy binary file: $filePath"; Copy-Item -Path $filePath -Destination "{{PUBLISH_DIR}}/{{package}}/bin" } \
+      $filePath = "{{BUILD_OUTPUT_FOLDER}}/$fileName"; \
+      if (Test-Path $filePath) { \
+        Write-Host "Copying binary file: $filePath"; \
+        Copy-Item -Path $filePath -Destination "{{PUBLISH_DIR}}/{{PACKAGE}}/bin"; \
+        just gen-checksum "binary.{{PACKAGE}}.{{BUILD_OS}}.{{BUILD_ARCH}}" $filePath; \
+      } \
     }
 
-pack-symbol package="divoom_cli":
-    if (Test-Path "{{PUBLISH_DIR}}/{{package}}/symbols") { Remove-Item -Path "{{PUBLISH_DIR}}/{{package}}/symbols" -Recurse -Force }
-    New-Item -ItemType Directory -Path "{{PUBLISH_DIR}}/{{package}}/symbols" -Force | Out-Null
+pack-symbols PACKAGE="divoom_cli":
+    if (Test-Path "{{PUBLISH_DIR}}/{{PACKAGE}}/symbols") { Remove-Item -Path "{{PUBLISH_DIR}}/{{PACKAGE}}/symbols" -Recurse -Force }
+    New-Item -ItemType Directory -Path "{{PUBLISH_DIR}}/{{PACKAGE}}/symbols" -Force | Out-Null
 
-    $fileNames = @("{{package}}.pdb", "{{package}}.debug" ); \
+    $fileNames = @("{{PACKAGE}}.pdb", "{{PACKAGE}}.debug" ); \
     foreach ($fileName in $fileNames) { \
-      $filePath = "{{BUILD_OUTPUT_FOLDER}}/$fileName"; if (Test-Path $filePath) { Write-Host "Copy symbol file: $filePath"; Copy-Item -Path $filePath -Destination "{{PUBLISH_DIR}}/{{package}}/symbols" } \
+      $filePath = "{{BUILD_OUTPUT_FOLDER}}/$fileName"; \
+      if (Test-Path $filePath) { \
+        Write-Host "Copying symbol file: $filePath"; \
+        Copy-Item -Path $filePath -Destination "{{PUBLISH_DIR}}/{{PACKAGE}}/symbols"; \
+        just gen-checksum "symbols.{{PACKAGE}}.{{BUILD_OS}}.{{BUILD_ARCH}}" $filePath; \
+      } \
     }
 
-pack-binary-zip package="divoom_cli":
-    if (-not (Test-Path "{{PUBLISH_DIR}}/{{package}}/zip")) { New-Item -ItemType Directory -Path "{{PUBLISH_DIR}}/{{package}}/zip" -Force | Out-Null }
+pack-binary-zip PACKAGE="divoom_cli":
+    if (-not (Test-Path "{{PUBLISH_PACKAGES_DIR}}")) { New-Item -ItemType Directory -Path "{{PUBLISH_PACKAGES_DIR}}" -Force | Out-Null }
 
     if ("{{BUILD_OS}}" -eq "windows") { \
-        $packageName = "{{replace(package, '_', '-')}}.{{BUILD_VERSION}}.{{BUILD_OS}}.{{BUILD_ARCH}}.zip"; \
-        7z -tzip a "{{PUBLISH_DIR}}/{{package}}/zip/$packageName" "{{PUBLISH_DIR}}/{{package}}/bin/*"; \
-    } else { \
-        $packageName = "{{replace(package, '_', '-')}}.{{BUILD_VERSION}}.{{BUILD_OS}}.{{BUILD_ARCH}}.tar"; \
-        7z -ttar a "{{PUBLISH_DIR}}/{{package}}/zip/$packageName" "{{PUBLISH_DIR}}/{{package}}/bin/*"; \
-        7z -tgzip a "{{PUBLISH_DIR}}/{{package}}/zip/$packageName.gz" "{{PUBLISH_DIR}}/{{package}}/zip/$packageName"; \
-        Remove-Item "{{PUBLISH_DIR}}/{{package}}/zip/$packageName"; \
+        $packageName = "{{replace(PACKAGE, '_', '-')}}.{{BUILD_VERSION}}.{{BUILD_OS}}.{{BUILD_ARCH}}.zip"; \
+        7z -tzip a "{{PUBLISH_PACKAGES_DIR}}/$packageName" "{{PUBLISH_DIR}}/{{PACKAGE}}/bin/*"; \
+        just gen-checksum "packages.{{PACKAGE}}.binary.{{BUILD_OS}}.{{BUILD_ARCH}}" "{{PUBLISH_PACKAGES_DIR}}/${packageName}"; \
+    }
+
+    if ("{{BUILD_OS}}" -ne "windows") { \
+        $packageName = "{{replace(PACKAGE, '_', '-')}}.{{BUILD_VERSION}}.{{BUILD_OS}}.{{BUILD_ARCH}}.tar"; \
+        7z -ttar a "{{PUBLISH_PACKAGES_DIR}}/$packageName" "{{PUBLISH_DIR}}/{{PACKAGE}}/bin/*"; \
+        7z -tgzip a "{{PUBLISH_PACKAGES_DIR}}/$packageName.gz" "{{PUBLISH_PACKAGES_DIR}}/$packageName"; \
+        Remove-Item "{{PUBLISH_PACKAGES_DIR}}/$packageName"; \
+        $packageName = "${packageName}.gz"; \
+        just gen-checksum "packages.{{PACKAGE}}.binary.{{BUILD_OS}}.{{BUILD_ARCH}}" "{{PUBLISH_PACKAGES_DIR}}/${packageName}"; \
     }
 
 pack-source:
-    if (Test-Path "{{PUBLISH_DIR}}/temp/source") { Remove-Item -Path "{{PUBLISH_DIR}}/temp/source" -Recurse -Force }
-    New-Item -ItemType Directory -Path "{{PUBLISH_DIR}}/temp/source" -Force | Out-Null
+    if (Test-Path "{{BUILD_OUTPUT_FOLDER}}/publish/source") { Remove-Item -Path "{{BUILD_OUTPUT_FOLDER}}/publish/source" -Recurse -Force }
+    New-Item -ItemType Directory -Path "{{BUILD_OUTPUT_FOLDER}}/publish/source" -Force | Out-Null
 
-    if (Test-Path "{{PUBLISH_DIR}}/source") { Remove-Item -Path "{{PUBLISH_DIR}}/source" -Recurse -Force }
-    New-Item -ItemType Directory -Path "{{PUBLISH_DIR}}/source" -Force | Out-Null
+    Copy-Item -Path "{{justfile_directory()}}/build" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish/source" -Recurse
+    Copy-Item -Path "{{justfile_directory()}}/divoom" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish/source" -Recurse
+    Copy-Item -Path "{{justfile_directory()}}/divoom_cli" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish/source" -Recurse
+    Copy-Item -Path "{{justfile_directory()}}/Cargo.*" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish/source" -Recurse
+    Copy-Item -Path "{{justfile_directory()}}/justfile" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish/source" -Recurse
+    Copy-Item -Path "{{justfile_directory()}}/LICENSE" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish/source" -Recurse
+    Copy-Item -Path "{{justfile_directory()}}/README.md" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish/source" -Recurse
+
+    if (-not (Test-Path "{{PUBLISH_PACKAGES_DIR}}")) { New-Item -ItemType Directory -Path "{{PUBLISH_PACKAGES_DIR}}" -Force | Out-Null }
+    if (Test-Path "{{PUBLISH_PACKAGES_DIR}}/divoom.source.{{BUILD_VERSION}}.zip") { Remove-Item -Path "{{PUBLISH_PACKAGES_DIR}}/divoom.source.{{BUILD_VERSION}}.zip" -Recurse -Force }
+    7z -tzip a "{{PUBLISH_PACKAGES_DIR}}/divoom.source.{{BUILD_VERSION}}.zip" "./{{BUILD_OUTPUT_FOLDER}}/publish/source/*"
+
+    just gen-checksum "packages.source" "{{PUBLISH_PACKAGES_DIR}}/divoom.source.{{BUILD_VERSION}}.zip";
+
+pack-msix PACKAGE="divoom_cli":
+    if (Test-Path "{{BUILD_OUTPUT_FOLDER}}/publish/msix") { Remove-Item -Path "{{BUILD_OUTPUT_FOLDER}}/publish/msix" -Recurse -Force }
+    New-Item -ItemType Directory -Path "{{BUILD_OUTPUT_FOLDER}}/publish/msix/bin" -Force | Out-Null
+    New-Item -ItemType Directory -Path "{{BUILD_OUTPUT_FOLDER}}/publish/msix/assets" -Force | Out-Null
+
+    Copy-Item -Path "{{justfile_directory()}}/LICENSE" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish/msix/bin"
+    Copy-Item -Path "{{justfile_directory()}}/README.md" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish/msix/bin"
+    Copy-Item -Path "{{PUBLISH_DIR}}/{{PACKAGE}}/bin/*" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish/msix/bin"
+
+    just eval-template "{{justfile_directory()}}/build/package-templates/msix/appxmanifest.xml" \
+      "{{BUILD_OUTPUT_FOLDER}}/publish/msix/appxmanifest.xml" \
+      "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters" \
+      "{{PUBLISH_CHECKSUMS_DIR}}"
+
+    just eval-template "{{justfile_directory()}}/build/package-templates/msix/appxmappings.txt" \
+      "{{BUILD_OUTPUT_FOLDER}}/publish/msix/appxmappings.txt" \
+      "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters" \
+      "{{PUBLISH_CHECKSUMS_DIR}}"
+
+    & "C:/Program Files (x86)/Windows Kits/10/bin/10.0.19041.0/x64/makeappx.exe" pack /m "{{BUILD_OUTPUT_FOLDER}}/publish/msix/appxmanifest.xml" \
+      /f "{{BUILD_OUTPUT_FOLDER}}/publish/msix/appxmappings.txt" \
+      /p "{{BUILD_OUTPUT_FOLDER}}/publish/msix/{{replace(PACKAGE, '_', '-')}}.{{BUILD_VERSION}}.{{BUILD_OS}}.{{BUILD_ARCH}}.msix"
+
+    if (-not (Test-Path "{{PUBLISH_PACKAGES_DIR}}")) { New-Item -ItemType Directory -Path "{{PUBLISH_PACKAGES_DIR}}" -Force | Out-Null }
+    Copy-Item -Path "{{BUILD_OUTPUT_FOLDER}}/publish/msix/*.msix" -Destination "{{PUBLISH_PACKAGES_DIR}}" -Force
+
+
+pack-nuget PACKAGE="divoom_cli":
+    if (Test-Path "{{BUILD_OUTPUT_FOLDER}}/publish/nuget") { Remove-Item -Path "{{BUILD_OUTPUT_FOLDER}}/publish/nuget" -Recurse -Force }
+    New-Item -ItemType Directory -Path "{{BUILD_OUTPUT_FOLDER}}/publish/nuget" -Force | Out-Null
+    New-Item -ItemType Directory -Path "{{BUILD_OUTPUT_FOLDER}}/publish/nuget/content" -Force | Out-Null
+
+    Copy-Item -Path "{{justfile_directory()}}/LICENSE" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish/nuget/content"
+    Copy-Item -Path "{{justfile_directory()}}/README.md" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish/nuget/content"
+    Copy-Item -Path "{{PUBLISH_DIR}}/{{PACKAGE}}/bin/*" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish/nuget/content"
+
+    just eval-template "{{justfile_directory()}}/build/package-templates/nuget/nupkg.csproj" \
+      "{{BUILD_OUTPUT_FOLDER}}/publish/nuget/nupkg.csproj" \
+      "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters" \
+      "{{PUBLISH_CHECKSUMS_DIR}}"
+
+    dotnet pack "{{BUILD_OUTPUT_FOLDER}}/publish/nuget/nupkg.csproj" -o "{{BUILD_OUTPUT_FOLDER}}/publish/nuget/output"
+
+    if (-not (Test-Path "{{PUBLISH_PACKAGES_DIR}}")) { New-Item -ItemType Directory -Path "{{PUBLISH_PACKAGES_DIR}}" -Force | Out-Null }
+    Copy-Item -Path "{{BUILD_OUTPUT_FOLDER}}/publish/nuget/output/*.nupkg" -Destination "{{PUBLISH_PACKAGES_DIR}}" -Force
+
 
 #
 # Publish tasks:
 #
-publish-dry package="divoom":
-    cargo publish --dry-run -p {{package}}
+publish-dry PACKAGE="divoom":
+    cargo publish --dry-run -p {{PACKAGE}}
 
     @echo "Files in package:"
-    cargo package --list -p {{package}}
+    cargo package --list -p {{PACKAGE}}
 
-publish package="divoom":
-    cargo publish -p {{package}}
+publish PACKAGE="divoom":
+    cargo publish -p {{PACKAGE}}
+
+
+#
+# Utility tasks:
+#
+gen-checksum INPUT_FILE_ID INPUT_FILE_PATH:
+    if (-not (Test-Path "{{PUBLISH_CHECKSUMS_DIR}}")) { New-Item -ItemType Directory -Path "{{PUBLISH_CHECKSUMS_DIR}}" -Force | Out-Null }
+
+    $fileName = [System.IO.Path]::GetFileName("{{INPUT_FILE_PATH}}"); \
+    $checksumFilePath = "{{PUBLISH_CHECKSUMS_DIR}}/{{INPUT_FILE_ID}}.checksum.txt"; \
+    Write-Host "Generating checksum file: $checksumFilePath"; \
+    echo "{{INPUT_FILE_ID}}=$((Get-FileHash "{{INPUT_FILE_PATH}}" -Algorithm SHA256).Hash.ToLowerInvariant())" > $checksumFilePath;
+
+eval-template TEMPLATE OUTPUT_FILE +TEMPLATE_PARAMETER_FOLDERS:
+    Write-Host "Reading all template parameters ..."; \
+    $allParameters = foreach ($templateParameterFolder in "{{TEMPLATE_PARAMETER_FOLDERS}}".Split(" ")) { \
+        Get-ChildItem "$templateParameterFolder/*.txt" | % { Get-Content $_ }; \
+    }; \
+    Write-Host ""; \
+    Write-Host "All template parameters:"; \
+    $allParameters; \
+    Write-Host ""; \
+    \
+    Write-Host "Generating content ..."; \
+    $templateFileContent = Get-Content "{{TEMPLATE}}" -Raw; \
+    $allParameters | ForEach-Object { \
+        $parameterPair = $_.Split("="); \
+        $templateFileContent = $templateFileContent.Replace("{" + $parameterPair[0] + "}", $parameterPair[1]); \
+    }; \
+    Write-Host "Writing content to file: {{OUTPUT_FILE}}"; \
+    $utf8NoBom = New-Object System.Text.UTF8Encoding $False; \
+    [System.IO.File]::WriteAllLines("{{OUTPUT_FILE}}", $templateFileContent, $utf8NoBom);

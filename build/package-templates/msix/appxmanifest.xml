@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Package
+        xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+        xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+        xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+        xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
+        xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10">
+    <Identity Name="R12f.R12f.{package.name.pascal_case}" Version="{build.version}.0" Publisher="CN=Jinzhou Jiang, O=Jinzhou Jiang, L=Redmond, S=Washington, C=US" ProcessorArchitecture="{build.arch}" />
+    <Properties>
+        <DisplayName>{package.name.pascal_case}</DisplayName>
+        <PublisherDisplayName>r12f</PublisherDisplayName>
+        <Description>{package.description}.</Description>
+        <Logo>images\logo.png</Logo>
+    </Properties>
+    <Resources>
+        <Resource Language="en-us" />
+    </Resources>
+    <Dependencies>
+        <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17134.0" MaxVersionTested="10.0.19041.0" />
+    </Dependencies>
+    <Capabilities>
+        <rescap:Capability Name="runFullTrust" />
+    </Capabilities>
+    <Applications>
+        <Application Id="{package.name.pascal_case}" Executable="{binary.name}.exe" EntryPoint="Windows.FullTrustApplication">
+            <uap:VisualElements
+                    DisplayName="{package.name.pascal_case}"
+                    Description="{package.description}."
+                    BackgroundColor="antiqueWhite"
+                    Square150x150Logo="images\logo-150.png"
+                    Square44x44Logo="images\logo-44.png" />
+            <Extensions>
+                <uap3:Extension Category="windows.appExecutionAlias" EntryPoint="Windows.FullTrustApplication">
+                    <uap3:AppExecutionAlias>
+                        <desktop:ExecutionAlias Alias="{binary.name}.exe" />
+                    </uap3:AppExecutionAlias>
+                </uap3:Extension>
+            </Extensions>
+        </Application>
+    </Applications>
+</Package>
