@@ -144,6 +144,13 @@ lint-fix:
 #
 # Build / test tasks:
 #
+fix-ver:
+    @("divoom", "divoom_cli") | ForEach-Object { \
+      $cargoFilePath = "{{(justfile_directory())}}/$_/Cargo.toml"; \
+      Write-Host "Updating version in file: $cargoFilePath"; \
+      (Get-Content $cargoFilePath) -Replace '"0.0.1"', '"{{BUILD_VERSION}}"' | Set-Content $cargoFilePath; \
+    }
+
 build:
     cargo build --profile {{BUILD_PROFILE}} --target {{BUILD_TOOL_TARGET}}
 
