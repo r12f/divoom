@@ -1,5 +1,5 @@
 # Divoom
-![Divoom](https://github.com/r12f/Divoom/blob/main/assets/logo.png?raw=true)
+![Divoom](https://raw.githubusercontent.com/r12f/divoom/main/assets/Logo.png)
 
 Rust Library for controlling divoom devices that support REST APIs, such as pixoo-64 (and from how divoom's api/doc organizes, maybe more in the future).
 
