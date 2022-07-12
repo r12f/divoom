@@ -264,6 +264,7 @@ pack-msix PACKAGE="divoom_cli":
     New-Item -ItemType Directory -Path "{{BUILD_OUTPUT_FOLDER}}/publish/msix/bin" -Force | Out-Null
     New-Item -ItemType Directory -Path "{{BUILD_OUTPUT_FOLDER}}/publish/msix/assets" -Force | Out-Null
 
+    Copy-Item -Path "{{justfile_directory()}}/assets/*" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish/msix/assets"
     Copy-Item -Path "{{justfile_directory()}}/LICENSE" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish/msix/bin"
     Copy-Item -Path "{{justfile_directory()}}/README.md" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish/msix/bin"
     Copy-Item -Path "{{PUBLISH_DIR}}/{{PACKAGE}}/bin/*" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish/msix/bin"
