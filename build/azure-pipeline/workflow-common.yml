@@ -146,10 +146,13 @@ stages:
           #
           # Build
           #
-          - script: just fix-ver
+          - script: |
+              echo $(BUILD_VERSION) > ./build/version.txt
+              just fix-ver
             displayName: Fix package version
             condition: and(succeeded(), ne('${{ parameters.isPRWorkflow }}', 'true'))
             env:
+              BUILD_VERSION: $(Build.Version)
               BUILD_PROFILE: "release"
               BUILD_TARGET: $(target_arch)
 
