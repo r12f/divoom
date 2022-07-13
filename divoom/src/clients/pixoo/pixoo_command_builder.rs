@@ -38,7 +38,9 @@ impl PixooCommandBuilder {
         (self.client, command_count, request_body)
     }
 
-    pub(crate) async fn execute_raw<TResp: DeserializeOwned>(self) -> DivoomAPIResult<TResp> {
+    pub(crate) async fn execute_with_parsed_response<TResp: DeserializeOwned>(
+        self,
+    ) -> DivoomAPIResult<TResp> {
         let (client, command_count, request_body) = self.build();
         if command_count == 0 {
             return Err(DivoomAPIError::ParameterError(
@@ -51,6 +53,19 @@ impl PixooCommandBuilder {
             .await
     }
 
+    pub async fn execute_with_raw_response(self) -> DivoomAPIResult<String> {
+        let (client, command_count, request_body) = self.build();
+        if command_count == 0 {
+            return Err(DivoomAPIError::ParameterError(
+                "No command is built yet!".to_string(),
+            ));
+        }
+
+        client
+            .send_raw_request_with_body("/post", request_body)
+            .await
+    }
+
     pub async fn execute(self) -> DivoomAPIResult<()> {
         if self.command_store.mode() == PixooCommandStoreMode::Single {
             return Err(DivoomAPIError::ParameterError(
@@ -60,7 +75,7 @@ impl PixooCommandBuilder {
         }
 
         let response = self
-            .execute_raw::<DivoomPixooCommandBatchExecuteCommandsResponse>()
+            .execute_with_parsed_response::<DivoomPixooCommandBatchExecuteCommandsResponse>()
             .await?;
         if response.error_code() != 0 {
             return Err(DivoomAPIError::ServerError(
@@ -368,6 +383,14 @@ impl PixooCommandBuilder {
     );
 }
 
+/// Raw API implementations
+impl PixooCommandBuilder {
+    pub fn send_raw_request(mut self, request: String) -> PixooCommandBuilder {
+        self.command_store.append(request);
+        self
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -498,6 +521,19 @@ mod tests {
             builder,
             1,
             "test_data/pixoo_command_builder_tests/batch_commands.json",
+        );
+    }
+
+    #[test]
+    fn pixoo_command_builder_should_work_with_raw_commands_in_batch_mode() {
+        let client = Rc::new(DivoomRestAPIClient::new("http://192.168.0.123".to_string()));
+        let builder = PixooCommandBuilder::start_batch(client)
+            .send_raw_request("{ \"Command\": \"Device/SetHighLightMode\", \"Mode\": 0 }".into());
+
+        run_pixoo_command_builder_test(
+            builder,
+            1,
+            "test_data/pixoo_command_builder_tests/raw_commands.json",
         );
     }
 

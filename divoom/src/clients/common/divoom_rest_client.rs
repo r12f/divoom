@@ -39,10 +39,32 @@ impl DivoomRestAPIClient {
         Ok(response)
     }
 
+    pub async fn send_raw_request_with_body(
+        &self,
+        url_path: &str,
+        body: String,
+    ) -> DivoomAPIResult<String> {
+        let url = format!("{}{}", self.server_url_base, url_path);
+        debug!("Sending request: Url = \"{}\", Body = \"{}\"", url, body);
+
+        let request = self.http_client.post(url).body(body);
+        let response = self.send_raw_request_with_request_builder(request).await?;
+        Ok(response)
+    }
+
     async fn send_request_with_request_builder<T: DeserializeOwned>(
         &self,
         request: RequestBuilder,
     ) -> DivoomAPIResult<T> {
+        let response_text = self.send_raw_request_with_request_builder(request).await?;
+        let parsed_response = serde_json::from_str::<T>(&response_text)?;
+        Ok(parsed_response)
+    }
+
+    async fn send_raw_request_with_request_builder(
+        &self,
+        request: RequestBuilder,
+    ) -> DivoomAPIResult<String> {
         let response = request.send().await?;
         debug!(
             "Response header received: StatusCode = {}",
@@ -60,7 +82,6 @@ impl DivoomRestAPIClient {
         let response_text = response.text().await?;
         debug!("Response received: Body = \"{}\"", response_text);
 
-        let parsed_response = serde_json::from_str(&response_text)?;
-        Ok(parsed_response)
+        Ok(response_text)
     }
 }

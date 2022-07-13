@@ -142,6 +142,29 @@ pixoo.start_batch()
   .execute().await.expect("Request should succeed.");
 ```
 
+#### Sending raw requests
+
+In case new API is released and we haven't support it yet, or we need to do some experimental things by sending the raw payload, we can use the following API to send raw request directly, which works for both single request and batch mode.
+
+Single request mode:
+
+```rust
+use divoom::*;
+
+let pixoo = PixooClient::new("192.168.0.123");
+pixoo.send_raw_request("{ \"Command\": \"Device/SetHighLightMode\", \"Mode\": 0 }").await?.expect("Request should succeed.");
+```
+
+Batch mode:
+
+```rust
+use divoom::*;
+let pixoo = PixooClient::new("192.168.0.123");
+pixoo.start_batch()
+  .send_raw_request("{ \"Command\": \"Device/SetHighLightMode\", \"Mode\": 0 }".into())
+  .execute_with_raw_response().await.expect("Request should succeed.");
+```
+
 ## Debugging
 
 The debug logs are logged at debug level. Once we set the log level to debug, we will be able to start see it:

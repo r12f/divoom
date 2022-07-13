@@ -31,7 +31,7 @@ macro_rules! impl_pixoo_client_api {
         pub async fn $api_name(&self) -> DivoomAPIResult<$resp_return_type> {
             let response: $resp_type = PixooCommandBuilder::start(self.client.clone())
                 .$api_name()
-                .execute_raw::<$resp_type>()
+                .execute_with_parsed_response::<$resp_type>()
                 .await?;
 
             let error_code = response.error_code();
@@ -50,7 +50,7 @@ macro_rules! impl_pixoo_client_api {
         pub async fn $api_name(&self, $($api_arg: $api_arg_type),*) -> DivoomAPIResult<$resp_return_type> {
             let response: $resp_type = PixooCommandBuilder::start(self.client.clone())
                 .$api_name($($api_arg),*)
-                .execute_raw::<$resp_type>()
+                .execute_with_parsed_response::<$resp_type>()
                 .await?;
 
             let error_code = response.error_code();
@@ -305,7 +305,7 @@ impl PixooClient {
         let response: DivoomPixooCommandBatchExecuteCommandsResponse =
             PixooCommandBuilder::start_batch(self.client.clone())
                 .send_image_animation(animation)
-                .execute_raw::<DivoomPixooCommandBatchExecuteCommandsResponse>()
+                .execute_with_parsed_response::<DivoomPixooCommandBatchExecuteCommandsResponse>()
                 .await?;
 
         let error_code = response.error_code();
@@ -359,6 +359,18 @@ impl PixooClient {
     /// This function returns the command builder, which allows us to build multiple commands and execute them at once.
     pub fn start_batch(&self) -> PixooCommandBuilder {
         PixooCommandBuilder::start_batch(self.client.clone())
+    }
+}
+
+/// # Raw API implementation
+impl PixooClient {
+    pub async fn send_raw_request(&self, request: String) -> DivoomAPIResult<String> {
+        let response: String = PixooCommandBuilder::start(self.client.clone())
+            .send_raw_request(request)
+            .execute_with_raw_response()
+            .await?;
+
+        Ok(response)
     }
 }
 

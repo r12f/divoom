@@ -1,0 +1,9 @@
+{
+  "Command": "Draw/CommandList",
+  "CommandList": [
+    {
+      "Command": "Device/SetHighLightMode",
+      "Mode": 0
+    }
+  ]
+}
