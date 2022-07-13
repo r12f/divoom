@@ -228,7 +228,7 @@ In order to help quickly give the APIs a try, we have also developed a command l
 
 ### Devices APIs
 
-```bash
+```powershell
 # Check current channel
 > .\divoom-cli.exe 192.168.0.123 channel get
 Clock
@@ -254,7 +254,7 @@ DivoomSelectedClockInfo { clock_id: 168, brightness: 67 }
 ### Help
 
 ```bash
-> .\divoom-cli.exe
+> divoom-cli.exe
 divoom-cli 0.1.0
 r12f
 https://github.com/r12f/divoom
