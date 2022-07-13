@@ -8,6 +8,7 @@ license = "Apache-2.0"
 keywords = ["divoom", "pixoo"]
 categories = ["command-line-utilities"]
 repository = "https://github.com/r12f/divoom"
+build = "build.rs"
 
 [dependencies]
 log = "0.4.14"
@@ -19,6 +20,9 @@ serde = { version = "1.0.130", features = ["derive"] }
 rgb = "0.8.33"
 structopt = "0.3.26"
 divoom = { version = "0.0.1", path = "../divoom" }
+
+[build-dependencies]
+winres = "0.1.12"
 
 [dev-dependencies]
 pretty_assertions = "1.0.0"

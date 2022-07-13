@@ -45,8 +45,6 @@ BUILD_FLAVOR := if BUILD_PROFILE == "dev" { "debug" } else { "release" }
 BUILD_OUTPUT_FOLDER := "target/" + BUILD_TOOL_TARGET + "/" + BUILD_FLAVOR
 BUILD_VERSION := trim(`gc ./build/version.txt | Select-String '\d+\.\d+\.\d+' | % { $_.Matches[0].Value }`)
 
-BIN_FILE_PATH_DIVOOM_CLI := BUILD_OUTPUT_FOLDER + "/divoom-cli.exe"
-
 # Signing settings
 export BUILD_SIGNING_URL := env_var_or_default("BUILD_SIGNING_URL", "")
 export BUILD_SIGNING_VAULT_URL := env_var_or_default("BUILD_SIGNING_VAULT_URL", "")
@@ -162,20 +160,6 @@ test:
 
 
 #
-# Sign task:
-#
-sign:
-    AzureSignTool sign \
-        -du "$BUILD_SIGNING_URL" \
-        -kvu "$BUILD_SIGNING_VAULT_URL" \
-        -kvt "$BUILD_SIGNING_TENANT_ID" \
-        -kvi "$BUILD_SIGNING_CLIENT_ID" \
-        -kvs "$BUILD_SIGNING_CLIENT_SECRET" \
-        -kvc "$BUILD_SIGNING_CERT_NAME" \
-        -v "{{BIN_FILE_PATH_DIVOOM_CLI}}"
-
-
-#
 # Install task:
 #
 install:
@@ -200,7 +184,23 @@ pack-prepare PACKAGE="divoom_cli":
     echo "package.description=$(gc {{justfile_directory()}}/{{PACKAGE}}/Cargo.toml | sls 'description = "(..+)"' | % { $_.Matches[0].Groups[1].Value })" >> "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters/parameters.txt"
     echo "package.tags=divoom;pixoo;pixoo64" >> "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters/parameters.txt"
 
-pack-bin PACKAGE="divoom_cli": (pack-binary PACKAGE) (pack-symbols PACKAGE)
+pack-source:
+    if (Test-Path "{{BUILD_OUTPUT_FOLDER}}/publish/source") { Remove-Item -Path "{{BUILD_OUTPUT_FOLDER}}/publish/source" -Recurse -Force }
+    New-Item -ItemType Directory -Path "{{BUILD_OUTPUT_FOLDER}}/publish/source" -Force | Out-Null
+
+    Copy-Item -Path "{{justfile_directory()}}/build" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish/source" -Recurse
+    Copy-Item -Path "{{justfile_directory()}}/divoom" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish/source" -Recurse
+    Copy-Item -Path "{{justfile_directory()}}/divoom_cli" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish/source" -Recurse
+    Copy-Item -Path "{{justfile_directory()}}/Cargo.*" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish/source" -Recurse
+    Copy-Item -Path "{{justfile_directory()}}/justfile" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish/source" -Recurse
+    Copy-Item -Path "{{justfile_directory()}}/LICENSE" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish/source" -Recurse
+    Copy-Item -Path "{{justfile_directory()}}/README.md" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish/source" -Recurse
+
+    if (-not (Test-Path "{{PUBLISH_PACKAGES_DIR}}")) { New-Item -ItemType Directory -Path "{{PUBLISH_PACKAGES_DIR}}" -Force | Out-Null }
+    if (Test-Path "{{PUBLISH_PACKAGES_DIR}}/divoom.source.{{BUILD_VERSION}}.zip") { Remove-Item -Path "{{PUBLISH_PACKAGES_DIR}}/divoom.source.{{BUILD_VERSION}}.zip" -Recurse -Force }
+    7z -tzip a "{{PUBLISH_PACKAGES_DIR}}/divoom.source.{{BUILD_VERSION}}.zip" "./{{BUILD_OUTPUT_FOLDER}}/publish/source/*"
+
+    just gen-checksum "packages.source" "{{PUBLISH_PACKAGES_DIR}}/divoom.source.{{BUILD_VERSION}}.zip";
 
 pack-binary PACKAGE="divoom_cli":
     if (Test-Path "{{PUBLISH_DIR}}/{{PACKAGE}}/bin") { Remove-Item -Path "{{PUBLISH_DIR}}/{{PACKAGE}}/bin" -Recurse -Force }
@@ -210,6 +210,8 @@ pack-binary PACKAGE="divoom_cli":
     foreach ($fileName in $fileNames) { \
       $filePath = "{{BUILD_OUTPUT_FOLDER}}/$fileName"; \
       if (Test-Path $filePath) { \
+        if ("{{BUILD_OS}}" -eq "windows") { just sign-file "$filePath"; } \
+        \
         Write-Host "Copying binary file: $filePath"; \
         Copy-Item -Path $filePath -Destination "{{PUBLISH_DIR}}/{{PACKAGE}}/bin"; \
         just gen-checksum "binary.{{PACKAGE}}.{{BUILD_OS}}.{{BUILD_ARCH}}" $filePath; \
@@ -248,24 +250,6 @@ pack-binary-zip PACKAGE="divoom_cli":
         just gen-checksum "packages.{{PACKAGE}}.binary.{{BUILD_OS}}.{{BUILD_ARCH}}" "{{PUBLISH_PACKAGES_DIR}}/${packageName}"; \
     }
 
-pack-source:
-    if (Test-Path "{{BUILD_OUTPUT_FOLDER}}/publish/source") { Remove-Item -Path "{{BUILD_OUTPUT_FOLDER}}/publish/source" -Recurse -Force }
-    New-Item -ItemType Directory -Path "{{BUILD_OUTPUT_FOLDER}}/publish/source" -Force | Out-Null
-
-    Copy-Item -Path "{{justfile_directory()}}/build" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish/source" -Recurse
-    Copy-Item -Path "{{justfile_directory()}}/divoom" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish/source" -Recurse
-    Copy-Item -Path "{{justfile_directory()}}/divoom_cli" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish/source" -Recurse
-    Copy-Item -Path "{{justfile_directory()}}/Cargo.*" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish/source" -Recurse
-    Copy-Item -Path "{{justfile_directory()}}/justfile" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish/source" -Recurse
-    Copy-Item -Path "{{justfile_directory()}}/LICENSE" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish/source" -Recurse
-    Copy-Item -Path "{{justfile_directory()}}/README.md" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish/source" -Recurse
-
-    if (-not (Test-Path "{{PUBLISH_PACKAGES_DIR}}")) { New-Item -ItemType Directory -Path "{{PUBLISH_PACKAGES_DIR}}" -Force | Out-Null }
-    if (Test-Path "{{PUBLISH_PACKAGES_DIR}}/divoom.source.{{BUILD_VERSION}}.zip") { Remove-Item -Path "{{PUBLISH_PACKAGES_DIR}}/divoom.source.{{BUILD_VERSION}}.zip" -Recurse -Force }
-    7z -tzip a "{{PUBLISH_PACKAGES_DIR}}/divoom.source.{{BUILD_VERSION}}.zip" "./{{BUILD_OUTPUT_FOLDER}}/publish/source/*"
-
-    just gen-checksum "packages.source" "{{PUBLISH_PACKAGES_DIR}}/divoom.source.{{BUILD_VERSION}}.zip";
-
 pack-msix PACKAGE="divoom_cli":
     if (Test-Path "{{BUILD_OUTPUT_FOLDER}}/publish/msix") { Remove-Item -Path "{{BUILD_OUTPUT_FOLDER}}/publish/msix" -Recurse -Force }
     New-Item -ItemType Directory -Path "{{BUILD_OUTPUT_FOLDER}}/publish/msix/bin" -Force | Out-Null
@@ -290,9 +274,10 @@ pack-msix PACKAGE="divoom_cli":
       /f "{{BUILD_OUTPUT_FOLDER}}/publish/msix/appxmappings.txt" \
       /p "{{BUILD_OUTPUT_FOLDER}}/publish/msix/{{replace(PACKAGE, '_', '-')}}.{{BUILD_VERSION}}.{{BUILD_OS}}.{{BUILD_ARCH}}.msix"
 
+    just sign-file "{{BUILD_OUTPUT_FOLDER}}/publish/msix/{{replace(PACKAGE, '_', '-')}}.{{BUILD_VERSION}}.{{BUILD_OS}}.{{BUILD_ARCH}}.msix"
+
     if (-not (Test-Path "{{PUBLISH_PACKAGES_DIR}}")) { New-Item -ItemType Directory -Path "{{PUBLISH_PACKAGES_DIR}}" -Force | Out-Null }
     Copy-Item -Path "{{BUILD_OUTPUT_FOLDER}}/publish/msix/*.msix" -Destination "{{PUBLISH_PACKAGES_DIR}}" -Force
-
 
 pack-nuget PACKAGE="divoom_cli":
     if (Test-Path "{{BUILD_OUTPUT_FOLDER}}/publish/nuget") { Remove-Item -Path "{{BUILD_OUTPUT_FOLDER}}/publish/nuget" -Recurse -Force }
@@ -330,6 +315,22 @@ publish PACKAGE="divoom":
 #
 # Utility tasks:
 #
+sign-file FILE_PATH:
+    Write-Host "Signing file: {{FILE_PATH}}"
+
+    if (-not [string]::IsNullOrEmpty($BUILD_SIGNING_URL)) { \
+        AzureSignTool sign \
+            -du "$BUILD_SIGNING_URL" \
+            -kvu "$BUILD_SIGNING_VAULT_URL" \
+            -kvt "$BUILD_SIGNING_TENANT_ID" \
+            -kvi "$BUILD_SIGNING_CLIENT_ID" \
+            -kvs "$BUILD_SIGNING_CLIENT_SECRET" \
+            -kvc "$BUILD_SIGNING_CERT_NAME" \
+            -v "{{FILE_PATH}}"; \
+    } else { \
+        Write-Host "Skipped signing file, because signing settings are not set."; \
+    }
+
 gen-checksum INPUT_FILE_ID INPUT_FILE_PATH:
     if (-not (Test-Path "{{PUBLISH_CHECKSUMS_DIR}}")) { New-Item -ItemType Directory -Path "{{PUBLISH_CHECKSUMS_DIR}}" -Force | Out-Null }
 
