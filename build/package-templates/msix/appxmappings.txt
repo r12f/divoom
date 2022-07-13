@@ -1,7 +1,7 @@
 [Files]
-"{build.out_dir}\publish\msix\bin\{binary.name}.exe" "{binary.name}.exe"
-"{build.out_dir}\publish\msix\bin\README.md" "README.md"
-"{build.out_dir}\publish\msix\bin\LICENSE" "LICENSE"
-"{build.out_dir}\publish\msix\assets\logo.png" "images\logo.png"
-"{build.out_dir}\publish\msix\assets\logo-150.png" "images\logo-150.png"
-"{build.out_dir}\publish\msix\assets\logo-44.png" "images\logo-44.png"
+"{build.out_dir}\publish-prepare\msix\bin\{binary.name}.exe" "{binary.name}.exe"
+"{build.out_dir}\publish-prepare\msix\bin\README.md" "README.md"
+"{build.out_dir}\publish-prepare\msix\bin\LICENSE" "LICENSE"
+"{build.out_dir}\publish-prepare\msix\assets\logo.png" "images\logo.png"
+"{build.out_dir}\publish-prepare\msix\assets\logo-150.png" "images\logo-150.png"
+"{build.out_dir}\publish-prepare\msix\assets\logo-44.png" "images\logo-44.png"
