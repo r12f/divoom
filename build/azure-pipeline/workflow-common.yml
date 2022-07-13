@@ -148,6 +148,8 @@ stages:
           #
           - script: just fix-ver
             displayName: Fix package version
+            condition: and(succeeded(), ne('${{ parameters.isPRWorkflow }}', 'false'))
+            env:
               BUILD_PROFILE: "release"
               BUILD_TARGET: $(target_arch)
 

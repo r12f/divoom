@@ -1,0 +1,40 @@
+#
+# Triggers
+#
+
+# No CI trigger
+trigger: none
+
+# Disable PR merge validations
+pr: none
+
+# Daily build. Time is UTC.
+schedules:
+- cron: "0 10 * * *"
+  displayName: Daily build
+  branches:
+    include:
+    - main
+  always: false
+
+#
+# Version and jobs
+#
+variables:
+  - group: BuildCodeSign
+  - name: buildVersionMajor
+    value: 0
+  - name: buildVersionMinor
+    value: 1
+  - name: buildVersionRevision
+    value: $[counter(format('{0}.{1}.{2}', variables['Build.SourceBranch'], variables['buildVersionMajor'], variables['buildVersionMinor']), 0)]
+
+# Run
+name: '$(buildVersionMajor).$(buildVersionMinor).$(buildVersionRevision)'
+
+extends:
+  template: workflow-common.yml
+  parameters:
+    buildVersionMajor: $(buildVersionMajor)
+    buildVersionMinor: $(buildVersionMinor)
+    buildVersionRevision: $(buildVersionRevision)
