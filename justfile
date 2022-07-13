@@ -54,7 +54,7 @@ export BUILD_SIGNING_CLIENT_SECRET := env_var_or_default("BUILD_SIGNING_CLIENT_S
 export BUILD_SIGNING_CERT_NAME := env_var_or_default("BUILD_SIGNING_CERT_NAME", "")
 
 # Publish
-PUBLISH_DIR := "./publish"
+PUBLISH_DIR := justfile_directory() + "/publish"
 PUBLISH_PACKAGES_DIR := PUBLISH_DIR + "/packages"
 PUBLISH_CHECKSUMS_DIR := PUBLISH_DIR + "/checksums"
 
@@ -171,7 +171,7 @@ install:
 pack-prepare PACKAGE="divoom_cli":
     if (Test-Path "{{PUBLISH_DIR}}/{{PACKAGE}}") { Remove-Item -Path "{{PUBLISH_DIR}}/{{PACKAGE}}" -Recurse -Force }
     New-Item -ItemType Directory -Path "{{PUBLISH_DIR}}/{{PACKAGE}}" -Force | Out-Null
-    New-Item -ItemType Directory -Path "{{PUBLISH_DIR}}/{{PACKAGE}}//template-parameters" -Force | Out-Null
+    New-Item -ItemType Directory -Path "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters" -Force | Out-Null
 
     if (Test-Path "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters/parameters.txt") { Remove-Item -ItemType File -Path "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters/parameters.txt" }
     echo "build.os={{BUILD_OS}}" >> "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters/parameters.txt"
