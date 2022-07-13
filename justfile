@@ -42,7 +42,7 @@ BUILD_TOOL_TARGET := if BUILD_TARGET == "windows-x86" {
 
 BUILD_PROFILE := env_var_or_default("BUILD_PROFILE", "dev")
 BUILD_FLAVOR := if BUILD_PROFILE == "dev" { "debug" } else { "release" }
-BUILD_OUTPUT_FOLDER := "target/" + BUILD_TOOL_TARGET + "/" + BUILD_FLAVOR
+BUILD_OUTPUT_FOLDER := "/target/" + BUILD_TOOL_TARGET + "/" + BUILD_FLAVOR
 BUILD_VERSION := trim(`gc ./build/version.txt | Select-String '\d+\.\d+\.\d+' | % { $_.Matches[0].Value }`)
 
 # Signing settings
@@ -54,7 +54,7 @@ export BUILD_SIGNING_CLIENT_SECRET := env_var_or_default("BUILD_SIGNING_CLIENT_S
 export BUILD_SIGNING_CERT_NAME := env_var_or_default("BUILD_SIGNING_CERT_NAME", "")
 
 # Publish
-PUBLISH_DIR := BUILD_OUTPUT_FOLDER + "/publish"
+PUBLISH_DIR := "./publish"
 PUBLISH_PACKAGES_DIR := PUBLISH_DIR + "/packages"
 PUBLISH_CHECKSUMS_DIR := PUBLISH_DIR + "/checksums"
 
@@ -169,6 +169,8 @@ install:
 # Pack tasks:
 #
 pack-prepare PACKAGE="divoom_cli":
+    @Write-Host "Current invocation directory: {{invocation_directory()}}"
+
     if (Test-Path "{{PUBLISH_DIR}}/{{PACKAGE}}") { Remove-Item -Path "{{PUBLISH_DIR}}/{{PACKAGE}}" -Recurse -Force }
     New-Item -ItemType Directory -Path "{{PUBLISH_DIR}}/{{PACKAGE}}" -Force | Out-Null
     New-Item -ItemType Directory -Path "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters" -Force | Out-Null
@@ -185,6 +187,8 @@ pack-prepare PACKAGE="divoom_cli":
     echo "package.tags=divoom;pixoo;pixoo64" >> "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters/parameters.txt"
 
 pack-source:
+    @Write-Host "Current invocation directory: {{invocation_directory()}}"
+
     if (Test-Path "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/source") { Remove-Item -Path "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/source" -Recurse -Force }
     New-Item -ItemType Directory -Path "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/source" -Force | Out-Null
 
@@ -203,6 +207,8 @@ pack-source:
     just gen-checksum "packages.source" "{{PUBLISH_PACKAGES_DIR}}/divoom.source.{{BUILD_VERSION}}.zip";
 
 pack-binary PACKAGE="divoom_cli":
+    @Write-Host "Current invocation directory: {{invocation_directory()}}"
+
     if (Test-Path "{{PUBLISH_DIR}}/{{PACKAGE}}/bin") { Remove-Item -Path "{{PUBLISH_DIR}}/{{PACKAGE}}/bin" -Recurse -Force }
     New-Item -ItemType Directory -Path "{{PUBLISH_DIR}}/{{PACKAGE}}/bin" -Force | Out-Null
 
@@ -219,6 +225,8 @@ pack-binary PACKAGE="divoom_cli":
     }
 
 pack-symbols PACKAGE="divoom_cli":
+    @Write-Host "Current invocation directory: {{invocation_directory()}}"
+
     if (Test-Path "{{PUBLISH_DIR}}/{{PACKAGE}}/symbols") { Remove-Item -Path "{{PUBLISH_DIR}}/{{PACKAGE}}/symbols" -Recurse -Force }
     New-Item -ItemType Directory -Path "{{PUBLISH_DIR}}/{{PACKAGE}}/symbols" -Force | Out-Null
 
@@ -233,6 +241,8 @@ pack-symbols PACKAGE="divoom_cli":
     }
 
 pack-binary-zip PACKAGE="divoom_cli":
+    @Write-Host "Current invocation directory: {{invocation_directory()}}"
+
     if (-not (Test-Path "{{PUBLISH_PACKAGES_DIR}}")) { New-Item -ItemType Directory -Path "{{PUBLISH_PACKAGES_DIR}}" -Force | Out-Null }
 
     if ("{{BUILD_OS}}" -eq "windows") { \
@@ -251,6 +261,8 @@ pack-binary-zip PACKAGE="divoom_cli":
     }
 
 pack-msix PACKAGE="divoom_cli":
+    @Write-Host "Current invocation directory: {{invocation_directory()}}"
+
     if (Test-Path "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/msix") { Remove-Item -Path "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/msix" -Recurse -Force }
     New-Item -ItemType Directory -Path "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/msix/bin" -Force | Out-Null
     New-Item -ItemType Directory -Path "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/msix/assets" -Force | Out-Null
@@ -280,6 +292,8 @@ pack-msix PACKAGE="divoom_cli":
     Copy-Item -Path "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/msix/*.msix" -Destination "{{PUBLISH_PACKAGES_DIR}}" -Force
 
 pack-nuget PACKAGE="divoom_cli":
+    @Write-Host "Current invocation directory: {{invocation_directory()}}"
+
     if (Test-Path "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/nuget") { Remove-Item -Path "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/nuget" -Recurse -Force }
     New-Item -ItemType Directory -Path "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/nuget" -Force | Out-Null
     New-Item -ItemType Directory -Path "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/nuget/content" -Force | Out-Null
@@ -340,7 +354,8 @@ gen-checksum INPUT_FILE_ID INPUT_FILE_PATH:
     echo "{{INPUT_FILE_ID}}=$((Get-FileHash "{{INPUT_FILE_PATH}}" -Algorithm SHA256).Hash.ToLowerInvariant())" > $checksumFilePath;
 
 eval-template TEMPLATE OUTPUT_FILE +TEMPLATE_PARAMETER_FOLDERS:
-    Write-Host "Reading all template parameters ..."; \
+    @Write-Host "Current invocation directory: {{invocation_directory()}}"
+    @Write-Host "Reading all template parameters ..."; \
     $allParameters = foreach ($templateParameterFolder in "{{TEMPLATE_PARAMETER_FOLDERS}}".Split(" ")) { \
         Get-ChildItem "$templateParameterFolder/*.txt" | % { Get-Content $_ }; \
     }; \
