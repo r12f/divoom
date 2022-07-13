@@ -148,7 +148,7 @@ stages:
           #
           - script: just fix-ver
             displayName: Fix package version
-            condition: and(succeeded(), ne('${{ parameters.isPRWorkflow }}', 'false'))
+            condition: and(succeeded(), ne('${{ parameters.isPRWorkflow }}', 'true'))
             env:
               BUILD_PROFILE: "release"
               BUILD_TARGET: $(target_arch)
@@ -164,7 +164,6 @@ stages:
           #
           - bash: just test
             displayName: Run tests
-            condition: and(succeeded(), eq(variables['is_cross_compile'], false))
             env:
               BUILD_PROFILE: "release"
               BUILD_TARGET: $(target_arch)
@@ -229,3 +228,22 @@ stages:
               BUILD_SIGNING_CLIENT_ID: $(BuildSigningClientId)
               BUILD_SIGNING_CLIENT_SECRET: $(BuildSigningClientSecret)
               BUILD_SIGNING_CERT_NAME: $(BuildSigningCertName)
+
+          #
+          # Copy all files to publish folder
+          #
+          - task: CopyFiles@2
+            displayName: Copy published artifacts to output
+            condition: and(succeeded(), ne('${{ parameters.isPRWorkflow }}', 'true'))
+            inputs:
+              sourceFolder: '$(Build.SourcesDirectory)/publish'
+              targetFolder: '$(Build.ArtifactStagingDirectory)'
+
+          #
+          # Publish artifacts
+          #
+          - task: PublishPipelineArtifact@1
+            displayName: Publish pipeline artifact
+            condition: and(succeeded(), ne('${{ parameters.isPRWorkflow }}', 'true'))
+            inputs:
+              targetPath: '$(Build.ArtifactStagingDirectory)'
