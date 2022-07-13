@@ -186,7 +186,7 @@ stages:
               BUILD_PROFILE: "release"
               BUILD_TARGET: $(target_arch)
 
-          - script: just pack-binary divoom-cli
+          - script: just pack-binary divoom_cli
             displayName: Pack divoom-cli binaries
             env:
               BUILD_PROFILE: "release"
@@ -198,25 +198,25 @@ stages:
               BUILD_SIGNING_CLIENT_SECRET: $(BuildSigningClientSecret)
               BUILD_SIGNING_CERT_NAME: $(BuildSigningCertName)
 
-          - script: just pack-symbols divoom-cli
+          - script: just pack-symbols divoom_cli
             displayName: Pack divoom-cli symbols
             env:
               BUILD_PROFILE: "release"
               BUILD_TARGET: $(target_arch)
 
-          - script: just pack-binary-zip divoom-cli
+          - script: just pack-binary-zip divoom_cli
             displayName: Zip divoom-cli binaries
             env:
               BUILD_PROFILE: "release"
               BUILD_TARGET: $(target_arch)
 
-          - script: just pack-nuget divoom-cli
+          - script: just pack-nuget divoom_cli
             displayName: Pack divoom-cli nuget package
             env:
               BUILD_PROFILE: "release"
               BUILD_TARGET: $(target_arch)
 
-          - script: just pack-msix divoom-cli
+          - script: just pack-msix divoom_cli
             displayName: Pack divoom-cli msix package
             condition: and(succeeded(), eq(variables['target_os'], 'windows'))
             env:
