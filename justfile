@@ -42,7 +42,7 @@ BUILD_TOOL_TARGET := if BUILD_TARGET == "windows-x86" {
 
 BUILD_PROFILE := env_var_or_default("BUILD_PROFILE", "dev")
 BUILD_FLAVOR := if BUILD_PROFILE == "dev" { "debug" } else { "release" }
-BUILD_OUTPUT_FOLDER := "/target/" + BUILD_TOOL_TARGET + "/" + BUILD_FLAVOR
+BUILD_OUTPUT_FOLDER := "target/" + BUILD_TOOL_TARGET + "/" + BUILD_FLAVOR
 BUILD_VERSION := trim(`gc ./build/version.txt | Select-String '\d+\.\d+\.\d+' | % { $_.Matches[0].Value }`)
 
 # Signing settings
