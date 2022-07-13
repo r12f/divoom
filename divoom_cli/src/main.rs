@@ -50,6 +50,18 @@ async fn main() -> DivoomAPIResult<()> {
         DivoomCliSubCommand::Batch(batch_command) => {
             handle_batch_api(&opts.common, batch_command).await
         }
+
+        DivoomCliSubCommand::Raw { request } => {
+            let pixoo = PixooClient::new(
+                opts.common
+                    .device_ip
+                    .as_ref()
+                    .expect("Device IP is not set!"),
+            );
+            let response = pixoo.send_raw_request(request).await?;
+            println!("{}", response);
+            Ok(())
+        }
     }
 }
 

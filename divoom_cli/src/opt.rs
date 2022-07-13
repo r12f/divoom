@@ -43,6 +43,14 @@ pub enum DivoomCliSubCommand {
 
     #[structopt(about = "Batch related APIs")]
     Batch(DivoomCliBatchCommand),
+
+    #[structopt(about = "Sending raw request")]
+    Raw {
+        #[structopt(
+            help = "Raw request body. Should be a valid JSON payload. Please refer to divoom's official API doc to check the format."
+        )]
+        request: String,
+    },
 }
 
 #[derive(StructOpt, Debug)]

@@ -242,6 +242,13 @@ DivoomSelectedClockInfo { clock_id: 168, brightness: 67 }
 
 # Play a gif from Internet
 > .\divoom-cli.exe 192.168.0.123 animation gif play --url https://www.gifandgif.eu/animated_gif/Planets/Animated%20Gif%20Planets%20(16).GIF
+
+# Send a raw request
+#
+# NOTICE: the double quotes in json string passed into the program needs to escaped with '\',
+# otherwise, rust runtime (not structopt) will eat them before reaching main function, even we 
+# pass the whole string as a string.
+> .\divoom-cli.exe 192.168.0.164 raw '{\"Command\": \"Device/SetHighLightMode\", \"Mode\": 0}'
 ```
 
 ### Help
