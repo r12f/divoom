@@ -26,13 +26,13 @@ BUILD_TOOL_TARGET := if BUILD_TARGET == "windows-x86" {
     "x86_64-pc-windows-msvc"
   } else if BUILD_TARGET == "windows-aarch64" {
     "aarch64-pc-windows-msvc"
-  } else if BUILD_TARGET == "unix-x86" {
+  } else if BUILD_TARGET == "linux-x86" {
     "i686-unknown-linux-gnu"
-  } else if BUILD_TARGET == "unix-x64" {
+  } else if BUILD_TARGET == "linux-x64" {
     "x86_64-unknown-linux-gnu"
-  } else if BUILD_TARGET == "unix-arm" {
+  } else if BUILD_TARGET == "linux-arm" {
     "arm-unknown-linux-gnueabi"
-  } else if BUILD_TARGET == "unix-aarch64" {
+  } else if BUILD_TARGET == "linux-aarch64" {
     "aarch64-unknown-linux-gnu"
   } else if BUILD_TARGET == "macos-x64" {
     "x86_64-apple-darwin"
