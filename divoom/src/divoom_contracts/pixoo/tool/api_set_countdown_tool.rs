@@ -32,11 +32,7 @@ impl DivoomPixooCommandToolSetCountdownRequestPayload {
         DivoomPixooCommandToolSetCountdownRequestPayload {
             minute,
             second,
-            status: match action {
-                DivoomToolCountdownAction::Stop => 0,
-                DivoomToolCountdownAction::Start => 1,
-                DivoomToolCountdownAction::Raw(n) => n,
-            },
+            status: action.into(),
         }
     }
 }

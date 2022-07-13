@@ -21,15 +21,7 @@ impl DivoomPixooCommandSystemSetRotationAngleRequestPayload {
     pub fn new(
         mode: DivoomDeviceRotationAngle,
     ) -> DivoomPixooCommandSystemSetRotationAngleRequestPayload {
-        DivoomPixooCommandSystemSetRotationAngleRequestPayload {
-            mode: match mode {
-                DivoomDeviceRotationAngle::None => 0,
-                DivoomDeviceRotationAngle::Rotate90 => 1,
-                DivoomDeviceRotationAngle::Rotate180 => 2,
-                DivoomDeviceRotationAngle::Rotate270 => 3,
-                DivoomDeviceRotationAngle::Raw(n) => n,
-            },
-        }
+        DivoomPixooCommandSystemSetRotationAngleRequestPayload { mode: mode.into() }
     }
 }
 

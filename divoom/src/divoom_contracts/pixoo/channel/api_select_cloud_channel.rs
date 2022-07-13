@@ -22,12 +22,7 @@ impl DivoomPixooCommandChannelSelectCloudChannelRequestPayload {
         channel_type: DivoomCloudChannelType,
     ) -> DivoomPixooCommandChannelSelectCloudChannelRequestPayload {
         DivoomPixooCommandChannelSelectCloudChannelRequestPayload {
-            index: match channel_type {
-                DivoomCloudChannelType::Gallery => 0,
-                DivoomCloudChannelType::Fav => 1,
-                DivoomCloudChannelType::Artist => 2,
-                DivoomCloudChannelType::Raw(n) => n,
-            },
+            index: channel_type.into(),
         }
     }
 }

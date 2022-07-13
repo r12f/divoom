@@ -21,13 +21,7 @@ impl DivoomPixooCommandSystemSetMirrorModeRequestPayload {
     pub fn new(
         mode: DivoomDeviceMirrorMode,
     ) -> DivoomPixooCommandSystemSetMirrorModeRequestPayload {
-        DivoomPixooCommandSystemSetMirrorModeRequestPayload {
-            mode: match mode {
-                DivoomDeviceMirrorMode::Off => 0,
-                DivoomDeviceMirrorMode::On => 1,
-                DivoomDeviceMirrorMode::Raw(n) => n,
-            },
-        }
+        DivoomPixooCommandSystemSetMirrorModeRequestPayload { mode: mode.into() }
     }
 }
 

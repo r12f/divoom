@@ -24,12 +24,6 @@ pub struct DivoomPixooCommandChannelGetCurrentChannelResponsePayload {
 
 impl DivoomPixooCommandChannelGetCurrentChannelResponsePayload {
     pub fn destructive_into(self) -> DivoomChannelType {
-        match self.select_index {
-            0 => DivoomChannelType::Clock,
-            1 => DivoomChannelType::CloudChannel,
-            2 => DivoomChannelType::Visualizer,
-            3 => DivoomChannelType::CustomPage,
-            _ => DivoomChannelType::Raw(self.select_index),
-        }
+        self.select_index.into()
     }
 }

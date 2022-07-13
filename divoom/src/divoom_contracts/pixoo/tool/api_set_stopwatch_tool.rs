@@ -22,12 +22,7 @@ impl DivoomPixooCommandToolSetStopwatchRequestPayload {
         action: DivoomToolStopwatchAction,
     ) -> DivoomPixooCommandToolSetStopwatchRequestPayload {
         DivoomPixooCommandToolSetStopwatchRequestPayload {
-            status: match action {
-                DivoomToolStopwatchAction::Stop => 0,
-                DivoomToolStopwatchAction::Start => 1,
-                DivoomToolStopwatchAction::Reset => 2,
-                DivoomToolStopwatchAction::Raw(n) => n,
-            },
+            status: action.into(),
         }
     }
 }

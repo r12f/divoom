@@ -22,11 +22,7 @@ impl DivoomPixooCommandToolSetNoiseStatusRequestPayload {
         action: DivoomToolNoiseAction,
     ) -> DivoomPixooCommandToolSetNoiseStatusRequestPayload {
         DivoomPixooCommandToolSetNoiseStatusRequestPayload {
-            noise_status: match action {
-                DivoomToolNoiseAction::Stop => 0,
-                DivoomToolNoiseAction::Start => 1,
-                DivoomToolNoiseAction::Raw(n) => n,
-            },
+            noise_status: action.into(),
         }
     }
 }

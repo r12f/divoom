@@ -19,13 +19,7 @@ pub struct DivoomPixooCommandSystemSetHourModeRequestPayload {
 
 impl DivoomPixooCommandSystemSetHourModeRequestPayload {
     pub fn new(mode: DivoomDeviceHourMode) -> DivoomPixooCommandSystemSetHourModeRequestPayload {
-        DivoomPixooCommandSystemSetHourModeRequestPayload {
-            mode: match mode {
-                DivoomDeviceHourMode::Hour12 => 0,
-                DivoomDeviceHourMode::Hour24 => 1,
-                DivoomDeviceHourMode::Raw(n) => n,
-            },
-        }
+        DivoomPixooCommandSystemSetHourModeRequestPayload { mode: mode.into() }
     }
 }
 

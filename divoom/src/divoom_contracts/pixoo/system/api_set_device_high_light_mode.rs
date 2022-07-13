@@ -21,13 +21,7 @@ impl DivoomPixooCommandSystemSetHighLightModeRequestPayload {
     pub fn new(
         mode: DivoomDeviceHighLightMode,
     ) -> DivoomPixooCommandSystemSetHighLightModeRequestPayload {
-        DivoomPixooCommandSystemSetHighLightModeRequestPayload {
-            mode: match mode {
-                DivoomDeviceHighLightMode::Off => 0,
-                DivoomDeviceHighLightMode::On => 1,
-                DivoomDeviceHighLightMode::Raw(n) => n,
-            },
-        }
+        DivoomPixooCommandSystemSetHighLightModeRequestPayload { mode: mode.into() }
     }
 }
 

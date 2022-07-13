@@ -24,12 +24,7 @@ impl DivoomPixooCommandAnimationPlayGifRequestPayload {
         file_name: String,
     ) -> DivoomPixooCommandAnimationPlayGifRequestPayload {
         DivoomPixooCommandAnimationPlayGifRequestPayload {
-            file_type: match file_type {
-                DivoomFileAnimationSourceType::LocalFile => 0,
-                DivoomFileAnimationSourceType::LocalFolder => 1,
-                DivoomFileAnimationSourceType::Url => 2,
-                DivoomFileAnimationSourceType::Raw(n) => n,
-            },
+            file_type: file_type.into(),
             file_name,
         }
     }

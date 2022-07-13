@@ -21,13 +21,7 @@ impl DivoomPixooCommandSystemSetTemperatureUnitRequestPayload {
     pub fn new(
         unit: DivoomDeviceTemperatureUnit,
     ) -> DivoomPixooCommandSystemSetTemperatureUnitRequestPayload {
-        DivoomPixooCommandSystemSetTemperatureUnitRequestPayload {
-            mode: match unit {
-                DivoomDeviceTemperatureUnit::Celsius => 0,
-                DivoomDeviceTemperatureUnit::Fahrenheit => 1,
-                DivoomDeviceTemperatureUnit::Raw(n) => n,
-            },
-        }
+        DivoomPixooCommandSystemSetTemperatureUnitRequestPayload { mode: unit.into() }
     }
 }
 

@@ -21,11 +21,7 @@ impl DivoomPixooCommandSystemSetScreenPowerStateRequestPayload {
         power_state: DivoomDeviceScreenPowerState,
     ) -> DivoomPixooCommandSystemSetScreenPowerStateRequestPayload {
         DivoomPixooCommandSystemSetScreenPowerStateRequestPayload {
-            on_off: match power_state {
-                DivoomDeviceScreenPowerState::Off => 0,
-                DivoomDeviceScreenPowerState::On => 1,
-                DivoomDeviceScreenPowerState::Raw(n) => n,
-            },
+            on_off: power_state.into(),
         }
     }
 }
