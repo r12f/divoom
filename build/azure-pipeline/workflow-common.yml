@@ -147,8 +147,8 @@ stages:
           # Build
           #
           - script: |
-              echo "Updating build version to: $(BUILD_VERSION)"
-              echo $(BUILD_VERSION) > ./build/version.txt
+              echo "Updating build version to: $(Build.Version)"
+              echo $(Build.Version) > ./build/version.txt
               just fix-ver
             displayName: Fix package version
             condition: and(succeeded(), ne('${{ parameters.isPRWorkflow }}', 'true'))
