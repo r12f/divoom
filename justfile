@@ -172,17 +172,17 @@ make-symbols:
     } \
     Write-Host "Striping binary with objcopy = $objcopyPath, strip = $stripPath."; \
     \
-    $fileNames = @("divoom-cli.exe"); \
+    $fileNames = @("divoom-cli"); \
     foreach ($fileName in $fileNames) { \
         $filePath = "{{BUILD_OUTPUT_FOLDER}}/$fileName"; \
         $symbolFilePath = "{{BUILD_OUTPUT_FOLDER}}/${fileName}.debug"; \
         \
         Write-Host "Removing existing symbol file: $symbolFilePath"; \
-        Remove-Item -ItemType File -Path $symbolFilePath; \
+        Remove-Item -Path $symbolFilePath; \
         \
         Write-Host "Generating new symbol file: $filePath"; \
         & $objcopyPath --only-keep-debug "$filePath" "$symbolFilePath"; \
-        & $strip --strip-debug --strip-unneeded -p "$filePath"; \
+        & $stripPath --strip-debug --strip-unneeded -p "$filePath"; \
         & $objcopyPath --add-gnu-debuglink="$symbolFilePath" "$filePath"; \
     }
 
