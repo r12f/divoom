@@ -163,6 +163,13 @@ stages:
               BUILD_PROFILE: "release"
               BUILD_TARGET: $(target_arch)
 
+          - script: just make-symbols
+            displayName: Build
+            env:
+              BUILD_PROFILE: "release"
+              BUILD_TARGET: $(target_arch)
+              BUILD_IS_CROSS_COMPILE: "$(is_cross_compile)"
+
           #
           # Running all tests
           #
