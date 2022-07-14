@@ -164,7 +164,7 @@ stages:
               BUILD_TARGET: $(target_arch)
 
           - script: just make-symbols
-            displayName: Build
+            displayName: Strip binary and build symbol files
             env:
               BUILD_PROFILE: "release"
               BUILD_TARGET: $(target_arch)
