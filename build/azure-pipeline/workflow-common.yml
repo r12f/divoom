@@ -129,19 +129,19 @@ stages:
             displayName: Install build tools on windows
             condition: and(succeeded(), eq(variables['target_os'], 'windows'))
             env:
-              BUILD_TARGET: $(target_arch)
+              BUILD_ARCH: $(target_arch)
 
           - script: just init-linux
             displayName: Install build tools on linux
             condition: and(succeeded(), eq(variables['target_os'], 'linux'))
             env:
-              BUILD_TARGET: $(target_arch)
+              BUILD_ARCH: $(target_arch)
 
           - script: just init-mac
             displayName: Install build tools on macos
             condition: and(succeeded(), eq(variables['target_os'], 'macos'))
             env:
-              BUILD_TARGET: $(target_arch)
+              BUILD_ARCH: $(target_arch)
 
           #
           # Build
@@ -155,19 +155,19 @@ stages:
             env:
               BUILD_VERSION: $(Build.Version)
               BUILD_PROFILE: "release"
-              BUILD_TARGET: $(target_arch)
+              BUILD_ARCH: $(target_arch)
 
           - script: just build
             displayName: Build
             env:
               BUILD_PROFILE: "release"
-              BUILD_TARGET: $(target_arch)
+              BUILD_ARCH: $(target_arch)
 
           - script: just make-symbols
             displayName: Strip binary and build symbol files
             env:
               BUILD_PROFILE: "release"
-              BUILD_TARGET: $(target_arch)
+              BUILD_ARCH: $(target_arch)
               BUILD_IS_CROSS_COMPILE: "$(is_cross_compile)"
 
           #
@@ -175,9 +175,10 @@ stages:
           #
           - bash: just test
             displayName: Run tests
+            condition: and(succeeded(), ne(variables['is_cross_compile'], 'true'))
             env:
               BUILD_PROFILE: "release"
-              BUILD_TARGET: $(target_arch)
+              BUILD_ARCH: $(target_arch)
               RUST_LOG: debug
               RUST_BACKTRACE: full
 
@@ -188,20 +189,20 @@ stages:
             displayName: Prepare to pack packages
             env:
               BUILD_PROFILE: "release"
-              BUILD_TARGET: $(target_arch)
+              BUILD_ARCH: $(target_arch)
 
           - script: just pack-source
             displayName: Pack source files
             condition: and(succeeded(), eq(variables['target_os'], 'linux'), eq(variables['target_arch'], 'x86_64'))
             env:
               BUILD_PROFILE: "release"
-              BUILD_TARGET: $(target_arch)
+              BUILD_ARCH: $(target_arch)
 
           - script: just pack-binary divoom_cli
             displayName: Pack divoom-cli binaries
             env:
               BUILD_PROFILE: "release"
-              BUILD_TARGET: $(target_arch)
+              BUILD_ARCH: $(target_arch)
               BUILD_SIGNING_URL: $(BuildSigningURL)
               BUILD_SIGNING_VAULT_URL: $(BuildSigningVaultURL)
               BUILD_SIGNING_TENANT_ID: $(BuildSigningTenantId)
@@ -213,26 +214,26 @@ stages:
             displayName: Pack divoom-cli symbols
             env:
               BUILD_PROFILE: "release"
-              BUILD_TARGET: $(target_arch)
+              BUILD_ARCH: $(target_arch)
 
           - script: just pack-binary-zip divoom_cli
             displayName: Zip divoom-cli binaries
             env:
               BUILD_PROFILE: "release"
-              BUILD_TARGET: $(target_arch)
+              BUILD_ARCH: $(target_arch)
 
           - script: just pack-nuget divoom_cli
             displayName: Pack divoom-cli nuget package
             env:
               BUILD_PROFILE: "release"
-              BUILD_TARGET: $(target_arch)
+              BUILD_ARCH: $(target_arch)
 
           - script: just pack-msix divoom_cli
             displayName: Pack divoom-cli msix package
             condition: and(succeeded(), eq(variables['target_os'], 'windows'))
             env:
               BUILD_PROFILE: "release"
-              BUILD_TARGET: $(target_arch)
+              BUILD_ARCH: $(target_arch)
               BUILD_SIGNING_URL: $(BuildSigningURL)
               BUILD_SIGNING_VAULT_URL: $(BuildSigningVaultURL)
               BUILD_SIGNING_TENANT_ID: $(BuildSigningTenantId)

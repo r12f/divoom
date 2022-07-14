@@ -183,7 +183,10 @@ _make-symbols OBJCOPY_PATH="objcopy" STRIP_PATH="strip" FILE_NAME="divoom-cli":
 
     Write-Host "Generating new symbol file: {{BUILD_OUTPUT_FOLDER}}/{{FILE_NAME}}";
     & {{OBJCOPY_PATH}} --only-keep-debug "{{BUILD_OUTPUT_FOLDER}}/{{FILE_NAME}}" "{{BUILD_OUTPUT_FOLDER}}/{{FILE_NAME}}.debug";
-    & {{STRIP_PATH}} --strip-debug --strip-unneeded -p "{{BUILD_OUTPUT_FOLDER}}/{{FILE_NAME}}";
+
+    if ("{{BUILD_OS}}" -eq "macos") { & {{STRIP_PATH}} -S "{{BUILD_OUTPUT_FOLDER}}/{{FILE_NAME}}"; } \
+    else { & {{STRIP_PATH}} --strip-debug --strip-unneeded -p "{{BUILD_OUTPUT_FOLDER}}/{{FILE_NAME}}"; }
+
     & {{OBJCOPY_PATH}} --add-gnu-debuglink="{{BUILD_OUTPUT_FOLDER}}/{{FILE_NAME}}.debug" "{{BUILD_OUTPUT_FOLDER}}/{{FILE_NAME}}";
 
 #
