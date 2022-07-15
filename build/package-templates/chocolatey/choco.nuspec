@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>{binary.name}</id>
+    <version>{version}</version>
+    <title>{binary.name}</title>
+    <authors>r12f</authors>
+    <licenseUrl>https://github.com/r12f/divoom/blob/main/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/r12f/divoom</projectUrl>
+    <iconUrl>https://cdn.statically.io/gh/r12f/divoom/main/assets/Logo.png</iconUrl>
+    <docsUrl>https://github.com/r12f/divoom/blob/main/README.md</docsUrl>
+    <bugTrackerUrl>https://github.com/r12f/divoom/issues</bugTrackerUrl>
+    <packageSourceUrl>https://github.com/r12f/divoom/tree/main/build/package-templates/chocolatey</packageSourceUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>{package.description}</summary>
+    <tags>divoom pixoo pixoo64</tags>
+    <description>
+{package.description}
+
+To see more on how to use it, please check our README in our project: https://github.com/r12f/divoom.
+    </description>
+    <releaseNotes>
+For release notes, please check our release in github: https://github.com/r12f/divoom/releases/{build.version}.
+    </releaseNotes>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+  </files>
+</package>

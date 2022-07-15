@@ -211,12 +211,11 @@ make-symbols:
     } \
     Write-Host "Striping binary with objcopy = $objcopyPath, strip = $stripPath."; \
     \
-    $fileNames = @("divoom-cli"); \
-    foreach ($fileName in $fileNames) { \
-        just _make-symbols $objcopyPath $stripPath $fileName; \
-    }
+    @("divoom-cli") | ForEach-Object { just _make-symbols $objcopyPath $stripPath $_; }
 
 _make-symbols OBJCOPY_PATH="objcopy" STRIP_PATH="strip" FILE_NAME="divoom-cli":
+    Write-Host "Making symbol file for {{FILE_NAME}}";
+
     Write-Host "Removing existing symbol file: {{BUILD_OUTPUT_FOLDER}}/{{FILE_NAME}}.debug";
     if (Test-Path "{{BUILD_OUTPUT_FOLDER}}/{{FILE_NAME}}.debug") { Remove-Item -Path "{{BUILD_OUTPUT_FOLDER}}/{{FILE_NAME}}.debug"; }
 
@@ -251,6 +250,7 @@ pack-prepare PACKAGE="divoom_cli":
     echo "build.version={{BUILD_VERSION}}" >> "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters/parameters.txt"
     echo "build.out_dir={{BUILD_OUTPUT_FOLDER}}" >> "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters/parameters.txt"
     echo "binary.name={{replace(PACKAGE, '_', '-')}}" >> "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters/parameters.txt"
+    echo "package.name.raw={{PACKAGE}}" >> "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters/parameters.txt"
     echo "package.name.pascal_case=$([regex]::Replace("{{PACKAGE}}", '(?i)(?:^|_)(\p{L})', { $args[0].Groups[1].Value.ToUpper() }))" >> "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters/parameters.txt"
     echo "package.description=$(gc {{justfile_directory()}}/{{PACKAGE}}/Cargo.toml | sls 'description = "(..+)"' | % { $_.Matches[0].Groups[1].Value })" >> "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters/parameters.txt"
     echo "package.tags=divoom;pixoo;pixoo64" >> "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters/parameters.txt"
@@ -381,6 +381,16 @@ pack-nuget PACKAGE="divoom_cli":
     if (-not (Test-Path "{{PUBLISH_PACKAGES_DIR}}")) { New-Item -ItemType Directory -Path "{{PUBLISH_PACKAGES_DIR}}" -Force | Out-Null }
     Copy-Item -Path "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/nuget/output/*.nupkg" -Destination "{{PUBLISH_PACKAGES_DIR}}" -Force
 
+pack-choco PACKAGE="divoom_cli":
+    @Write-Host "Current invocation directory: {{invocation_directory()}}"
+
+    if (Test-Path "{{PUBLISH_DIR}}/{{PACKAGE}}/choco-source") { Remove-Item -Path "{{PUBLISH_DIR}}/{{PACKAGE}}/choco-source" -Recurse -Force }
+    New-Item -ItemType Directory -Path "{{PUBLISH_DIR}}/{{PACKAGE}}/choco-source" -Force | Out-Null
+
+    just eval-template-dir "{{justfile_directory()}}/build/package-templates/chocolatey" \
+      "{{PUBLISH_DIR}}/{{PACKAGE}}/choco-source" \
+      "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters" \
+      "{{PUBLISH_CHECKSUMS_DIR}}"
 
 #
 # Publish tasks:
@@ -422,6 +432,19 @@ gen-checksum INPUT_FILE_ID INPUT_FILE_PATH:
     Write-Host "Generating checksum file: $checksumFilePath"; \
     echo "{{INPUT_FILE_ID}}=$((Get-FileHash "{{INPUT_FILE_PATH}}" -Algorithm SHA256).Hash.ToLowerInvariant())" > $checksumFilePath;
 
+eval-template-dir TEMPLATE_FOLDER OUTPUT_FOLDER +TEMPLATE_PARAMETER_FOLDERS:
+    @Write-Host "Current invocation directory: {{invocation_directory()}}"
+
+    Get-ChildItem "{{TEMPLATE_FOLDER}}/*" -Recurse -File | ForEach-Object { \
+        $relativePath = Resolve-Path -Path $_ -Relative; \
+        $relativeFolder = [System.IO.Path]::GetDirectoryName($relativePath); \
+        if (-not (Test-Path "{{OUTPUT_FOLDER}}/$relativeFolder")) { New-Item -ItemType Directory -Path "{{OUTPUT_FOLDER}}/$relativeFolder" -Force | Out-Null } \
+        \
+        just eval-template "$($_.FullName)" \
+          "{{OUTPUT_FOLDER}}/$relativePath" \
+          {{TEMPLATE_PARAMETER_FOLDERS}}; \
+    }
+
 eval-template TEMPLATE OUTPUT_FILE +TEMPLATE_PARAMETER_FOLDERS:
     @Write-Host "Current invocation directory: {{invocation_directory()}}"
     @Write-Host "Reading all template parameters ..."; \
@@ -435,10 +458,18 @@ eval-template TEMPLATE OUTPUT_FILE +TEMPLATE_PARAMETER_FOLDERS:
     \
     Write-Host "Generating content ..."; \
     $templateFileContent = Get-Content "{{TEMPLATE}}" -Raw; \
-    $allParameters | ForEach-Object { \
-        $parameterPair = $_.Split("="); \
-        $templateFileContent = $templateFileContent.Replace("{" + $parameterPair[0] + "}", $parameterPair[1]); \
-    }; \
+    while ($true) { \
+        $newTemplateFileContent = $templateFileContent; \
+        $allParameters | ForEach-Object { \
+            $parameterPair = $_.Split("="); \
+            $newTemplateFileContent = $newTemplateFileContent.Replace("{" + $parameterPair[0] + "}", $parameterPair[1]); \
+        }; \
+        if ($templateFileContent -eq $newTemplateFileContent) { \
+            break; \
+        } else { \
+            $templateFileContent = $newTemplateFileContent; \
+        } \
+    } \
     Write-Host "Content generated:"; \
     Write-Host "$templateFileContent"; \
     Write-Host ""; \

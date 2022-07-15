@@ -242,6 +242,12 @@ stages:
               BUILD_SIGNING_CLIENT_SECRET: $(BuildSigningClientSecret)
               BUILD_SIGNING_CERT_NAME: $(BuildSigningCertName)
 
+          - script: just pack-choco divoom_cli
+            displayName: Pack divoom-cli chocolatey package source
+            condition: and(succeeded(), eq(variables['target_os'], 'windows'), eq(variables['target_arch'], 'x86_64'))
+            env:
+              BUILD_PROFILE: "release"
+              BUILD_ARCH: $(target_arch)
           #
           # Copy all files to publish folder
           #

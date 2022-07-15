@@ -1,0 +1,12 @@
+﻿VERIFICATION
+Verification is intended to assist the Chocolatey moderators and community
+in verifying that this package's contents are trustworthy.
+ 
+To validate the checksum, we can us Get-FileHash command in powershell.
+
+    Get-FileHash .\Path\To\{binary.name} -Algorithm SHA256
+
+And the known file hash for version {build.version} are:
+- {binary.name}:
+  - x86: {binary.{package.name.raw}.windows.x86}
+  - x64: {binary.{package.name.raw}.windows.x64}
