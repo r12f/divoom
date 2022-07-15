@@ -116,11 +116,13 @@ stages:
             displayName: Install make tool on Windows
             condition: and(succeeded(), eq(variables['target_os'], 'windows'))
 
+          - bash: snap install --edge --classic just
+            displayName: Install make tool on Linux
+            condition: and(succeeded(), eq(variables['target_os'], 'linux'))
 
-          - bash: |
-              curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to /usr/local/bin
-            displayName: Install cargo make binary on Linux/MAC
-            condition: and(succeeded(), ne(variables['target_os'], 'windows'))
+          - bash: brew install just
+            displayName: Install make tool on Mac
+            condition: and(succeeded(), eq(variables['target_os'], 'macos'))
 
           #
           # Install build tools
@@ -168,7 +170,6 @@ stages:
             env:
               BUILD_PROFILE: "release"
               BUILD_ARCH: $(target_arch)
-              BUILD_IS_CROSS_COMPILE: "$(is_cross_compile)"
 
           #
           # Running all tests
