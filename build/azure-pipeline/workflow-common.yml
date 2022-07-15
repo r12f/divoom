@@ -116,11 +116,11 @@ stages:
             displayName: Install make tool on Windows
             condition: and(succeeded(), eq(variables['target_os'], 'windows'))
 
-          - bash: snap install --edge --classic just
+          - bash: sudo snap install --edge --classic just
             displayName: Install make tool on Linux
             condition: and(succeeded(), eq(variables['target_os'], 'linux'))
 
-          - bash: brew install just
+          - bash: sudo brew install just
             displayName: Install make tool on Mac
             condition: and(succeeded(), eq(variables['target_os'], 'macos'))
 
