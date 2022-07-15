@@ -12,23 +12,37 @@ BUILD_OS := if os_family() == "windows" {
     "linux"
   }
 
-BUILD_ARCH := env_var_or_default("BUILD_ARCH", arch())
+BUILD_ARCH := if env_var_or_default("BUILD_ARCH", arch()) == "x86_64" {
+    "x64"
+} else if env_var_or_default("BUILD_ARCH", arch()) == "aarch64" {
+    "arm64"
+} else {
+    env_var_or_default("BUILD_ARCH", arch())
+}
+
+OS_ARCH := if arch() == "x86_64" {
+    "x64"
+} else if arch() == "aarch64" {
+    "arm64"
+} else {
+    arch()
+}
 
 BUILD_TARGET := BUILD_OS + "-" + BUILD_ARCH
 
-BUILD_TOOL_TARGET := if BUILD_TARGET == "windows-x86_64" {
+BUILD_TOOL_TARGET := if BUILD_TARGET == "windows-x86" {
     "i686-pc-windows-msvc"
   } else if BUILD_TARGET == "windows-x64" {
     "x86_64-pc-windows-msvc"
-  } else if BUILD_TARGET == "windows-aarch64" {
+  } else if BUILD_TARGET == "windows-arm64" {
     "aarch64-pc-windows-msvc"
-  } else if BUILD_TARGET == "linux-x86_64" {
+  } else if BUILD_TARGET == "linux-x86" {
     "i686-unknown-linux-gnu"
   } else if BUILD_TARGET == "linux-x64" {
     "x86_64-unknown-linux-gnu"
   } else if BUILD_TARGET == "linux-arm" {
     "arm-unknown-linux-gnueabi"
-  } else if BUILD_TARGET == "linux-aarch64" {
+  } else if BUILD_TARGET == "linux-arm64" {
     "aarch64-unknown-linux-gnu"
   } else if BUILD_TARGET == "macos-x64" {
     "x86_64-apple-darwin"
@@ -40,7 +54,7 @@ BUILD_PROFILE := env_var_or_default("BUILD_PROFILE", "dev")
 BUILD_FLAVOR := if BUILD_PROFILE == "dev" { "debug" } else { "release" }
 BUILD_OUTPUT_FOLDER := "target/" + BUILD_TOOL_TARGET + "/" + BUILD_FLAVOR
 BUILD_VERSION := trim(`gc ./build/version.txt | Select-String '\d+\.\d+\.\d+' | % { $_.Matches[0].Value }`)
-BUILD_IS_CROSS_COMPILE := if BUILD_ARCH != arch() { "true" } else { "false" }
+BUILD_IS_CROSS_COMPILE := if BUILD_ARCH != OS_ARCH { "true" } else { "false" }
 
 # Signing settings
 export BUILD_SIGNING_URL := env_var_or_default("BUILD_SIGNING_URL", "")
@@ -84,21 +98,6 @@ init-linux:
     # Install GCC and required libs/tools
     @echo "Installing build tools and required libs."
     sudo apt install -y build-essential libssl-dev p7zip-full
-
-    # case "{{BUILD_TOOL_TARGET}}" in
-    #     "i686-unknown-linux-gnu")
-    #         # For building x86 binary, we are using gcc-multilib.
-    #         # This package is conflicting with other gcc-* packages, but we don not know any better package to use.
-    #         # But sadly, this package is lacking of tools that we need to build ARM/ARM64, so we can only pick 1 to use - either support x86 or ARM/ARM64.
-    #         sudo apt install -y gcc-multilib
-    #         ;;
-    #     "arm-unknown-linux-gnueabi")
-    #         sudo apt install -y gcc-arm-linux-gnueabi binutils-arm-linux-gnueabi
-    #         ;;
-    #     "aarch64-unknown-linux-gnu")
-    #         sudo apt install -y gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu
-    #         ;;
-    # esac
 
     # Install toolchains for cross builds
     @echo "Installing rust target: {{BUILD_TOOL_TARGET}}"
@@ -180,14 +179,14 @@ make-symbols:
             $gccXCompilerPrefix = "{{BUILD_TOOL_TARGET}}-"; \
             if ("{{BUILD_TOOL_TARGET}}" -eq "i686-pc-windows-msvc") { \
                 $gccXCompilerPrefix = "x86_64-linux-gnu-"; \
-            } elseif ("{{BUILD_TOOL_TARGET}}" -eq "i686-pc-windows-msvc") { \
+            } elseif ("{{BUILD_TOOL_TARGET}}" -eq "arm-unknown-linux-gnueabi") { \
                 $gccXCompilerPrefix = "arm-linux-gnueabi-"; \
-            } elseif ("{{BUILD_TOOL_TARGET}}" -eq "i686-pc-windows-msvc") { \
+            } elseif ("{{BUILD_TOOL_TARGET}}" -eq "aarch64-unknown-linux-gnu") { \
                 $gccXCompilerPrefix = "aarch64-linux-gnu-"; \
             } \
         } \
-        $objcopyPath = "${gccXCompilerPrefix}-objcopy"; \
-        $stripPath = "${gccXCompilerPrefix}-strip"; \
+        $objcopyPath = "${gccXCompilerPrefix}objcopy"; \
+        $stripPath = "${gccXCompilerPrefix}strip"; \
     } elseif ("{{BUILD_OS}}" -eq "macos") { \
         $objcopyPath = "/usr/local/opt/binutils/bin/gobjcopy"; \
         $stripPath = "strip"; \
