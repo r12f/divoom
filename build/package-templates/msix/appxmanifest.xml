@@ -5,7 +5,7 @@
         xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
         xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
         xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10">
-    <Identity Name="R12f.R12f.{package.name.pascal_case}" Version="{build.version}.0" Publisher="CN=Jinzhou Jiang, O=Jinzhou Jiang, L=Redmond, S=Washington, C=US" ProcessorArchitecture="{build.arch}" />
+    <Identity Name="R12f.R12f.{package.name.pascal_case}" Version="{build.version}.0" Publisher="CN=Jinzhou Jiang, O=Jinzhou Jiang, S=Washington, C=US" ProcessorArchitecture="{build.arch}" />
     <Properties>
         <DisplayName>{package.name.pascal_case}</DisplayName>
         <PublisherDisplayName>r12f</PublisherDisplayName>

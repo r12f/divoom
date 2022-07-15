@@ -3,6 +3,9 @@
 # Use powershell 7 on all platforms.
 set shell := ["pwsh", "-NoLogo", "-Command"]
 
+# Load .env if we have it. .env files are ignored in check-ins, so we can have private dev environment.
+set dotenv-load
+
 # Build environment settings
 BUILD_OS := if os_family() == "windows" {
     "windows"
@@ -398,14 +401,14 @@ publish PACKAGE="divoom":
 sign-file FILE_PATH:
     Write-Host "Signing file: {{FILE_PATH}}"
 
-    if (-not [string]::IsNullOrEmpty($BUILD_SIGNING_URL)) { \
+    if (-not [string]::IsNullOrEmpty(${env:BUILD_SIGNING_URL})) { \
         AzureSignTool sign \
-            -du "$BUILD_SIGNING_URL" \
-            -kvu "$BUILD_SIGNING_VAULT_URL" \
-            -kvt "$BUILD_SIGNING_TENANT_ID" \
-            -kvi "$BUILD_SIGNING_CLIENT_ID" \
-            -kvs "$BUILD_SIGNING_CLIENT_SECRET" \
-            -kvc "$BUILD_SIGNING_CERT_NAME" \
+            -du "${env:BUILD_SIGNING_URL}" \
+            -kvu "${env:BUILD_SIGNING_VAULT_URL}" \
+            -kvt "${env:BUILD_SIGNING_TENANT_ID}" \
+            -kvi "${env:BUILD_SIGNING_CLIENT_ID}" \
+            -kvs "${env:BUILD_SIGNING_CLIENT_SECRET}" \
+            -kvc "${env:BUILD_SIGNING_CERT_NAME}" \
             -v "{{FILE_PATH}}"; \
     } else { \
         Write-Host "Skipped signing file, because signing settings are not set."; \
