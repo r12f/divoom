@@ -177,7 +177,7 @@ make-symbols:
         $gccXCompilerPrefix = ""; \
         if ("{{BUILD_IS_CROSS_COMPILE}}" -eq "true") { \
             $gccXCompilerPrefix = "{{BUILD_TOOL_TARGET}}-"; \
-            if ("{{BUILD_TOOL_TARGET}}" -eq "i686-pc-windows-msvc") { \
+            if ("{{BUILD_TOOL_TARGET}}" -eq "i686-unknown-linux-gnu") { \
                 $gccXCompilerPrefix = "x86_64-linux-gnu-"; \
             } elseif ("{{BUILD_TOOL_TARGET}}" -eq "arm-unknown-linux-gnueabi") { \
                 $gccXCompilerPrefix = "arm-linux-gnueabi-"; \
@@ -185,8 +185,8 @@ make-symbols:
                 $gccXCompilerPrefix = "aarch64-linux-gnu-"; \
             } \
         } \
-        $objcopyPath = "${gccXCompilerPrefix}objcopy"; \
-        $stripPath = "${gccXCompilerPrefix}strip"; \
+        $objcopyPath = "/usr/bin/${gccXCompilerPrefix}objcopy"; \
+        $stripPath = "/usr/bin/${gccXCompilerPrefix}strip"; \
     } elseif ("{{BUILD_OS}}" -eq "macos") { \
         $objcopyPath = "/usr/local/opt/binutils/bin/gobjcopy"; \
         $stripPath = "strip"; \
@@ -421,6 +421,9 @@ eval-template TEMPLATE OUTPUT_FILE +TEMPLATE_PARAMETER_FOLDERS:
         $parameterPair = $_.Split("="); \
         $templateFileContent = $templateFileContent.Replace("{" + $parameterPair[0] + "}", $parameterPair[1]); \
     }; \
+    Write-Host "Content generated:"; \
+    Write-Host "$templateFileContent"; \
+    Write-Host ""; \
     Write-Host "Writing content to file: {{OUTPUT_FILE}}"; \
     $utf8NoBom = New-Object System.Text.UTF8Encoding $False; \
     [System.IO.File]::WriteAllLines("{{OUTPUT_FILE}}", $templateFileContent, $utf8NoBom);
