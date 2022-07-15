@@ -99,6 +99,21 @@ init-linux:
     @echo "Installing build tools and required libs."
     sudo apt install -y build-essential libssl-dev p7zip-full
 
+    case "{{BUILD_TOOL_TARGET}}" in
+        "i686-unknown-linux-gnu")
+            # For building x86 binary, we are using gcc-multilib.
+            # This package is conflicting with other gcc-* packages, but we don not know any better package to use.
+            # But sadly, this package is lacking of tools that we need to build ARM/ARM64, so we can only pick 1 to use - either support x86 or ARM/ARM64.
+            sudo apt install -y gcc-multilib
+            ;;
+        "arm-unknown-linux-gnueabi")
+            sudo apt install -y gcc-arm-linux-gnueabi binutils-arm-linux-gnueabi
+            ;;
+        "aarch64-unknown-linux-gnu")
+            sudo apt install -y gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu
+            ;;
+    esac
+
     # Install toolchains for cross builds
     @echo "Installing rust target: {{BUILD_TOOL_TARGET}}"
     rustup default stable
@@ -185,8 +200,8 @@ make-symbols:
                 $gccXCompilerPrefix = "aarch64-linux-gnu-"; \
             } \
         } \
-        $objcopyPath = "/usr/bin/${gccXCompilerPrefix}objcopy"; \
-        $stripPath = "/usr/bin/${gccXCompilerPrefix}strip"; \
+        $objcopyPath = "${gccXCompilerPrefix}objcopy"; \
+        $stripPath = "${gccXCompilerPrefix}strip"; \
     } elseif ("{{BUILD_OS}}" -eq "macos") { \
         $objcopyPath = "/usr/local/opt/binutils/bin/gobjcopy"; \
         $stripPath = "strip"; \
