@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
   <metadata>
     <id>{binary.name}</id>
-    <version>{version}</version>
+    <version>{build.version}</version>
     <title>{binary.name}</title>
     <authors>r12f</authors>
     <licenseUrl>https://github.com/r12f/divoom/blob/main/LICENSE</licenseUrl>
