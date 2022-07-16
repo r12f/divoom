@@ -68,6 +68,9 @@ pack-choco:
     if (Test-Path "{{INTERMEDIATE_CHOCO_PACKAGE_FOLDER}}") { Remove-Item -Path "{{INTERMEDIATE_CHOCO_PACKAGE_FOLDER}}" -Recurse -Force }
     New-Item -ItemType Directory -Path "{{INTERMEDIATE_CHOCO_PACKAGE_FOLDER}}" -Force | Out-Null
 
+    if (Test-Path "{{RELEASE_CHOCO_FOLDER}}") { Remove-Item -Path "{{RELEASE_CHOCO_FOLDER}}" -Recurse -Force }
+    New-Item -ItemType Directory -Path "{{RELEASE_CHOCO_FOLDER}}" -Force | Out-Null
+
     just _pack-choco-with-package divoom_cli
 
 _pack-choco-with-package PACKAGE="divoom_cli":
