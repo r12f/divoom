@@ -439,7 +439,7 @@ eval-template-dir TEMPLATE_FOLDER OUTPUT_FOLDER +TEMPLATE_PARAMETER_FOLDERS:
     @Write-Host "Current invocation directory: {{invocation_directory()}}"
 
     Get-ChildItem "{{TEMPLATE_FOLDER}}/*" -Recurse -File | ForEach-Object { \
-        $relativePath = Resolve-Path -Path $_ -Relative; \
+        $relativePath = [System.IO.Path]::GetRelativePath("{{TEMPLATE_FOLDER}}", $_); \
         $relativeFolder = [System.IO.Path]::GetDirectoryName($relativePath); \
         if (-not (Test-Path "{{OUTPUT_FOLDER}}/$relativeFolder")) { New-Item -ItemType Directory -Path "{{OUTPUT_FOLDER}}/$relativeFolder" -Force | Out-Null } \
         \
