@@ -275,6 +275,9 @@ pack-source:
 
     just gen-checksum "packages.source" "{{PUBLISH_PACKAGES_DIR}}/divoom.source.{{BUILD_VERSION}}.zip";
 
+pack-post-build:
+    Copy-Item -Path "{{justfile_directory()}}/build/post-build/post-build.justfile" -Destination "{{PUBLISH_DIR}}"
+
 pack-binary PACKAGE="divoom_cli":
     @Write-Host "Current invocation directory: {{invocation_directory()}}"
 
