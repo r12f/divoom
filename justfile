@@ -261,6 +261,7 @@ pack-source:
     if (Test-Path "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/source") { Remove-Item -Path "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/source" -Recurse -Force }
     New-Item -ItemType Directory -Path "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/source" -Force | Out-Null
 
+    Copy-Item -Path "{{justfile_directory()}}/assets" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/source" -Recurse
     Copy-Item -Path "{{justfile_directory()}}/build" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/source" -Recurse
     Copy-Item -Path "{{justfile_directory()}}/divoom" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/source" -Recurse
     Copy-Item -Path "{{justfile_directory()}}/divoom_cli" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/source" -Recurse
@@ -320,12 +321,16 @@ pack-binary-zip PACKAGE="divoom_cli":
     if ("{{BUILD_OS}}" -eq "windows") { \
         $packageName = "{{replace(PACKAGE, '_', '-')}}.{{BUILD_VERSION}}.{{BUILD_OS}}.{{BUILD_ARCH}}.zip"; \
         7z -tzip a "{{PUBLISH_PACKAGES_DIR}}/$packageName" "{{PUBLISH_DIR}}/{{PACKAGE}}/bin/*"; \
+        7z -tzip a "{{PUBLISH_PACKAGES_DIR}}/$packageName" "{{justfile_directory()}}/{{PACKAGE}}/LICENSE"; \
+        7z -tzip a "{{PUBLISH_PACKAGES_DIR}}/$packageName" "{{justfile_directory()}}/{{PACKAGE}}/README.md"; \
         just gen-checksum "packages.{{PACKAGE}}.binary.{{BUILD_OS}}.{{BUILD_ARCH}}" "{{PUBLISH_PACKAGES_DIR}}/${packageName}"; \
     }
 
     if ("{{BUILD_OS}}" -ne "windows") { \
         $packageName = "{{replace(PACKAGE, '_', '-')}}.{{BUILD_VERSION}}.{{BUILD_OS}}.{{BUILD_ARCH}}.tar"; \
         7z -ttar a "{{PUBLISH_PACKAGES_DIR}}/$packageName" "{{PUBLISH_DIR}}/{{PACKAGE}}/bin/*"; \
+        7z -ttar a "{{PUBLISH_PACKAGES_DIR}}/$packageName" "{{justfile_directory()}}/{{PACKAGE}}/LICENSE"; \
+        7z -ttar a "{{PUBLISH_PACKAGES_DIR}}/$packageName" "{{justfile_directory()}}/{{PACKAGE}}/README.md"; \
         7z -tgzip a "{{PUBLISH_PACKAGES_DIR}}/$packageName.gz" "{{PUBLISH_PACKAGES_DIR}}/$packageName"; \
         Remove-Item "{{PUBLISH_PACKAGES_DIR}}/$packageName"; \
         $packageName = "${packageName}.gz"; \
@@ -340,8 +345,8 @@ pack-msix PACKAGE="divoom_cli":
     New-Item -ItemType Directory -Path "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/msix/assets" -Force | Out-Null
 
     Copy-Item -Path "{{justfile_directory()}}/assets/*" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/msix/assets"
-    Copy-Item -Path "{{justfile_directory()}}/LICENSE" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/msix/bin"
-    Copy-Item -Path "{{justfile_directory()}}/README.md" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/msix/bin"
+    Copy-Item -Path "{{justfile_directory()}}/{{PACKAGE}}/LICENSE" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/msix/bin"
+    Copy-Item -Path "{{justfile_directory()}}/{{PACKAGE}}/README.md" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/msix/bin"
     Copy-Item -Path "{{PUBLISH_DIR}}/{{PACKAGE}}/bin/*" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/msix/bin"
 
     just eval-template "{{justfile_directory()}}/build/package-templates/msix/appxmanifest.xml" \
@@ -370,8 +375,8 @@ pack-nuget PACKAGE="divoom_cli":
     New-Item -ItemType Directory -Path "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/nuget" -Force | Out-Null
     New-Item -ItemType Directory -Path "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/nuget/content" -Force | Out-Null
 
-    Copy-Item -Path "{{justfile_directory()}}/LICENSE" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/nuget/content"
-    Copy-Item -Path "{{justfile_directory()}}/README.md" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/nuget/content"
+    Copy-Item -Path "{{justfile_directory()}}/{{PACKAGE}}/LICENSE" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/nuget/content"
+    Copy-Item -Path "{{justfile_directory()}}/{{PACKAGE}}/README.md" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/nuget/content"
     Copy-Item -Path "{{PUBLISH_DIR}}/{{PACKAGE}}/bin/*" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/nuget/content"
 
     just eval-template "{{justfile_directory()}}/build/package-templates/nuget/nupkg.csproj" \
