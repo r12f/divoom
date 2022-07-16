@@ -345,7 +345,7 @@ stages:
           - task: CopyFiles@2
             displayName: Copy packages to staging folder
             inputs:
-              sourceFolder: '$(System.DefaultWorkingDirectory)/r12f.divoom/Releases'
+              sourceFolder: '$(System.DefaultWorkingDirectory)/r12f.divoom/release'
               targetFolder: '$(Build.ArtifactStagingDirectory)/Releases'
 
           - task: PublishPipelineArtifact@1
