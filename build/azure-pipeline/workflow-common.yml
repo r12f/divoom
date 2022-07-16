@@ -192,7 +192,7 @@ stages:
 
           - script: just pack-post-build
             displayName: Pack post-build build tasks
-            condition: and(succeeded(), eq(variables['target_os'], 'windows'))
+            condition: and(succeeded(), eq(variables['target_os'], 'windows'), eq(variables['target_arch'], 'x86_64'))
             env:
               BUILD_PROFILE: "release"
               BUILD_ARCH: $(target_arch)
@@ -292,34 +292,51 @@ stages:
             displayName: Update build environment variables
 
           - script: choco install just -y
-            displayName: Install make tool on Windows
-            condition: and(succeeded(), eq(variables['target_os'], 'windows'))
+            displayName: Install make tool
 
-          - script: just --justfile "./Build.Build.windowsx64/post-build.justfile" prepare-release-prepare
+          - script: cp "./Build.Build.windowsx64/post-build.justfile" "./justfile"
+            displayName: Copy just file
+            workingDirectory: '$(System.DefaultWorkingDirectory)/r12f.divoom'
+            env:
+              BUILD_VERSION: $(Build.Version)
+
+          - script: just prepare-release-prepare
             displayName: Prepare to prepare release
             workingDirectory: '$(System.DefaultWorkingDirectory)/r12f.divoom'
             env:
               BUILD_VERSION: $(Build.Version)
 
-          - script: just --justfile "./Build.Build.windowsx64/post-build.justfile" prepare-crate-io-release
+          - script: just pack-symbols
+            displayName: Pack symbol package for release
+            workingDirectory: '$(System.DefaultWorkingDirectory)/r12f.divoom'
+            env:
+              BUILD_VERSION: $(Build.Version)
+
+          - script: just pack-choco
+            displayName: Pack chocolatey package for release
+            workingDirectory: '$(System.DefaultWorkingDirectory)/r12f.divoom'
+            env:
+              BUILD_VERSION: $(Build.Version)
+
+          - script: just prepare-crate-io-release
             displayName: Prepare Crate.IO release
             workingDirectory: '$(System.DefaultWorkingDirectory)/r12f.divoom'
             env:
               BUILD_VERSION: $(Build.Version)
 
-          - script: just --justfile "./Build.Build.windowsx64/post-build.justfile" prepare-nuget-release
+          - script: just prepare-github-release
+            displayName: Prepare github release
+            workingDirectory: '$(System.DefaultWorkingDirectory)/r12f.divoom'
+            env:
+              BUILD_VERSION: $(Build.Version)
+
+          - script: just prepare-nuget-release
             displayName: Prepare nuget release
             workingDirectory: '$(System.DefaultWorkingDirectory)/r12f.divoom'
             env:
               BUILD_VERSION: $(Build.Version)
 
-          - script: just --justfile "./Build.Build.windowsx64/post-build.justfile" prepare-choco-release
-            displayName: Prepare chocolatey release
-            workingDirectory: '$(System.DefaultWorkingDirectory)/r12f.divoom'
-            env:
-              BUILD_VERSION: $(Build.Version)
-
-          - script: just --justfile "./Build.Build.windowsx64/post-build.justfile" prepare-winget-release
+          - script: just prepare-winget-release
             displayName: Prepare winget release
             workingDirectory: '$(System.DefaultWorkingDirectory)/r12f.divoom'
             env:

@@ -11,15 +11,17 @@ BUILD_VERSION := env_var_or_default("BUILD_VERSION", "")
 BUILD_FOLDER_PREFIX := "./Build.Build."
 BUILD_MODULES := "divoom_cli"
 
-INTERMEDIATE_FOLDER = "./temp"
-INTERMEDIATE_SYMBOL_PACKAGE_FOLDER = INTERMEDIATE_FOLDER + "/symbols"
-INTERMEDIATE_CHOCO_PACKAGE_FOLDER = INTERMEDIATE_FOLDER + "/choco"
+INTERMEDIATE_FOLDER := "./temp"
+INTERMEDIATE_SYMBOL_PACKAGE_FOLDER := INTERMEDIATE_FOLDER + "/symbols"
+INTERMEDIATE_CHOCO_PACKAGE_FOLDER := INTERMEDIATE_FOLDER + "/choco"
 
 RELEASE_FOLDER := "./release"
 RELEASE_TEMPLATE_PARAMETER_FOLDER := RELEASE_FOLDER + "/template-parameters"
 RELEASE_CRATES_FOLDER := RELEASE_FOLDER + "/crates"
+RELEASE_NUGET_FOLDER := RELEASE_FOLDER + "/nuget"
 RELEASE_GITHUB_FOLDER := RELEASE_FOLDER + "/github"
 RELEASE_WINGET_FOLDER := RELEASE_FOLDER + "/winget"
+RELEASE_CHOCO_FOLDER := RELEASE_FOLDER + "/choco"
 
 #
 # Preparation tasks
@@ -77,6 +79,9 @@ _pack-choco-with-package PACKAGE="divoom_cli":
         "{{INTERMEDIATE_CHOCO_PACKAGE_FOLDER}}/{{PACKAGE}}" \
         "{{RELEASE_TEMPLATE_PARAMETER_FOLDER}}" \
 
+    @Write-Host "Generating final chocolatey package to {{RELEASE_CHOCO_FOLDER}} ..."
+    choco pack "{{INTERMEDIATE_CHOCO_PACKAGE_FOLDER}}/{{PACKAGE}}/choco.nuspec" --outputdirectory "{{RELEASE_CHOCO_FOLDER}}"
+
 #
 # Prepare packages for crate.io release
 #
@@ -101,6 +106,16 @@ prepare-github-release:
     Copy-Item -Path "{{INTERMEDIATE_SYMBOL_PACKAGE_FOLDER}}/divoom.symbols.{{BUILD_VERSION}}.zip" -Destination "{{RELEASE_GITHUB_FOLDER}}" -PassThru
 
 #
+# Prepare packages for nuget release
+#
+prepare-nuget-release:
+    if (Test-Path "{{RELEASE_NUGET_FOLDER}}") { Remove-Item -Path "{{RELEASE_NUGET_FOLDER}}" -Recurse -Force }
+    New-Item -ItemType Directory -Path "{{RELEASE_NUGET_FOLDER}}" -Force | Out-Null
+
+    @Write-Host "Copy all nuget packages from each build folder ..."
+    Get-ChildItem "./{{BUILD_FOLDER_PREFIX}}*/packages/*.nupkg" -Recurse | Copy-Item -Destination "{{RELEASE_NUGET_FOLDER}}" -PassThru
+
+#
 # Prepare packages for winget releases
 #
 prepare-winget-release:
@@ -117,7 +132,7 @@ eval-template-dir TEMPLATE_FOLDER OUTPUT_FOLDER +TEMPLATE_PARAMETER_FOLDERS:
     @Write-Host "Current invocation directory: {{invocation_directory()}}"
 
     Get-ChildItem "{{TEMPLATE_FOLDER}}/*" -Recurse -File | ForEach-Object { \
-        $relativePath = Resolve-Path -Path $_ -Relative; \
+        $relativePath = [System.IO.Path]::GetRelativePath("{{TEMPLATE_FOLDER}}", $_); \
         $relativeFolder = [System.IO.Path]::GetDirectoryName($relativePath); \
         if (-not (Test-Path "{{OUTPUT_FOLDER}}/$relativeFolder")) { New-Item -ItemType Directory -Path "{{OUTPUT_FOLDER}}/$relativeFolder" -Force | Out-Null } \
         \
