@@ -19,6 +19,8 @@ println!(
 // Output: Clock
 ```
 
+We have a command line tool as well to help people use and serve as demo! For more docs, feel free to check it here: <https://github.com/r12f/divoom/blob/main/divoom_cli/README.md>.
+
 ## How to use
 
 The library contains 2 major parts:
@@ -210,73 +212,6 @@ To revert it back:
 ```powershell
 > $env:RUST_LOG="warn"; .\divoom-cli.exe 192.168.0.123 channel get
 CustomPage
-```
-
-## Command line tool
-
-In order to help quickly give the APIs a try, we have also developed a command line tool. It also serves as an example on how to uses these APIs.
-
-> This tool is currently under construction and doesn't have all API covered yet.
-
-### Device discovery
-
-```bash
-> divoom-cli.exe discover
-1 devices are found:
-- Id = 300000001, Name = Pixoo, IP = 192.168.0.123
-```
-
-### Devices APIs
-
-```powershell
-# Check current channel
-> .\divoom-cli.exe 192.168.0.123 channel get
-Clock
-
-# Check current clock
-> .\divoom-cli.exe 192.168.0.123 channel get-clock
-DivoomSelectedClockInfo { clock_id: 168, brightness: 67 }
-
-# Create a text animation
-> .\divoom-cli.exe 192.168.0.123 animation text set 1 "The gray fox jumped over the lazy dog"
-
-# Play a gif from Internet
-> .\divoom-cli.exe 192.168.0.123 animation gif play --url https://www.gifandgif.eu/animated_gif/Planets/Animated%20Gif%20Planets%20(16).GIF
-
-# Send a raw request
-#
-# NOTICE: the double quotes in json string passed into the program needs to escaped with '\',
-# otherwise, rust runtime (not structopt) will eat them before reaching main function, even we 
-# pass the whole string as a string.
-> .\divoom-cli.exe 192.168.0.164 raw '{\"Command\": \"Device/SetHighLightMode\", \"Mode\": 0}'
-```
-
-### Help
-
-```bash
-> divoom-cli.exe
-divoom-cli 0.1.0
-r12f
-https://github.com/r12f/divoom
-
-USAGE:
-    divoom-cli.exe [device-ip] <SUBCOMMAND>
-
-FLAGS:
-    -h, --help       Prints help information
-    -V, --version    Prints version information
-
-ARGS:
-    <device-ip>    Device IP. Required when using device APIs, such as "channel get".
-
-SUBCOMMANDS:
-    animation    Animation related APIs
-    batch        Batch related APIs
-    channel      Channel related APIs
-    discover     Discover divoom devices by calling into divoom service API
-    help         Prints this message or the help of the given subcommand(s)
-    system       System/device related APIs
-    tool         APIs to launch some tools
 ```
 
 ## License
