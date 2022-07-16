@@ -104,6 +104,7 @@ prepare-github-release:
 
     @Write-Host "Copy all tarballs from each build folder ..."
     Get-ChildItem "./{{BUILD_FOLDER_PREFIX}}*/packages/*.zip" -Recurse | Copy-Item -Destination "{{RELEASE_GITHUB_FOLDER}}" -PassThru
+    Get-ChildItem "./{{BUILD_FOLDER_PREFIX}}*/packages/*.tar.gz" -Recurse | Copy-Item -Destination "{{RELEASE_GITHUB_FOLDER}}" -PassThru
 
     @Write-Host "Copy symbol package ..."
     Copy-Item -Path "{{INTERMEDIATE_SYMBOL_PACKAGE_FOLDER}}/divoom.symbols.{{BUILD_VERSION}}.zip" -Destination "{{RELEASE_GITHUB_FOLDER}}" -PassThru

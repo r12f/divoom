@@ -27,3 +27,6 @@ winres = "0.1.12"
 [dev-dependencies]
 pretty_assertions = "1.0.0"
 mockito = "0.31.0"
+
+[package.metadata.winres]
+LegalCopyright = "Copyright (c) 2022 r12f"
