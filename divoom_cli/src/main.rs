@@ -1,5 +1,6 @@
 mod opt;
 
+use serde::Serialize;
 use crate::opt::*;
 use divoom::*;
 use structopt::StructOpt;
@@ -59,7 +60,7 @@ async fn main() -> DivoomAPIResult<()> {
                     .expect("Device IP is not set!"),
             );
             let response = pixoo.send_raw_request(request).await?;
-            println!("{}", response);
+            serialize_to_console(response);
             Ok(())
         }
     }
@@ -74,13 +75,13 @@ async fn handle_channel_api(
     match channel_command {
         DivoomCliChannelCommand::Get => {
             let result = pixoo.get_current_channel().await?;
-            println!("{}", result);
+            serialize_to_console(result);
             Ok(())
         }
 
         DivoomCliChannelCommand::GetClock => {
             let result = pixoo.get_selected_clock_info().await?;
-            println!("{:?}", result);
+            serialize_to_console(result);
             Ok(())
         }
 
@@ -111,13 +112,13 @@ async fn handle_system_api(
     match system_command {
         DivoomCliSystemCommand::GetSettings => {
             let result = pixoo.get_device_settings().await?;
-            println!("{:?}", result);
+            serialize_to_console(result);
             Ok(())
         }
 
         DivoomCliSystemCommand::GetTime => {
             let result = pixoo.get_device_time().await?;
-            println!("{}", result);
+            serialize_to_console(result);
             Ok(())
         }
 
@@ -256,7 +257,7 @@ async fn handle_image_animation_api(
     match image_animation_command {
         DivoomCliImageAnimationCommand::GetNextId => {
             let result = pixoo.get_next_animation_id().await?;
-            println!("{}", result);
+            serialize_to_console(result);
             Ok(())
         }
 
@@ -290,4 +291,9 @@ async fn handle_batch_api(
             pixoo.execute_commands_from_url(command_url).await
         }
     }
+}
+
+fn serialize_to_console<Data: Serialize>(v: Data) {
+    let output = serde_yaml::to_string(&v).expect(&format!("Serializing data failed!"));
+    println!("{}", output);
 }

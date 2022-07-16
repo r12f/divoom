@@ -2,9 +2,10 @@ use super::divoom_dto_common::*;
 use std::collections::BTreeMap;
 use std::fmt;
 use std::str::FromStr;
+use serde::{Serialize, Deserialize};
 
 /// Definition of image animations.
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct DivoomImageAnimation {
     /// Id of the Animation to create/update. Returned by `get_next_animation_id()`.
     pub id: i32,
@@ -35,7 +36,7 @@ pub struct DivoomImageAnimation {
 pub type DivoomImageAnimationFrameData = String;
 
 /// Type of the image animations file source.
-#[derive(Debug, PartialOrd, PartialEq)]
+#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize)]
 pub enum DivoomFileAnimationSourceType {
     LocalFile,
     LocalFolder,

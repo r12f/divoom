@@ -1,9 +1,10 @@
 use super::divoom_dto_common::*;
 use std::fmt;
 use std::str::FromStr;
+use serde::{Serialize, Deserialize};
 
 /// Divoom device information returned from Divoom backend service
-#[derive(Debug, PartialOrd, PartialEq)]
+#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize)]
 pub struct DivoomDeviceInfo {
     pub device_name: String,
     pub device_id: u64,
@@ -12,7 +13,7 @@ pub struct DivoomDeviceInfo {
 
 /// All settings of a pixoo device.
 /// Supported settings could be very different device per device, hence we scope this to pixoo device only.
-#[derive(Debug, PartialOrd, PartialEq)]
+#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize)]
 pub struct DivoomPixooDeviceSettings {
     pub brightness: i32,
     pub rotation_flag: i32,
@@ -30,7 +31,7 @@ pub struct DivoomPixooDeviceSettings {
 }
 
 /// High light mode
-#[derive(Debug, PartialOrd, PartialEq)]
+#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize)]
 pub enum DivoomDeviceHighLightMode {
     Off,
     On,
@@ -40,7 +41,7 @@ pub enum DivoomDeviceHighLightMode {
 impl_divoom_dto_enum_traits!(DivoomDeviceHighLightMode, Off: "off", On: "on");
 
 /// Hour mode, 12-hours o 24-hours.
-#[derive(Debug, PartialOrd, PartialEq)]
+#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize)]
 pub enum DivoomDeviceHourMode {
     Hour12,
     Hour24,
@@ -50,7 +51,7 @@ pub enum DivoomDeviceHourMode {
 impl_divoom_dto_enum_traits!(DivoomDeviceHourMode, Hour12: "12h", Hour24: "24h");
 
 /// Mirror mode.
-#[derive(Debug, PartialOrd, PartialEq)]
+#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize)]
 pub enum DivoomDeviceMirrorMode {
     Off,
     On,
@@ -60,7 +61,7 @@ pub enum DivoomDeviceMirrorMode {
 impl_divoom_dto_enum_traits!(DivoomDeviceMirrorMode, Off: "off", On: "on");
 
 /// Temperature unit. Used in weather report.
-#[derive(Debug, PartialOrd, PartialEq)]
+#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize)]
 pub enum DivoomDeviceTemperatureUnit {
     Celsius,
     Fahrenheit,
@@ -70,7 +71,7 @@ pub enum DivoomDeviceTemperatureUnit {
 impl_divoom_dto_enum_traits!(DivoomDeviceTemperatureUnit, Celsius: "c", Fahrenheit: "f");
 
 /// Device screen rotation angle.
-#[derive(Debug, PartialOrd, PartialEq)]
+#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize)]
 pub enum DivoomDeviceRotationAngle {
     None,
     Rotate90,
@@ -82,7 +83,7 @@ pub enum DivoomDeviceRotationAngle {
 impl_divoom_dto_enum_traits!(DivoomDeviceRotationAngle, None: "0", Rotate90: "90", Rotate180: "180", Rotate270: "270");
 
 /// Device screen power state.
-#[derive(Debug, PartialOrd, PartialEq)]
+#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize)]
 pub enum DivoomDeviceScreenPowerState {
     Off,
     On,
