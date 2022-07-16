@@ -21,6 +21,12 @@ println!(
 
 We have a command line tool as well to help people use and serve as demo! For more docs, feel free to check it here: <https://github.com/r12f/divoom/blob/main/divoom_cli/README.md>.
 
+```bash
+# Check current channel
+> divoom-cli 192.168.0.123 channel get
+Clock
+```
+
 ## How to use
 
 The library contains 2 major parts:
