@@ -1,11 +1,11 @@
 use super::divoom_dto_common::*;
 use rgb::RGB8;
-use serde::{Deserialize, Serialize};
+use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt;
 use std::str::FromStr;
 
 /// Font types
-#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialOrd, PartialEq)]
 pub enum DivoomFontType {
     Scrollable,
     NotScrollable,
@@ -16,6 +16,7 @@ impl_divoom_dto_enum_traits!(DivoomFontType, Scrollable: "scroll", NotScrollable
 
 /// Font info
 #[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
 pub struct DivoomFontInfo {
     pub id: i32,
     pub name: String,
@@ -26,7 +27,7 @@ pub struct DivoomFontInfo {
 }
 
 /// Text animation scrolling direction
-#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialOrd, PartialEq)]
 pub enum DivoomTextAnimationScrollDirection {
     Left,
     Right,
@@ -36,7 +37,7 @@ pub enum DivoomTextAnimationScrollDirection {
 impl_divoom_dto_enum_traits!(DivoomTextAnimationScrollDirection, Left: "left", Right: "right");
 
 /// Text animation text alignment
-#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialOrd, PartialEq)]
 pub enum DivoomTextAnimationAlign {
     Left,
     Middle,
@@ -48,6 +49,7 @@ impl_divoom_dto_enum_traits!(DivoomTextAnimationAlign, Left: "left", Middle: "mi
 
 /// Text animation definition
 #[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
 pub struct DivoomTextAnimation {
     /// Text id to create/update. Must be <= 20.
     pub text_id: i32,

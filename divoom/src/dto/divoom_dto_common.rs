@@ -31,6 +31,27 @@ macro_rules! impl_divoom_dto_enum_traits {
                 }
             }
         }
+
+        impl Serialize for $dto_name {
+            fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+            where
+                S: Serializer,
+            {
+                serializer.serialize_str(&format!("{}", self))
+            }
+        }
+
+        impl<'de> Deserialize<'de> for $dto_name {
+            fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+            where
+                D: Deserializer<'de>,
+            {
+                let s = String::deserialize(deserializer)?.to_lowercase();
+                let parsed = s.parse::<$dto_name>()
+                    .map_err(|_x| de::Error::invalid_value(serde::de::Unexpected::Str(&s), &""))?;
+                Ok(parsed)
+            }
+        }
     )
 }
 

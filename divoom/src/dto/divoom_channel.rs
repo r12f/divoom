@@ -1,5 +1,5 @@
 use super::divoom_dto_common::*;
-use serde::{Deserialize, Serialize};
+use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt;
 use std::str::FromStr;
 
@@ -7,7 +7,7 @@ use std::str::FromStr;
 ///
 /// It can be Clock, CloudChannel, Visualizer, CustomPage. And in case we didn't have things covered, we provided `Raw(i32)` to allow us to set it
 /// to any values.
-#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialOrd, PartialEq)]
 pub enum DivoomChannelType {
     Clock,
     CloudChannel,
@@ -16,11 +16,12 @@ pub enum DivoomChannelType {
     Raw(i32),
 }
 
-impl_divoom_dto_enum_traits!(DivoomChannelType, Clock: "clock", CloudChannel: "cloud", Visualizer: "visualizer", CustomPage: "custom");
+impl_divoom_dto_enum_traits!(DivoomChannelType, Clock: "clock", CloudChannel: "cloud", Visualizer: "visualizer", CustomPage: "customPage");
 
 /// Clock info list that returned from Divoom service (not device).
 /// The result will be paginated, hence we have to `total_num` field here to help query with pagination.
 #[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
 pub struct DivoomClockInfoPage {
     pub total_num: i32,
     pub dial_list: Vec<DivoomClockInfo>,
@@ -28,6 +29,7 @@ pub struct DivoomClockInfoPage {
 
 /// Clock info that returned from Divoom service (not device).
 #[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
 pub struct DivoomClockInfo {
     pub clock_id: i32,
     pub name: String,
@@ -35,6 +37,7 @@ pub struct DivoomClockInfo {
 
 /// Clock info that returned from Divoom device, such as Pixoo-64 (not service).
 #[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
 pub struct DivoomSelectedClockInfo {
     pub clock_id: i32,
     pub brightness: i32,
@@ -42,7 +45,7 @@ pub struct DivoomSelectedClockInfo {
 
 /// The sub channel type of cloud channel.
 /// Same as the top level channel, we provided `Raw(i32)` to help us setting to any value in case we didn't have it covered here.
-#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialOrd, PartialEq)]
 pub enum DivoomCloudChannelType {
     Gallery,
     Fav,

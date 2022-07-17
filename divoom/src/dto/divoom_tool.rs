@@ -1,10 +1,10 @@
 use super::divoom_dto_common::*;
-use serde::{Deserialize, Serialize};
+use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt;
 use std::str::FromStr;
 
 /// Countdown tool action
-#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialOrd, PartialEq)]
 pub enum DivoomToolCountdownAction {
     Stop,
     Start,
@@ -14,7 +14,7 @@ pub enum DivoomToolCountdownAction {
 impl_divoom_dto_enum_traits!(DivoomToolCountdownAction, Stop: "stop", Start: "start");
 
 /// Noise tool action
-#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialOrd, PartialEq)]
 pub enum DivoomToolNoiseAction {
     Stop,
     Start,
@@ -24,7 +24,7 @@ pub enum DivoomToolNoiseAction {
 impl_divoom_dto_enum_traits!(DivoomToolNoiseAction, Stop: "stop", Start: "start");
 
 /// Stopwatch tool action
-#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialOrd, PartialEq)]
 pub enum DivoomToolStopwatchAction {
     Stop,
     Start,
