@@ -33,8 +33,10 @@ It is straight forward to use the command line tool. Usually, we do it in 2 step
 
 ```bash
 > divoom-cli discover
-1 devices are found:
-- Id = 300000001, Name = Pixoo, IP = 192.168.0.123
+---
+- device_name: Pixoo
+  device_id: 300000001
+  device_private_ip: 192.168.0.123
 ```
 
 ### Use Devices APIs to control the device
@@ -54,7 +56,9 @@ Clock
 
 # Check current clock
 > divoom-cli 192.168.0.123 channel get-clock
-DivoomSelectedClockInfo { clock_id: 168, brightness: 67 }
+---
+clock_id: 100
+brightness: 67
 
 # Set channel to clock with id 100
 > divoom-cli 192.168.0.164 channel set-clock 100
@@ -84,11 +88,14 @@ r12f
 https://github.com/r12f/divoom
 
 USAGE:
-    divoom-cli.exe [device-ip] <SUBCOMMAND>
+    divoom-cli.exe [OPTIONS] [device-ip] <SUBCOMMAND>
 
 FLAGS:
     -h, --help       Prints help information
     -V, --version    Prints version information
+
+OPTIONS:
+    -o, --output <output>    Output format. [default: yaml]
 
 ARGS:
     <device-ip>    Device IP. Required when using device APIs, such as "channel get".

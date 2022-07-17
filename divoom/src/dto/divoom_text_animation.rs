@@ -1,8 +1,8 @@
 use super::divoom_dto_common::*;
 use rgb::RGB8;
+use serde::{Deserialize, Serialize};
 use std::fmt;
 use std::str::FromStr;
-use serde::{Serialize, Deserialize};
 
 /// Font types
 #[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize)]

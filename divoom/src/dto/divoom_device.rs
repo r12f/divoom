@@ -1,7 +1,7 @@
 use super::divoom_dto_common::*;
+use serde::{Deserialize, Serialize};
 use std::fmt;
 use std::str::FromStr;
-use serde::{Serialize, Deserialize};
 
 /// Divoom device information returned from Divoom backend service
 #[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize)]

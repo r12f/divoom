@@ -1,8 +1,8 @@
 use super::divoom_dto_common::*;
+use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::fmt;
 use std::str::FromStr;
-use serde::{Serialize, Deserialize};
 
 /// Definition of image animations.
 #[derive(Debug, PartialEq, Serialize, Deserialize)]

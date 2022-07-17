@@ -1,4 +1,5 @@
 use divoom::*;
+use std::str::FromStr;
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
@@ -21,6 +22,27 @@ pub struct DivoomCliOptions {
 pub struct DivoomCliDeviceCommandCommonOpts {
     #[structopt(help = "Device IP. Required when using device APIs, such as \"channel get\".")]
     pub device_ip: Option<String>,
+
+    #[structopt(short, long, default_value = "yaml", help = "Output format.")]
+    pub output: DivoomCliOutputFormat,
+}
+
+#[derive(StructOpt, Debug, Copy, Clone)]
+#[structopt(rename_all = "kebab-case")]
+pub enum DivoomCliOutputFormat {
+    Yaml,
+    Json,
+}
+
+impl FromStr for DivoomCliOutputFormat {
+    type Err = &'static str;
+    fn from_str(src: &str) -> Result<Self, Self::Err> {
+        match src {
+            "yaml" => Ok(DivoomCliOutputFormat::Yaml),
+            "json" => Ok(DivoomCliOutputFormat::Json),
+            _ => Err("Invalid output format"),
+        }
+    }
 }
 
 #[derive(StructOpt, Debug)]

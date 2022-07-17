@@ -1,8 +1,8 @@
 mod opt;
 
-use serde::Serialize;
 use crate::opt::*;
 use divoom::*;
+use serde::Serialize;
 use structopt::StructOpt;
 
 #[tokio::main]
@@ -14,21 +14,7 @@ async fn main() -> DivoomAPIResult<()> {
         DivoomCliSubCommand::Discover => {
             let divoom = DivoomServiceClient::new();
             let devices = divoom.get_same_lan_devices().await?;
-            if devices.is_empty() {
-                println!("No device is found!");
-                return Ok(());
-            }
-
-            println!("{} devices are found:", devices.len());
-            for device in devices {
-                println!(
-                    "- Id = {}, Name = {}, IP = {}",
-                    device.device_id, device.device_name, device.device_private_ip
-                );
-            }
-
-            println!();
-
+            serialize_to_console(devices, opts.common.output);
             Ok(())
         }
 
@@ -60,7 +46,7 @@ async fn main() -> DivoomAPIResult<()> {
                     .expect("Device IP is not set!"),
             );
             let response = pixoo.send_raw_request(request).await?;
-            serialize_to_console(response);
+            serialize_to_console(response, opts.common.output);
             Ok(())
         }
     }
@@ -75,13 +61,13 @@ async fn handle_channel_api(
     match channel_command {
         DivoomCliChannelCommand::Get => {
             let result = pixoo.get_current_channel().await?;
-            serialize_to_console(result);
+            serialize_to_console(result, common.output);
             Ok(())
         }
 
         DivoomCliChannelCommand::GetClock => {
             let result = pixoo.get_selected_clock_info().await?;
-            serialize_to_console(result);
+            serialize_to_console(result, common.output);
             Ok(())
         }
 
@@ -112,13 +98,13 @@ async fn handle_system_api(
     match system_command {
         DivoomCliSystemCommand::GetSettings => {
             let result = pixoo.get_device_settings().await?;
-            serialize_to_console(result);
+            serialize_to_console(result, common.output);
             Ok(())
         }
 
         DivoomCliSystemCommand::GetTime => {
             let result = pixoo.get_device_time().await?;
-            serialize_to_console(result);
+            serialize_to_console(result, common.output);
             Ok(())
         }
 
@@ -257,7 +243,7 @@ async fn handle_image_animation_api(
     match image_animation_command {
         DivoomCliImageAnimationCommand::GetNextId => {
             let result = pixoo.get_next_animation_id().await?;
-            serialize_to_console(result);
+            serialize_to_console(result, common.output);
             Ok(())
         }
 
@@ -293,7 +279,15 @@ async fn handle_batch_api(
     }
 }
 
-fn serialize_to_console<Data: Serialize>(v: Data) {
-    let output = serde_yaml::to_string(&v).expect(&format!("Serializing data failed!"));
+fn serialize_to_console<Data: Serialize>(v: Data, format: DivoomCliOutputFormat) {
+    let output = match format {
+        DivoomCliOutputFormat::Yaml => {
+            serde_yaml::to_string(&v).unwrap_or_else(|_| panic!("Serializing data failed!"))
+        }
+        DivoomCliOutputFormat::Json => {
+            serde_json::to_string(&v).unwrap_or_else(|_| panic!("Serializing data failed!"))
+        }
+    };
+
     println!("{}", output);
 }
