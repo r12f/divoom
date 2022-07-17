@@ -12,11 +12,11 @@ Rust Library for controlling divoom devices that support REST APIs, such as pixo
 use divoom::*;
 
 println!(
-    "{:?}",
+    "{}",
     PixooClient::new("192.168.0.123").get_current_channel().await?
 );
 
-// Output: Clock
+// Output: clock
 ```
 
 We have a command line tool as well to help people use and serve as demo! For more docs, feel free to check it here: <https://github.com/r12f/divoom/blob/main/divoom_cli/README.md>.
@@ -24,7 +24,8 @@ We have a command line tool as well to help people use and serve as demo! For mo
 ```bash
 # Check current channel
 > divoom-cli 192.168.0.123 channel get
-Clock
+---
+clock
 ```
 
 ## How to use
