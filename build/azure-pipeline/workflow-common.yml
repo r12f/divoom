@@ -336,12 +336,6 @@ stages:
             env:
               BUILD_VERSION: $(Build.Version)
 
-          - script: just prepare-winget-release
-            displayName: Prepare winget release
-            workingDirectory: '$(System.DefaultWorkingDirectory)/r12f.divoom'
-            env:
-              BUILD_VERSION: $(Build.Version)
-
           - task: CopyFiles@2
             displayName: Copy packages to staging folder
             inputs:

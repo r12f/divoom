@@ -20,7 +20,6 @@ RELEASE_TEMPLATE_PARAMETER_FOLDER := RELEASE_FOLDER + "/template-parameters"
 RELEASE_CRATES_FOLDER := RELEASE_FOLDER + "/crates"
 RELEASE_NUGET_FOLDER := RELEASE_FOLDER + "/nuget"
 RELEASE_GITHUB_FOLDER := RELEASE_FOLDER + "/github"
-RELEASE_WINGET_FOLDER := RELEASE_FOLDER + "/winget"
 RELEASE_CHOCO_FOLDER := RELEASE_FOLDER + "/choco"
 
 #
@@ -105,6 +104,7 @@ prepare-github-release:
     @Write-Host "Copy all tarballs from each build folder ..."
     Get-ChildItem "./{{BUILD_FOLDER_PREFIX}}*/packages/*.zip" -Recurse | Copy-Item -Destination "{{RELEASE_GITHUB_FOLDER}}" -PassThru
     Get-ChildItem "./{{BUILD_FOLDER_PREFIX}}*/packages/*.tar.gz" -Recurse | Copy-Item -Destination "{{RELEASE_GITHUB_FOLDER}}" -PassThru
+    Get-ChildItem "./{{BUILD_FOLDER_PREFIX}}*/packages/*.msix" -Recurse | Copy-Item -Destination "{{RELEASE_GITHUB_FOLDER}}" -PassThru
 
     @Write-Host "Copy symbol package ..."
     Copy-Item -Path "{{INTERMEDIATE_SYMBOL_PACKAGE_FOLDER}}/divoom.symbols.{{BUILD_VERSION}}.zip" -Destination "{{RELEASE_GITHUB_FOLDER}}" -PassThru
@@ -118,16 +118,6 @@ prepare-nuget-release:
 
     @Write-Host "Copy all nuget packages from each build folder ..."
     Get-ChildItem "./{{BUILD_FOLDER_PREFIX}}*/packages/*.nupkg" -Recurse | Copy-Item -Destination "{{RELEASE_NUGET_FOLDER}}" -PassThru
-
-#
-# Prepare packages for winget releases
-#
-prepare-winget-release:
-    if (Test-Path "{{RELEASE_WINGET_FOLDER}}") { Remove-Item -Path "{{RELEASE_WINGET_FOLDER}}" -Recurse -Force }
-    New-Item -ItemType Directory -Path "{{RELEASE_WINGET_FOLDER}}" -Force | Out-Null
-
-    @Write-Host "Copy all tarballs from each build folder ..."
-    Get-ChildItem "./{{BUILD_FOLDER_PREFIX}}*/packages/*.msix" -Recurse | Copy-Item -Destination "{{RELEASE_WINGET_FOLDER}}" -PassThru
 
 #
 # Utility tasks
