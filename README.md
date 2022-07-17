@@ -54,7 +54,7 @@ DivoomDeviceInfo { device_name: "Pixoo", device_id: 300000001, device_private_ip
 
 ### Pixoo device APIs
 
-Once we get the device ip, we can use it to create a pixoo client and start talking to it:
+Once we get the Device Address, we can use it to create a pixoo client and start talking to it:
 
 ```rust
 use divoom::*;

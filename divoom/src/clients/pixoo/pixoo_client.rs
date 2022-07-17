@@ -65,9 +65,12 @@ macro_rules! impl_pixoo_client_api {
 
 /// Ctor
 impl PixooClient {
-    pub fn new(device_ip: &str) -> PixooClient {
+    pub fn new(device_address: &str) -> PixooClient {
         PixooClient {
-            client: Rc::new(DivoomRestAPIClient::new(format!("http://{}", device_ip))),
+            client: Rc::new(DivoomRestAPIClient::new(format!(
+                "http://{}",
+                device_address
+            ))),
         }
     }
 }

@@ -88,7 +88,7 @@ r12f
 https://github.com/r12f/divoom
 
 USAGE:
-    divoom-cli.exe [OPTIONS] [device-ip] <SUBCOMMAND>
+    divoom-cli.exe [OPTIONS] [device-address] <SUBCOMMAND>
 
 FLAGS:
     -h, --help       Prints help information
@@ -98,7 +98,7 @@ OPTIONS:
     -o, --output <output>    Output format. [default: yaml]
 
 ARGS:
-    <device-ip>    Device IP. Required when using device APIs, such as "channel get".
+    <device-address>    Device Address. Required when using device APIs, such as "channel get".
 
 SUBCOMMANDS:
     animation    Animation related APIs

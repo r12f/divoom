@@ -20,8 +20,10 @@ pub struct DivoomCliOptions {
 #[derive(StructOpt, Debug)]
 #[structopt(rename_all = "kebab-case")]
 pub struct DivoomCliDeviceCommandCommonOpts {
-    #[structopt(help = "Device IP. Required when using device APIs, such as \"channel get\".")]
-    pub device_ip: Option<String>,
+    #[structopt(
+        help = "Device Address. Required when using device APIs, such as \"channel get\"."
+    )]
+    pub device_address: Option<String>,
 
     #[structopt(short, long, default_value = "yaml", help = "Output format.")]
     pub output: DivoomCliOutputFormat,
