@@ -4,7 +4,8 @@ use tiny_skia::Pixmap;
 pub struct DivoomAnimationBuilder {
     width: u32,
     height: u32,
-    frames: Vec<Pixmap>,
+
+    pub frames: Vec<Pixmap>,
 }
 
 // Ctor and basic functions
@@ -42,13 +43,13 @@ impl DivoomAnimationBuilder {
         let mut decoder = options.read_info(input).unwrap();
         while let Some(frame) = decoder.read_next_frame().unwrap() {
             if builder.width == 0 {
-                builder.width = frame.width();
+                builder.width = frame.width as u32;
             } else {
                 return Err(std::io::Error::from(std::io::ErrorKind::InvalidData));
             }
 
             if builder.height == 0 {
-                builder.height = frame.height();
+                builder.height = frame.height as u32;
             } else {
                 return Err(std::io::Error::from(std::io::ErrorKind::InvalidData));
             }
@@ -66,6 +67,22 @@ impl DivoomAnimationBuilder {
 
         frame_pixmap.data_mut().copy_from_slice(&frame.buffer[0..]);
         frame_pixmap
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn divoom_animation_builder_can_load_gif_file() {
+        let animation = DivoomAnimationBuilder::from_gif("test_data/animation_builder_tests/logo.gif").unwrap();
+        assert_eq!(animation.width(), 64);
+        assert_eq!(animation.height(), 64);
+        assert_eq!(animation.frames.len(), 1);
+
+        let non_zero_bits: Vec<&u8> = animation.frames[0].data().as_ref().into_iter().filter(|x| **x != 0u8).collect();
+        assert_ne!(non_zero_bits.len(), 0);
     }
 }
 
