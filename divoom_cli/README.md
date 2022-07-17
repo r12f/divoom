@@ -83,9 +83,9 @@ brightness: 67
 > divoom-cli 192.168.0.164 raw '{\"Command\": \"Device/SetHighLightMode\", \"Mode\": 0}'
 ```
 
-### Output format
+### Paramter/Output format
 
-By default, divoom-cli uses yaml as output format with all field names in `kebab-case` and values in `camelCase`. And beside yaml, we support json format too.
+By default, divoom-cli uses yaml as output format with all field names in `kebab-case`. And beside yaml, we support json format too.
 
 To specify the output format, we can use `-o` parameter:
 
@@ -98,6 +98,8 @@ To specify the output format, we can use `-o` parameter:
 clock-id: 100
 brightness: 67
 ```
+
+For values, divoom-cli always expect `camelCase` to be used, both in parameter and output.
 
 ### More help
 
@@ -171,6 +173,7 @@ Then we will see the output log like below:
 [2022-07-10T00:33:50Z DEBUG hyper::proto::h1::conn] incoming body completed
 [2022-07-10T00:33:50Z DEBUG hyper::client::pool] pooling idle connection for ("http", 192.168.0.123)
 [2022-07-10T00:33:50Z DEBUG divoom::clients::common::divoom_rest_client] Response received: Body = "{"error_code": 0, "SelectIndex":3}"
+---
 customPage
 ```
 
@@ -178,6 +181,7 @@ To revert it back, we can use the same way to set the `RUST_LOG` to `warn` level
 
 ```powershell
 > $env:RUST_LOG="warn"; divoom-cli 192.168.0.123 channel get
+---
 customPage
 ```
 

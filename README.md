@@ -211,13 +211,15 @@ Then we will see the output log like below:
 [2022-07-10T00:33:50Z DEBUG hyper::proto::h1::conn] incoming body completed
 [2022-07-10T00:33:50Z DEBUG hyper::client::pool] pooling idle connection for ("http", 192.168.0.123)
 [2022-07-10T00:33:50Z DEBUG divoom::clients::common::divoom_rest_client] Response received: Body = "{"error_code": 0, "SelectIndex":3}"
-CustomPage
+---
+customPage
 ```
 
 To revert it back:
 ```powershell
 > $env:RUST_LOG="warn"; .\divoom-cli.exe 192.168.0.123 channel get
-CustomPage
+---
+customPage
 ```
 
 ## License
