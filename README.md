@@ -6,6 +6,7 @@ Rust Library for controlling divoom devices that support REST APIs, such as pixo
 [![Crates.io](https://img.shields.io/crates/v/divoom)](https://crates.io/crates/divoom)
 [![Documentation](https://docs.rs/divoom/badge.svg)](https://docs.rs/divoom/)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE-APACHE)
+[![Build Status](https://riff.visualstudio.com/divoom/_apis/build/status/r12f.divoom?branchName=main)](https://riff.visualstudio.com/divoom/_build/latest?definitionId=7&branchName=main)
 
 ```rust
 // Get current channel

@@ -5,6 +5,7 @@ Command line tool built on top of divoom APIs for controlling divoom devices, li
 
 [![Crates.io](https://img.shields.io/crates/v/divoom)](https://crates.io/crates/divoom-cli)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE-APACHE)
+[![Build Status](https://riff.visualstudio.com/divoom/_apis/build/status/r12f.divoom?branchName=main)](https://riff.visualstudio.com/divoom/_build/latest?definitionId=7&branchName=main)
 
 ```rust
 # Check current channel
