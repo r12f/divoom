@@ -58,7 +58,8 @@ So we can run the commands like below:
 ```bash
 # Check current channel
 > divoom-cli 192.168.0.123 channel get
-Clock
+---
+clock
 
 # Check current clock
 > divoom-cli 192.168.0.123 channel get-clock
@@ -83,7 +84,7 @@ brightness: 67
 > divoom-cli 192.168.0.164 raw '{\"Command\": \"Device/SetHighLightMode\", \"Mode\": 0}'
 ```
 
-### Paramter/Output format
+### Parameter/Output format
 
 By default, divoom-cli uses yaml as output format with all field names in `kebab-case`. And beside yaml, we support json format too.
 
@@ -100,6 +101,14 @@ brightness: 67
 ```
 
 For values, divoom-cli always expect `camelCase` to be used, both in parameter and output.
+
+```bash
+> divoom-cli 192.168.0.123 channel set customPage
+
+> divoom-cli 192.168.0.123 channel get
+---
+customPage
+```
 
 ### More help
 
