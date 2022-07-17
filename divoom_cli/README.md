@@ -9,10 +9,16 @@ Command line tool built on top of divoom APIs for controlling divoom devices, li
 ```rust
 # Check current channel
 > divoom-cli 192.168.0.123 channel get
-Clock
+clock
 
 # Set channel to clock with id 100
 > divoom-cli 192.168.0.164 channel set-clock 100
+
+# Get clock channel info
+> divoom-cli 192.168.0.164 channel get-clock
+---
+clock-id: 100
+brightness: 100
 ```
 
 ## Installation
@@ -34,9 +40,9 @@ It is straight forward to use the command line tool. Usually, we do it in 2 step
 ```bash
 > divoom-cli discover
 ---
-- device_name: Pixoo
-  device_id: 300000001
-  device_private_ip: 192.168.0.123
+- device-name: Pixoo
+  device-id: 300000001
+  device-private-ip: 192.168.0.123
 ```
 
 ### Use Devices APIs to control the device
@@ -75,6 +81,22 @@ brightness: 67
 # otherwise, rust runtime (not structopt) will eat them before reaching main function, even we 
 # pass the whole string as a string.
 > divoom-cli 192.168.0.164 raw '{\"Command\": \"Device/SetHighLightMode\", \"Mode\": 0}'
+```
+
+### Output format
+
+By default, divoom-cli uses yaml as output format with all field names in `kebab-case` and values in `camelCase`. And beside yaml, we support json format too.
+
+To specify the output format, we can use `-o` parameter:
+
+```bash
+> divoom-cli -o json 192.168.0.164 channel get-clock
+{"clock-id":100,"brightness":67}
+
+> divoom-cli -o yaml 192.168.0.164 channel get-clock
+---
+clock-id: 100
+brightness: 67
 ```
 
 ### More help
@@ -149,14 +171,14 @@ Then we will see the output log like below:
 [2022-07-10T00:33:50Z DEBUG hyper::proto::h1::conn] incoming body completed
 [2022-07-10T00:33:50Z DEBUG hyper::client::pool] pooling idle connection for ("http", 192.168.0.123)
 [2022-07-10T00:33:50Z DEBUG divoom::clients::common::divoom_rest_client] Response received: Body = "{"error_code": 0, "SelectIndex":3}"
-CustomPage
+customPage
 ```
 
 To revert it back, we can use the same way to set the `RUST_LOG` to `warn` level:
 
 ```powershell
 > $env:RUST_LOG="warn"; divoom-cli 192.168.0.123 channel get
-CustomPage
+customPage
 ```
 
 ## API && SDK
