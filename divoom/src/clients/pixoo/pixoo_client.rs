@@ -309,9 +309,6 @@ impl PixooClient {
             .await
     }
 
-    #[doc = "Send image animation with specific id."]
-    #[doc = "The `id` parameter should be the id that returned by `get_next_animation_id`."]
-    #[doc = "If `DIVOOM_IMAGE_ANIMATION_ID_AUTO` is used, we will automatically get the latest animation id and use it."]
     #[doc = include_str!("../../divoom_contracts/pixoo/animation/api_send_image_animation_frame.md")]
     pub async fn send_image_animation_with_id(
         &self,
