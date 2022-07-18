@@ -8,22 +8,21 @@ use std::str::FromStr;
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct DivoomImageAnimation {
-    /// Id of the Animation to create/update. Returned by `get_next_animation_id()`.
-    pub id: i32,
-
     /// Size of canvas. Only 16, 32, 64 are supported
-    pub size: i32,
+    pub size: u32,
 
     /// The total number of frames in entire animation
-    pub frame_count: i32,
+    pub frame_count: usize,
 
     /// Animation play speed, in ms.
     pub speed_in_ms: i32,
 
     /// Offset to frame data map.
     /// We use this format, because Divoom support only updating a single frame at a time, so we don't need to use vector and update all frames.
-    pub frames: BTreeMap<i32, DivoomImageAnimationFrameData>,
+    pub frames: BTreeMap<u32, DivoomImageAnimationFrameData>,
 }
+
+pub const DIVOOM_IMAGE_ANIMATION_ID_AUTO: i32 = -1;
 
 /// The data of this frame. It is a base64 encoded RGB data.
 ///

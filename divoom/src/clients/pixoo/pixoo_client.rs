@@ -305,9 +305,23 @@ impl PixooClient {
         &self,
         animation: DivoomImageAnimation,
     ) -> DivoomAPIResult<()> {
+        self.send_image_animation_with_id(DIVOOM_IMAGE_ANIMATION_ID_AUTO, animation).await
+    }
+
+    #[doc = "Send image animation with specific id."]
+    #[doc = "The `id` parameter should be the id that returned by `get_next_animation_id`."]
+    #[doc = "If `DIVOOM_IMAGE_ANIMATION_ID_AUTO` is used, we will automatically get the latest animation id and use it."]
+    #[doc = include_str!("../../divoom_contracts/pixoo/animation/api_send_image_animation_frame.md")]
+    pub async fn send_image_animation_with_id(
+        &self,
+        id: i32,
+        animation: DivoomImageAnimation,
+    ) -> DivoomAPIResult<()> {
+        let animation_id = if id == DIVOOM_IMAGE_ANIMATION_ID_AUTO { self.get_next_animation_id().await? } else { id };
+
         let response: DivoomPixooCommandBatchExecuteCommandsResponse =
             PixooCommandBuilder::start_batch(self.client.clone())
-                .send_image_animation(animation)
+                .send_image_animation(animation_id, animation)
                 .execute_with_parsed_response::<DivoomPixooCommandBatchExecuteCommandsResponse>()
                 .await?;
 

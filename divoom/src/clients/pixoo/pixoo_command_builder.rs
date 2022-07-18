@@ -333,9 +333,10 @@ impl PixooCommandBuilder {
     );
 
     #[doc = include_str!("../../divoom_contracts/pixoo/animation/api_send_image_animation_frame.md")]
-    pub fn send_image_animation(mut self, animation: DivoomImageAnimation) -> PixooCommandBuilder {
+    pub fn send_image_animation(mut self, id: i32, animation: DivoomImageAnimation) -> PixooCommandBuilder {
         let payloads =
             DivoomPixooCommandAnimationSendImageAnimationFrameRequestPayload::create_frames(
+                id,
                 animation,
             );
         payloads.into_iter().for_each(|payload| {
@@ -477,7 +478,6 @@ mod tests {
         };
 
         let mut image_animation = DivoomImageAnimation {
-            id: 1,
             size: 64,
             frame_count: 5,
             speed_in_ms: 100,
@@ -499,7 +499,7 @@ mod tests {
             )
             .get_next_animation_id()
             .reset_next_animation_id()
-            .send_image_animation(image_animation)
+            .send_image_animation(1, image_animation)
             .clear_all_text_area()
             .send_text_animation(text_animation)
             .play_buzzer(100, 10, 10);
