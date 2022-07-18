@@ -38,7 +38,7 @@ mod tests {
         let non_zero_bits: Vec<&u8> = frames[0]
             .data()
             .as_ref()
-            .into_iter()
+            .iter()
             .filter(|x| **x != 0u8)
             .collect();
         assert_ne!(non_zero_bits.len(), 0);

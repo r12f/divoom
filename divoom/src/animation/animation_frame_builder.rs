@@ -10,7 +10,7 @@ impl DivoomAnimationFrameBuilder<'_> {
     }
 
     pub fn draw_frame_transform(
-        mut self,
+        self,
         frame: &Pixmap,
         x: Option<i32>,
         y: Option<i32>,
@@ -37,7 +37,7 @@ impl DivoomAnimationFrameBuilder<'_> {
 
         let mut paint = PixmapPaint::default();
         paint.opacity = opacity.unwrap_or(1.0);
-        paint.blend_mode = blend.unwrap_or(BlendMode::default());
+        paint.blend_mode = blend.unwrap_or_default();
         paint.quality = FilterQuality::Bicubic;
 
         self.frame.draw_pixmap(
@@ -45,7 +45,7 @@ impl DivoomAnimationFrameBuilder<'_> {
             y.unwrap_or(0),
             frame.as_ref(),
             &paint,
-            transform.clone(),
+            transform,
             None,
         );
 
