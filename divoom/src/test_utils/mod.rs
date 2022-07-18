@@ -1,9 +1,12 @@
-use std::{env, fs};
-use std::fmt::Debug;
-use serde::Serialize;
 use serde::de::DeserializeOwned;
+use serde::Serialize;
+use std::fmt::Debug;
+use std::{env, fs};
 
-pub fn assert_object_equal_with_baseline<T: Serialize + DeserializeOwned + PartialEq + Debug>(actual: &T, reference_file_path: &str) {
+pub fn assert_object_equal_with_baseline<T: Serialize + DeserializeOwned + PartialEq + Debug>(
+    actual: &T,
+    reference_file_path: &str,
+) {
     if env::var("DIVOOM_API_GENERATE_TEST_DATA").is_ok() {
         let actual_in_json_text =
             serde_json::to_string_pretty(&actual).expect("Serialize actual data into json failed!");

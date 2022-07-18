@@ -305,7 +305,8 @@ impl PixooClient {
         &self,
         animation: DivoomImageAnimation,
     ) -> DivoomAPIResult<()> {
-        self.send_image_animation_with_id(DIVOOM_IMAGE_ANIMATION_ID_AUTO, animation).await
+        self.send_image_animation_with_id(DIVOOM_IMAGE_ANIMATION_ID_AUTO, animation)
+            .await
     }
 
     #[doc = "Send image animation with specific id."]
@@ -317,7 +318,11 @@ impl PixooClient {
         id: i32,
         animation: DivoomImageAnimation,
     ) -> DivoomAPIResult<()> {
-        let animation_id = if id == DIVOOM_IMAGE_ANIMATION_ID_AUTO { self.get_next_animation_id().await? } else { id };
+        let animation_id = if id == DIVOOM_IMAGE_ANIMATION_ID_AUTO {
+            self.get_next_animation_id().await?
+        } else {
+            id
+        };
 
         let response: DivoomPixooCommandBatchExecuteCommandsResponse =
             PixooCommandBuilder::start_batch(self.client.clone())
