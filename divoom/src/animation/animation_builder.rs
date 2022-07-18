@@ -2,7 +2,7 @@ use crate::animation::animation_builder_error::{
     DivoomAnimationBuilderError, DivoomAnimationBuilderResult,
 };
 use crate::animation::animation_frame_builder::DivoomAnimationFrameBuilder;
-use crate::{DivoomImageAnimation};
+use crate::DivoomImageAnimation;
 use tiny_skia::{BlendMode, Pixmap};
 
 pub struct DivoomAnimationBuilder {
@@ -98,8 +98,6 @@ impl DivoomAnimationBuilder {
 // Export function
 impl DivoomAnimationBuilder {
     pub fn build(&self) -> DivoomImageAnimation {
-        
-
         DivoomImageAnimation {
             id: 0,
             size: self.width,
