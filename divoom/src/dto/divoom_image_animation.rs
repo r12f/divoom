@@ -9,6 +9,7 @@ use std::str::FromStr;
 #[serde(rename_all = "kebab-case")]
 pub struct DivoomImageAnimation {
     /// Id of the Animation to create/update. Returned by `get_next_animation_id()`.
+    /// When -1 is set, we will automatically reconcile with target divoom device and assign the latest one to it.
     pub id: i32,
 
     /// Size of canvas. Only 16, 32, 64 are supported
@@ -22,8 +23,10 @@ pub struct DivoomImageAnimation {
 
     /// Offset to frame data map.
     /// We use this format, because Divoom support only updating a single frame at a time, so we don't need to use vector and update all frames.
-    pub frames: BTreeMap<i32, DivoomImageAnimationFrameData>,
+    pub frames: BTreeMap<u32, DivoomImageAnimationFrameData>,
 }
+
+pub const DIVOOM_IMAGE_ANIMATION_ID_AUTO: i32 = -1;
 
 /// The data of this frame. It is a base64 encoded RGB data.
 ///

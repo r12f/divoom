@@ -1,3 +1,5 @@
+extern crate core;
+
 mod clients;
 mod dto;
 
@@ -8,3 +10,6 @@ pub use dto::*;
 
 #[cfg(feature = "animation-builder")]
 mod animation;
+
+#[cfg(test)]
+mod test_utils;

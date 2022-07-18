@@ -18,9 +18,6 @@ pub enum DivoomAnimationBuilderError {
 
     #[error("Canvas size not supported. Only 16, 32, and 64 are supported.")]
     UnsupportedCanvasSize,
-
-    #[error("Gif file containing frames with different sizes.")]
-    InconsistentCanvasSize,
 }
 
 /// Result that wraps the error.
