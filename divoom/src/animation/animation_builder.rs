@@ -95,7 +95,6 @@ impl DivoomAnimationBuilder {
 impl DivoomAnimationBuilder {
     pub fn build(&self) -> DivoomImageAnimation {
         let mut animation = DivoomImageAnimation {
-            id: DIVOOM_IMAGE_ANIMATION_ID_AUTO,
             size: self.canvas_size,
             frame_count: self.frames.len(),
             speed_in_ms: self.speed.as_millis() as i32,

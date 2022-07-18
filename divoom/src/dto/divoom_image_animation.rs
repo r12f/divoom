@@ -8,10 +8,6 @@ use std::str::FromStr;
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct DivoomImageAnimation {
-    /// Id of the Animation to create/update. Returned by `get_next_animation_id()`.
-    /// When -1 is set, we will automatically reconcile with target divoom device and assign the latest one to it.
-    pub id: i32,
-
     /// Size of canvas. Only 16, 32, 64 are supported
     pub size: u32,
 
