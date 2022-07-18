@@ -1,9 +1,9 @@
+use crate::animation::animation_builder_error::*;
+use crate::animation::animation_frame_builder::DivoomAnimationFrameBuilder;
+use crate::dto::*;
 use std::collections::BTreeMap;
 use std::iter::once;
 use std::time::Duration;
-use crate::dto::*;
-use crate::animation::animation_builder_error::*;
-use crate::animation::animation_frame_builder::DivoomAnimationFrameBuilder;
 use tiny_skia::{BlendMode, Pixmap};
 
 pub struct DivoomAnimationBuilder {
@@ -110,7 +110,11 @@ impl DivoomAnimationBuilder {
     }
 
     fn build_divoom_animation_frame_buffer(frame: &Pixmap) -> DivoomImageAnimationFrameData {
-        let divoom_frame_buffer: Vec<u8> = frame.pixels().iter().flat_map(|p| once(p.red()).chain(once(p.green())).chain(once(p.blue()))).collect();
+        let divoom_frame_buffer: Vec<u8> = frame
+            .pixels()
+            .iter()
+            .flat_map(|p| once(p.red()).chain(once(p.green())).chain(once(p.blue())))
+            .collect();
         let encoded_buffer = base64::encode(divoom_frame_buffer);
         encoded_buffer
     }
@@ -118,9 +122,9 @@ impl DivoomAnimationBuilder {
 
 #[cfg(test)]
 mod tests {
-    use std::time::Duration;
     use crate::animation::*;
     use crate::test_utils;
+    use std::time::Duration;
 
     #[test]
     fn divoom_animation_builder_can_be_created() {
@@ -150,18 +154,25 @@ mod tests {
 
         let builder = DivoomAnimationBuilder::new(16, Duration::from_millis(100)).unwrap();
         let animation = builder.draw_frames(&frames, 0).build();
-        test_utils::assert_object_equal_with_baseline(&animation, "test_data/animation_builder_tests/single_frame_animation_expected.json");
+        test_utils::assert_object_equal_with_baseline(
+            &animation,
+            "test_data/animation_builder_tests/single_frame_animation_expected.json",
+        );
     }
 
     #[test]
     fn divoom_animation_builder_can_build_multi_frame_animation() {
-        let frames =
-            DivoomAnimationResourceLoader::gif("test_data/animation_builder_tests/logo-16-rotate-4-frames.gif")
-                .unwrap();
+        let frames = DivoomAnimationResourceLoader::gif(
+            "test_data/animation_builder_tests/logo-16-rotate-4-frames.gif",
+        )
+        .unwrap();
         assert_eq!(frames.len(), 4);
 
         let builder = DivoomAnimationBuilder::new(16, Duration::from_millis(100)).unwrap();
         let animation = builder.draw_frames(&frames, 0).build();
-        test_utils::assert_object_equal_with_baseline(&animation, "test_data/animation_builder_tests/multi_frames_animation_expected.json");
+        test_utils::assert_object_equal_with_baseline(
+            &animation,
+            "test_data/animation_builder_tests/multi_frames_animation_expected.json",
+        );
     }
 }

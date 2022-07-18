@@ -333,11 +333,14 @@ impl PixooCommandBuilder {
     );
 
     #[doc = include_str!("../../divoom_contracts/pixoo/animation/api_send_image_animation_frame.md")]
-    pub fn send_image_animation(mut self, id: i32, animation: DivoomImageAnimation) -> PixooCommandBuilder {
+    pub fn send_image_animation(
+        mut self,
+        id: i32,
+        animation: DivoomImageAnimation,
+    ) -> PixooCommandBuilder {
         let payloads =
             DivoomPixooCommandAnimationSendImageAnimationFrameRequestPayload::create_frames(
-                id,
-                animation,
+                id, animation,
             );
         payloads.into_iter().for_each(|payload| {
             let request = DivoomPixooCommandAnimationSendImageAnimationFrameRequest::new(payload);
