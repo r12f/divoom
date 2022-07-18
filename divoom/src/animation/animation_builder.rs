@@ -1,88 +1,111 @@
-use std::fs::File;
-use tiny_skia::Pixmap;
+use crate::animation::animation_builder_error::{
+    DivoomAnimationBuilderError, DivoomAnimationBuilderResult,
+};
+use crate::animation::animation_frame_builder::DivoomAnimationFrameBuilder;
+use crate::{DivoomImageAnimation, DivoomImageAnimationFrameData};
+use tiny_skia::{BlendMode, Pixmap};
 
 pub struct DivoomAnimationBuilder {
     width: u32,
     height: u32,
+    speed_in_ms: i32,
 
     pub frames: Vec<Pixmap>,
 }
 
 // Ctor and basic functions
 impl DivoomAnimationBuilder {
-    pub fn new(canvas_size: u32) -> DivoomAnimationBuilder {
-        DivoomAnimationBuilder {
+    pub fn new(
+        canvas_size: u32,
+        speed_in_ms: i32,
+    ) -> DivoomAnimationBuilderResult<DivoomAnimationBuilder> {
+        if canvas_size != 16 && canvas_size != 32 && canvas_size != 64 {
+            return Err(DivoomAnimationBuilderError::UnsupportedCanvasSize);
+        }
+
+        Ok(DivoomAnimationBuilder {
             width: canvas_size,
             height: canvas_size,
+            speed_in_ms,
             frames: vec![],
-        }
+        })
     }
 
-    pub fn width(&self) -> u32 { self.width }
-    pub fn height(&self) -> u32 { self.height }
+    pub fn width(&self) -> u32 {
+        self.width
+    }
+    pub fn height(&self) -> u32 {
+        self.height
+    }
 
-    pub fn new_frame(&mut self) -> &mut Pixmap {
-        let pixmap = Pixmap::new(self.width, self.height).unwrap();
-        self.frames.push(pixmap);
-        self.frames.last_mut().unwrap()
+    pub fn build_frame(&mut self, index: usize) -> DivoomAnimationFrameBuilder {
+        while index + 1 < self.frames.len() {
+            let pixmap = Pixmap::new(self.width, self.height).unwrap();
+            self.frames.push(pixmap);
+        }
+
+        DivoomAnimationFrameBuilder::new(&mut self.frames[index])
     }
 }
 
-// Load from GIF files
+// Draw functions
 impl DivoomAnimationBuilder {
-    pub fn from_gif(
-        gif_file_path: &str
-    ) -> std::io::Result<DivoomAnimationBuilder> {
-        let mut builder = DivoomAnimationBuilder::new(0);
+    pub fn draw_frames(self, frames: &Vec<Pixmap>, start_frame_index: usize) -> Self {
+        self.draw_frames_transform(
+            frames,
+            start_frame_index,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+        )
+    }
 
-        let input = File::open(gif_file_path)?;
-
-        let mut options = gif::DecodeOptions::new();
-        options.set_color_output(gif::ColorOutput::RGBA);
-
-        let mut decoder = options.read_info(input).unwrap();
-        while let Some(frame) = decoder.read_next_frame().unwrap() {
-            if builder.width == 0 {
-                builder.width = frame.width as u32;
-            } else {
-                return Err(std::io::Error::from(std::io::ErrorKind::InvalidData));
-            }
-
-            if builder.height == 0 {
-                builder.height = frame.height as u32;
-            } else {
-                return Err(std::io::Error::from(std::io::ErrorKind::InvalidData));
-            }
-
-            let frame_pixmap = DivoomAnimationBuilder::convert_gif_frame_to_skia_pixmap(frame);
-            builder.frames.push(frame_pixmap);
+    pub fn draw_frames_transform(
+        mut self,
+        frames: &Vec<Pixmap>,
+        start_frame_index: usize,
+        x: Option<i32>,
+        y: Option<i32>,
+        width: Option<u32>,
+        height: Option<u32>,
+        rotation: Option<f32>,
+        opacity: Option<f32>,
+        blend: Option<BlendMode>,
+    ) -> Self {
+        for frame_offset in 0..frames.len() {
+            let target_frame_index = start_frame_index + frame_offset;
+            let frame_builder = self.build_frame(target_frame_index);
+            frame_builder.draw_frame_transform(
+                &frames[frame_offset],
+                x,
+                y,
+                width,
+                height,
+                rotation,
+                opacity,
+                blend,
+            );
         }
 
-        Ok(builder)
-    }
-
-    fn convert_gif_frame_to_skia_pixmap(frame: &gif::Frame) -> Pixmap {
-        let mut frame_pixmap = Pixmap::new(frame.width as u32, frame.height as u32).unwrap();
-        assert_eq!(frame_pixmap.data().len(), frame.buffer.len());
-
-        frame_pixmap.data_mut().copy_from_slice(&frame.buffer[0..]);
-        frame_pixmap
+        self
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+// Export function
+impl DivoomAnimationBuilder {
+    pub fn build(&self) -> DivoomImageAnimation {
+        let animation = DivoomImageAnimation {
+            id: 0,
+            size: self.width,
+            frame_count: self.frames.len(),
+            speed_in_ms: self.speed_in_ms,
+            frames: Default::default(),
+        };
 
-    #[test]
-    fn divoom_animation_builder_can_load_gif_file() {
-        let animation = DivoomAnimationBuilder::from_gif("test_data/animation_builder_tests/logo.gif").unwrap();
-        assert_eq!(animation.width(), 64);
-        assert_eq!(animation.height(), 64);
-        assert_eq!(animation.frames.len(), 1);
-
-        let non_zero_bits: Vec<&u8> = animation.frames[0].data().as_ref().into_iter().filter(|x| **x != 0u8).collect();
-        assert_ne!(non_zero_bits.len(), 0);
+        animation
     }
 }
-

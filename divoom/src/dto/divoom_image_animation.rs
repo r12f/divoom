@@ -12,10 +12,10 @@ pub struct DivoomImageAnimation {
     pub id: i32,
 
     /// Size of canvas. Only 16, 32, 64 are supported
-    pub size: i32,
+    pub size: u32,
 
     /// The total number of frames in entire animation
-    pub frame_count: i32,
+    pub frame_count: usize,
 
     /// Animation play speed, in ms.
     pub speed_in_ms: i32,

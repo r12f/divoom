@@ -30,8 +30,8 @@ impl DivoomPixooCommandAnimationSendImageAnimationFrameRequestPayload {
             .into_iter()
             .map(
                 |entry| DivoomPixooCommandAnimationSendImageAnimationFrameRequestPayload {
-                    pic_num: animation.frame_count,
-                    pic_width: animation.size,
+                    pic_num: animation.frame_count as i32,
+                    pic_width: animation.size as i32,
                     pic_offset: entry.0,
                     pic_id: animation.id,
                     pic_speed: animation.speed_in_ms,
