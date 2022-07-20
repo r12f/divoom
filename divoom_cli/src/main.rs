@@ -3,6 +3,7 @@ mod opt;
 use crate::opt::*;
 use divoom::*;
 use serde::Serialize;
+use std::time::Duration;
 use structopt::StructOpt;
 
 #[tokio::main]
@@ -278,6 +279,16 @@ async fn handle_image_animation_api(
         }
 
         DivoomCliImageAnimationCommand::ResetId => pixoo.reset_next_animation_id().await,
+
+        DivoomCliImageAnimationCommand::SendGif {
+            file_path,
+            size,
+            speed_in_ms,
+        } => {
+            pixoo
+                .send_gif_as_animation(size, Duration::from_millis(speed_in_ms), &file_path)
+                .await
+        }
     }
 }
 

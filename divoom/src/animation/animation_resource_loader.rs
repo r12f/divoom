@@ -1,11 +1,11 @@
-use crate::animation::animation_builder_error::DivoomAnimationBuilderResult;
+use crate::{DivoomAPIError, DivoomAPIResult};
 use std::fs::File;
 use tiny_skia::Pixmap;
 
 pub struct DivoomAnimationResourceLoader {}
 
 impl DivoomAnimationResourceLoader {
-    pub fn gif(file_path: &str) -> DivoomAnimationBuilderResult<Vec<Pixmap>> {
+    pub fn gif(file_path: &str) -> DivoomAPIResult<Vec<Pixmap>> {
         let mut frames = vec![];
         let input = File::open(file_path)?;
 
@@ -21,6 +21,12 @@ impl DivoomAnimationResourceLoader {
         }
 
         Ok(frames)
+    }
+}
+
+impl From<gif::DecodingError> for DivoomAPIError {
+    fn from(err: gif::DecodingError) -> Self {
+        DivoomAPIError::ResourceDecodeError(err.to_string())
     }
 }
 

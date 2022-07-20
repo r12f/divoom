@@ -71,11 +71,22 @@ brightness: 67
 # Set channel to clock with id 100
 > divoom-cli 192.168.0.164 channel set-clock 100
 
-# Create a text animation
-> divoom-cli 192.168.0.123 animation text set 1 "The gray fox jumped over the lazy dog"
-
-# Play a gif from Internet
+# Play a gif from Internet by calling the API provided by Divoom Device.
+# Please note that: this API can be unstable and only accepts GIF with 16x16, 32x32 and 64x64 image size.
 > divoom-cli 192.168.0.123 animation gif play --url https://www.gifandgif.eu/animated_gif/Planets/Animated%20Gif%20Planets%20(16).GIF
+
+# To help playing GIF in a more stable way, we can use the image animation API to craft an animation and draw the GIF
+# frames into it and send to device to play, e.g.:
+> divoom-cli 192.168.0.123 animation image send-gif "logo-16-rotate-4-frames.gif" 16 -s 100
+
+# Create a text animation
+# Please note that: this API only works after we use "animation image send-gif" API to draw anything. This API call will be ignored, 
+# when the device is showing other things, like clock or channel.
+> divoom-cli 192.168.0.123 animation text set 1 "Hello world!"
+> divoom-cli 192.168.0.123 animation text set 2 "The gray fox jumped over the lazy dog" -y 20
+
+# Modify existing text animation. E.g. changing "Hello world!" above to "Hello Divoom!"
+> divoom-cli 192.168.0.123 animation text set 1 "Hello Divoom!"
 
 # Send a raw request
 #

@@ -305,6 +305,28 @@ pub enum DivoomCliImageAnimationCommand {
 
     #[structopt(about = "Reset next animation id")]
     ResetId,
+
+    #[structopt(
+        about = "Send gif as animation. This is different from \"gif play\" command, which is provided directly by Divoom device. This command will create a regular animation and load the gif file and draw the frames into it in order to play it."
+    )]
+    SendGif {
+        #[structopt(help = "Gif file path")]
+        file_path: String,
+
+        #[structopt(
+            default_value = "64",
+            help = "Animation size in pixels. Only 16 and 32 and 64 are allowed."
+        )]
+        size: u32,
+
+        #[structopt(
+            short,
+            long = "speed",
+            default_value = "100",
+            help = "Animation play speed in milliseconds"
+        )]
+        speed_in_ms: u64,
+    },
 }
 
 #[derive(StructOpt, Debug)]
