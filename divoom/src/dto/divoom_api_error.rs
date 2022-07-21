@@ -1,3 +1,4 @@
+use std::io;
 use thiserror::Error;
 
 /// This represents the error that returned from Divoom online service or Divoom devices.
@@ -53,6 +54,15 @@ impl DivoomServerErrorInfo {
 pub enum DivoomAPIError {
     #[error("Invalid parameter.")]
     ParameterError(String),
+
+    #[error("Failed to load resource")]
+    ResourceLoadError {
+        #[from]
+        source: io::Error,
+    },
+
+    #[error("Failed to decode resource")]
+    ResourceDecodeError(String),
 
     #[error("Failed to send request")]
     RequestError {

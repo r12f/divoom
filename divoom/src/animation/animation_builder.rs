@@ -1,4 +1,3 @@
-use crate::animation::animation_builder_error::*;
 use crate::animation::animation_frame_builder::DivoomAnimationFrameBuilder;
 use crate::dto::*;
 use std::collections::BTreeMap;
@@ -15,12 +14,12 @@ pub struct DivoomAnimationBuilder {
 
 // Ctor and basic functions
 impl DivoomAnimationBuilder {
-    pub fn new(
-        canvas_size: u32,
-        speed: Duration,
-    ) -> DivoomAnimationBuilderResult<DivoomAnimationBuilder> {
+    pub fn new(canvas_size: u32, speed: Duration) -> DivoomAPIResult<DivoomAnimationBuilder> {
         if canvas_size != 16 && canvas_size != 32 && canvas_size != 64 {
-            return Err(DivoomAnimationBuilderError::UnsupportedCanvasSize);
+            return Err(DivoomAPIError::ParameterError(format!(
+                "Invalid canvas size: {}. Only 16, 32 and 64 are supported.",
+                canvas_size
+            )));
         }
 
         Ok(DivoomAnimationBuilder {
@@ -123,7 +122,7 @@ impl DivoomAnimationBuilder {
 #[cfg(test)]
 mod tests {
     use crate::animation::*;
-    use crate::test_utils;
+    use crate::{test_utils, DivoomAPIError};
     use std::time::Duration;
 
     #[test]
@@ -139,7 +138,7 @@ mod tests {
         match result {
             Ok(_) => panic!("Canvas size is incorrect and we shall not create builder here."),
             Err(e) => match e {
-                DivoomAnimationBuilderError::UnsupportedCanvasSize => (),
+                DivoomAPIError::ParameterError(_) => (),
                 _ => panic!("Incorrect error code!"),
             },
         }

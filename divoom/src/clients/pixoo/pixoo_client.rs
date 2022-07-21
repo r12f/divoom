@@ -8,6 +8,10 @@ use crate::divoom_contracts::pixoo::system::*;
 use crate::divoom_contracts::pixoo::tool::*;
 use crate::dto::*;
 use std::rc::Rc;
+use std::time::Duration;
+
+#[cfg(feature = "animation-builder")]
+use crate::animation::*;
 
 /// Pixoo device client
 ///
@@ -299,6 +303,26 @@ impl PixooClient {
         DivoomPixooCommandAnimationResetNextAnimationIdResponse,
         ()
     );
+
+    /// Send GIF to the device to play as an animation.
+    ///
+    /// This API is different from `play_gif_file`, which is provided by divoom device directly. This API will try to leverage the animation API,
+    /// create a new animation, load the gif files and draw all the frames into the animation, and send the to device to play.
+    ///
+    /// The API `play_gif_file` doesn't seems to be very stable when the package is published, hence `send_gif_as_animation` is more preferred
+    /// as of now.
+    #[cfg(feature = "animation-builder")]
+    pub async fn send_gif_as_animation(
+        &self,
+        canvas_size: u32,
+        speed: Duration,
+        file_path: &str,
+    ) -> DivoomAPIResult<()> {
+        let animation_builder = DivoomAnimationBuilder::new(canvas_size, speed)?;
+        let gif = DivoomAnimationResourceLoader::gif(file_path)?;
+        let animation = animation_builder.draw_frames(&gif, 0).build();
+        self.send_image_animation(animation).await
+    }
 
     #[doc = include_str!("../../divoom_contracts/pixoo/animation/api_send_image_animation_frame.md")]
     pub async fn send_image_animation(
