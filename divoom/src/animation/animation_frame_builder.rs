@@ -1,7 +1,7 @@
 use tiny_skia::{BlendMode, FilterQuality, Pixmap, PixmapPaint, Transform};
 
 /// Fit mode when drawing the animation frame
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub enum DivoomDrawFitMode {
     /// Draw the image in the center
     Center,
@@ -122,10 +122,11 @@ impl DivoomAnimationFrameBuilder<'_> {
         let transform =
             Transform::from_scale(scale_x, scale_y).post_concat(Transform::from_rotate(rotation));
 
-        let mut paint = PixmapPaint::default();
-        paint.opacity = opacity;
-        paint.blend_mode = blend;
-        paint.quality = FilterQuality::Bicubic;
+        let paint = PixmapPaint {
+            opacity,
+            blend_mode: blend,
+            quality: FilterQuality::Bicubic,
+        };
 
         self.frame
             .draw_pixmap(x, y, frame.as_ref(), &paint, transform, None);

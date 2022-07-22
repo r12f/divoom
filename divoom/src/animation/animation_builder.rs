@@ -47,10 +47,10 @@ impl DivoomAnimationBuilder {
 // Draw functions
 impl DivoomAnimationBuilder {
     pub fn draw_frames(mut self, frames: &Vec<Pixmap>, start_frame_index: usize) -> Self {
-        for frame_offset in 0..frames.len() {
+        for (frame_offset, frame) in frames.iter().enumerate() {
             let target_frame_index = start_frame_index + frame_offset;
             let frame_builder = self.build_frame(target_frame_index);
-            frame_builder.draw_frame(&frames[frame_offset]);
+            frame_builder.draw_frame(frame);
         }
 
         self
@@ -65,10 +65,10 @@ impl DivoomAnimationBuilder {
         opacity: f32,
         blend: BlendMode,
     ) -> Self {
-        for frame_offset in 0..frames.len() {
+        for (frame_offset, frame) in frames.iter().enumerate() {
             let target_frame_index = start_frame_index + frame_offset;
             let frame_builder = self.build_frame(target_frame_index);
-            frame_builder.draw_frame_fit(&frames[frame_offset], fit, rotation, opacity, blend);
+            frame_builder.draw_frame_fit(frame, fit, rotation, opacity, blend);
         }
 
         self
@@ -86,11 +86,11 @@ impl DivoomAnimationBuilder {
         opacity: f32,
         blend: BlendMode,
     ) -> Self {
-        for frame_offset in 0..frames.len() {
+        for (frame_offset, frame) in frames.iter().enumerate() {
             let target_frame_index = start_frame_index + frame_offset;
             let frame_builder = self.build_frame(target_frame_index);
             frame_builder.draw_frame_sized(
-                &frames[frame_offset],
+                frame,
                 x,
                 y,
                 width,
@@ -116,11 +116,11 @@ impl DivoomAnimationBuilder {
         opacity: f32,
         blend: BlendMode,
     ) -> Self {
-        for frame_offset in 0..frames.len() {
+        for (frame_offset, frame) in frames.iter().enumerate() {
             let target_frame_index = start_frame_index + frame_offset;
             let frame_builder = self.build_frame(target_frame_index);
             frame_builder.draw_frame_scaled(
-                &frames[frame_offset],
+                frame,
                 x,
                 y,
                 scale_x,
