@@ -226,6 +226,40 @@ mod tests {
     }
 
     #[test]
+    fn divoom_animation_builder_can_build_animation_with_rotation() {
+        let frames = DivoomAnimationResourceLoader::gif(
+            "test_data/animation_builder_tests/logo-16-0.gif",
+        ).unwrap();
+        assert_eq!(frames.len(), 1);
+
+        let builder = DivoomAnimationBuilder::new(32, Duration::from_millis(100)).unwrap();
+        let animation = builder.draw_frames_fit(&frames, 0, DivoomDrawFitMode::Center, 45.0, 1.0, BlendMode::default())
+            .build();
+
+        test_utils::assert_object_equal_with_baseline(
+            &animation,
+            "test_data/animation_builder_tests/animation_with_rotation_expected.json",
+        );
+    }
+
+    #[test]
+    fn divoom_animation_builder_can_build_animation_with_opacity() {
+        let frames = DivoomAnimationResourceLoader::gif(
+            "test_data/animation_builder_tests/logo-16-0.gif",
+        ).unwrap();
+        assert_eq!(frames.len(), 1);
+
+        let builder = DivoomAnimationBuilder::new(32, Duration::from_millis(100)).unwrap();
+        let animation = builder.draw_frames_fit(&frames, 0, DivoomDrawFitMode::Center, 0.0, 0.5, BlendMode::default())
+            .build();
+
+        test_utils::assert_object_equal_with_baseline(
+            &animation,
+            "test_data/animation_builder_tests/animation_with_opacity_expected.json",
+        );
+    }
+
+    #[test]
     fn divoom_animation_builder_can_build_animation_with_sized() {
         let frames = DivoomAnimationResourceLoader::gif(
             "test_data/animation_builder_tests/logo-16-0.gif",
