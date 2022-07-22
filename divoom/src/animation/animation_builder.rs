@@ -1,4 +1,5 @@
 use crate::animation::animation_frame_builder::DivoomAnimationFrameBuilder;
+use crate::animation::DivoomDrawFitMode;
 use crate::dto::*;
 use std::collections::BTreeMap;
 use std::iter::once;
@@ -45,36 +46,110 @@ impl DivoomAnimationBuilder {
 
 // Draw functions
 impl DivoomAnimationBuilder {
-    pub fn draw_frames(self, frames: &Vec<Pixmap>, start_frame_index: usize) -> Self {
-        self.draw_frames_transform(
-            frames,
-            start_frame_index,
-            None,
-            None,
-            None,
-            None,
-            None,
-            None,
-            None,
-        )
+    pub fn draw_frames(mut self, frames: &Vec<Pixmap>, start_frame_index: usize) -> Self {
+        for frame_offset in 0..frames.len() {
+            let target_frame_index = start_frame_index + frame_offset;
+            let frame_builder = self.build_frame(target_frame_index);
+            frame_builder.draw_frame(&frames[frame_offset]);
+        }
+
+        self
     }
 
-    pub fn draw_frames_transform(
+    pub fn draw_frame_fit(
         mut self,
         frames: &Vec<Pixmap>,
         start_frame_index: usize,
-        x: Option<i32>,
-        y: Option<i32>,
-        width: Option<u32>,
-        height: Option<u32>,
-        rotation: Option<f32>,
-        opacity: Option<f32>,
-        blend: Option<BlendMode>,
+        fit: DivoomDrawFitMode,
+        rotation: f32,
+        opacity: f32,
+        blend: BlendMode,
     ) -> Self {
         for frame_offset in 0..frames.len() {
             let target_frame_index = start_frame_index + frame_offset;
             let frame_builder = self.build_frame(target_frame_index);
-            frame_builder.draw_frame_transform(
+            frame_builder.draw_frame_fit(&frames[frame_offset], fit, rotation, opacity, blend);
+        }
+
+        self
+    }
+
+    pub fn draw_frame_sized(
+        mut self,
+        frames: &Vec<Pixmap>,
+        start_frame_index: usize,
+        x: i32,
+        y: i32,
+        width: u32,
+        height: u32,
+        rotation: f32,
+        opacity: f32,
+        blend: BlendMode,
+    ) -> Self {
+        for frame_offset in 0..frames.len() {
+            let target_frame_index = start_frame_index + frame_offset;
+            let frame_builder = self.build_frame(target_frame_index);
+            frame_builder.draw_frame_sized(
+                &frames[frame_offset],
+                x,
+                y,
+                width,
+                height,
+                rotation,
+                opacity,
+                blend,
+            );
+        }
+
+        self
+    }
+
+    pub fn draw_frame_scaled(
+        mut self,
+        frames: &Vec<Pixmap>,
+        start_frame_index: usize,
+        x: i32,
+        y: i32,
+        scale_x: f32,
+        scale_y: f32,
+        rotation: f32,
+        opacity: f32,
+        blend: BlendMode,
+    ) -> Self {
+        for frame_offset in 0..frames.len() {
+            let target_frame_index = start_frame_index + frame_offset;
+            let frame_builder = self.build_frame(target_frame_index);
+            frame_builder.draw_frame_scaled(
+                &frames[frame_offset],
+                x,
+                y,
+                scale_x,
+                scale_y,
+                rotation,
+                opacity,
+                blend,
+            );
+        }
+
+        self
+    }
+
+    pub fn draw_frames_sized(
+        mut self,
+        frames: &Vec<Pixmap>,
+        start_frame_index: usize,
+        x: i32,
+        y: i32,
+        width: u32,
+        height: u32,
+        rotation: f32,
+        opacity: f32,
+        blend: BlendMode,
+    ) -> Self {
+        for frame_offset in 0..frames.len() {
+            let target_frame_index = start_frame_index + frame_offset;
+            let frame_builder = self.build_frame(target_frame_index);
+            frame_builder.draw_frame_sized(
                 &frames[frame_offset],
                 x,
                 y,
