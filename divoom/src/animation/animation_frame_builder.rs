@@ -6,14 +6,14 @@ pub enum DivoomDrawFitMode {
     /// Draw the image in the center
     Center,
 
+    /// Stretch both width and height of the image and doesn't maintain the radio
+    Stretch,
+
     /// Maintaining the ratio and stretch the image to make the width the same as the canvas
     FitX,
 
     /// Maintaining the ratio and stretch the image to make the height the same as the canvas
     FitY,
-
-    /// Stretch both width and height of the image and doesn't maintain the radio
-    Stretch,
 }
 
 pub struct DivoomAnimationFrameBuilder<'a> {

@@ -56,7 +56,7 @@ impl DivoomAnimationBuilder {
         self
     }
 
-    pub fn draw_frame_fit(
+    pub fn draw_frames_fit(
         mut self,
         frames: &Vec<Pixmap>,
         start_frame_index: usize,
@@ -69,66 +69,6 @@ impl DivoomAnimationBuilder {
             let target_frame_index = start_frame_index + frame_offset;
             let frame_builder = self.build_frame(target_frame_index);
             frame_builder.draw_frame_fit(&frames[frame_offset], fit, rotation, opacity, blend);
-        }
-
-        self
-    }
-
-    pub fn draw_frame_sized(
-        mut self,
-        frames: &Vec<Pixmap>,
-        start_frame_index: usize,
-        x: i32,
-        y: i32,
-        width: u32,
-        height: u32,
-        rotation: f32,
-        opacity: f32,
-        blend: BlendMode,
-    ) -> Self {
-        for frame_offset in 0..frames.len() {
-            let target_frame_index = start_frame_index + frame_offset;
-            let frame_builder = self.build_frame(target_frame_index);
-            frame_builder.draw_frame_sized(
-                &frames[frame_offset],
-                x,
-                y,
-                width,
-                height,
-                rotation,
-                opacity,
-                blend,
-            );
-        }
-
-        self
-    }
-
-    pub fn draw_frame_scaled(
-        mut self,
-        frames: &Vec<Pixmap>,
-        start_frame_index: usize,
-        x: i32,
-        y: i32,
-        scale_x: f32,
-        scale_y: f32,
-        rotation: f32,
-        opacity: f32,
-        blend: BlendMode,
-    ) -> Self {
-        for frame_offset in 0..frames.len() {
-            let target_frame_index = start_frame_index + frame_offset;
-            let frame_builder = self.build_frame(target_frame_index);
-            frame_builder.draw_frame_scaled(
-                &frames[frame_offset],
-                x,
-                y,
-                scale_x,
-                scale_y,
-                rotation,
-                opacity,
-                blend,
-            );
         }
 
         self
@@ -155,6 +95,36 @@ impl DivoomAnimationBuilder {
                 y,
                 width,
                 height,
+                rotation,
+                opacity,
+                blend,
+            );
+        }
+
+        self
+    }
+
+    pub fn draw_frames_scaled(
+        mut self,
+        frames: &Vec<Pixmap>,
+        start_frame_index: usize,
+        x: i32,
+        y: i32,
+        scale_x: f32,
+        scale_y: f32,
+        rotation: f32,
+        opacity: f32,
+        blend: BlendMode,
+    ) -> Self {
+        for frame_offset in 0..frames.len() {
+            let target_frame_index = start_frame_index + frame_offset;
+            let frame_builder = self.build_frame(target_frame_index);
+            frame_builder.draw_frame_scaled(
+                &frames[frame_offset],
+                x,
+                y,
+                scale_x,
+                scale_y,
                 rotation,
                 opacity,
                 blend,
@@ -199,6 +169,7 @@ mod tests {
     use crate::animation::*;
     use crate::{test_utils, DivoomAPIError};
     use std::time::Duration;
+    use tiny_skia::BlendMode;
 
     #[test]
     fn divoom_animation_builder_can_be_created() {
@@ -231,6 +202,60 @@ mod tests {
         test_utils::assert_object_equal_with_baseline(
             &animation,
             "test_data/animation_builder_tests/single_frame_animation_expected.json",
+        );
+    }
+
+    #[test]
+    fn divoom_animation_builder_can_build_animation_with_fit() {
+        let frames = DivoomAnimationResourceLoader::gif(
+            "test_data/animation_builder_tests/logo-16-0.gif",
+        ).unwrap();
+        assert_eq!(frames.len(), 1);
+
+        let builder = DivoomAnimationBuilder::new(32, Duration::from_millis(100)).unwrap();
+        let animation = builder.draw_frames_fit(&frames, 0, DivoomDrawFitMode::Center, 0.0, 1.0, BlendMode::default())
+            .draw_frames_fit(&frames, 1, DivoomDrawFitMode::Stretch, 0.0, 1.0, BlendMode::default())
+            .draw_frames_fit(&frames, 2, DivoomDrawFitMode::FitX, 0.0, 1.0, BlendMode::default())
+            .draw_frames_fit(&frames, 3, DivoomDrawFitMode::FitY, 0.0, 1.0, BlendMode::default())
+            .build();
+
+        test_utils::assert_object_equal_with_baseline(
+            &animation,
+            "test_data/animation_builder_tests/animation_with_fit_expected.json",
+        );
+    }
+
+    #[test]
+    fn divoom_animation_builder_can_build_animation_with_sized() {
+        let frames = DivoomAnimationResourceLoader::gif(
+            "test_data/animation_builder_tests/logo-16-0.gif",
+        ).unwrap();
+        assert_eq!(frames.len(), 1);
+
+        let builder = DivoomAnimationBuilder::new(32, Duration::from_millis(100)).unwrap();
+        let animation = builder.draw_frames_sized(&frames, 0, 6, 6, 28, 18, 0.0, 1.0, BlendMode::default())
+            .build();
+
+        test_utils::assert_object_equal_with_baseline(
+            &animation,
+            "test_data/animation_builder_tests/animation_with_sized_expected.json",
+        );
+    }
+
+    #[test]
+    fn divoom_animation_builder_can_build_animation_with_scaled() {
+        let frames = DivoomAnimationResourceLoader::gif(
+            "test_data/animation_builder_tests/logo-16-0.gif",
+        ).unwrap();
+        assert_eq!(frames.len(), 1);
+
+        let builder = DivoomAnimationBuilder::new(32, Duration::from_millis(100)).unwrap();
+        let animation = builder.draw_frames_scaled(&frames, 0, 6, 6, 1.2, 0.8, 0.0, 1.0, BlendMode::default())
+            .build();
+
+        test_utils::assert_object_equal_with_baseline(
+            &animation,
+            "test_data/animation_builder_tests/animation_with_scaled_expected.json",
         );
     }
 
