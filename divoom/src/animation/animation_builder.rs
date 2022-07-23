@@ -46,7 +46,7 @@ impl DivoomAnimationBuilder {
 
 // Draw functions
 impl DivoomAnimationBuilder {
-    pub fn draw_frames(mut self, frames: &Vec<Pixmap>, start_frame_index: usize) -> Self {
+    pub fn draw_frames(mut self, frames: &[Pixmap], start_frame_index: usize) -> Self {
         for (frame_offset, frame) in frames.iter().enumerate() {
             let target_frame_index = start_frame_index + frame_offset;
             let frame_builder = self.build_frame(target_frame_index);
@@ -58,7 +58,7 @@ impl DivoomAnimationBuilder {
 
     pub fn draw_frames_fit(
         mut self,
-        frames: &Vec<Pixmap>,
+        frames: &[Pixmap],
         start_frame_index: usize,
         fit: DivoomDrawFitMode,
         rotation: f32,
@@ -76,7 +76,7 @@ impl DivoomAnimationBuilder {
 
     pub fn draw_frames_sized(
         mut self,
-        frames: &Vec<Pixmap>,
+        frames: &[Pixmap],
         start_frame_index: usize,
         x: i32,
         y: i32,
@@ -89,16 +89,7 @@ impl DivoomAnimationBuilder {
         for (frame_offset, frame) in frames.iter().enumerate() {
             let target_frame_index = start_frame_index + frame_offset;
             let frame_builder = self.build_frame(target_frame_index);
-            frame_builder.draw_frame_sized(
-                frame,
-                x,
-                y,
-                width,
-                height,
-                rotation,
-                opacity,
-                blend,
-            );
+            frame_builder.draw_frame_sized(frame, x, y, width, height, rotation, opacity, blend);
         }
 
         self
@@ -106,7 +97,7 @@ impl DivoomAnimationBuilder {
 
     pub fn draw_frames_scaled(
         mut self,
-        frames: &Vec<Pixmap>,
+        frames: &[Pixmap],
         start_frame_index: usize,
         x: i32,
         y: i32,
@@ -119,16 +110,8 @@ impl DivoomAnimationBuilder {
         for (frame_offset, frame) in frames.iter().enumerate() {
             let target_frame_index = start_frame_index + frame_offset;
             let frame_builder = self.build_frame(target_frame_index);
-            frame_builder.draw_frame_scaled(
-                frame,
-                x,
-                y,
-                scale_x,
-                scale_y,
-                rotation,
-                opacity,
-                blend,
-            );
+            frame_builder
+                .draw_frame_scaled(frame, x, y, scale_x, scale_y, rotation, opacity, blend);
         }
 
         self
