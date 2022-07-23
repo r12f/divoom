@@ -290,7 +290,7 @@ async fn handle_image_animation_api(
             opacity,
         } => {
             pixoo
-                .send_gif_as_animation(
+                .send_gif_as_animation_with_options(
                     size,
                     Duration::from_millis(speed_in_ms),
                     &file_path,
