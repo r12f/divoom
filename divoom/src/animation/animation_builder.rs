@@ -206,7 +206,9 @@ mod tests {
         let mut frame = frame_builder.canvas_mut();
         assert_eq!(frame.width(), 64);
 
-        let frames = DivoomAnimationResourceLoader::gif("test_data/animation_builder_tests/logo-16-0.gif").unwrap();
+        let frames =
+            DivoomAnimationResourceLoader::gif("test_data/animation_builder_tests/logo-16-0.gif")
+                .unwrap();
         frame_builder = frame_builder.draw_frame(&frames[0]);
     }
 
