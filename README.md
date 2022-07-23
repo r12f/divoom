@@ -123,6 +123,41 @@ let pixoo = PixooClient::new("192.168.0.123");
 pixoo.play_gif_file(DivoomFileAnimationSourceType::Url, "<Some URL goes here>").await?;
 ```
 
+However, this device API is not quite stable (by 07/2022) and the most reliable way to play a GIF is to create an animation and draw
+all the GIF frames into it one by one. To help with this process, we created a resource loader and an animation builder to help.
+
+```rust
+use divoom::*;
+
+// Load the resource.
+let frames = DivoomAnimationResourceLoader::gif("test_data/animation_builder_tests/logo-16-rotate-4-frames.gif").unwrap();
+
+// Build animation with 16 pixel canvas and 100ms frame play speed.
+let builder = DivoomAnimationBuilder::new(16, Duration::from_millis(100)).unwrap();
+let animation = builder.draw_frames(&frames, 0).build();
+
+// Send to device here.
+let pixoo = PixooClient::new("192.168.0.123");
+pixoo.send_image_animation(animation).await
+```
+
+Or even simpler:
+
+```rust
+use divoom::*;
+let pixoo = PixooClient::new("192.168.0.123");
+pixoo.send_gif_as_animation(16, Duration::from_millis(100), "test_data/animation_builder_tests/logo-16-rotate-4-frames.gif").await
+```
+
+For more on how to use it, feel free to check our doc here: <https://docs.rs/divoom/latest/divoom/struct.DivoomAnimationBuilder.html>.
+
+And if you don't want this animation builder, we can exclude it by specifying the features with:
+
+```toml
+[dependencies]
+divoom = { version = "0.1", features = [] }
+```
+
 #### Text Animation
 
 To create a text animation, we can use `DivoomTextAnimation` structure and `send_text_animation` API to help us:

@@ -319,6 +319,28 @@ impl PixooClient {
         &self,
         canvas_size: u32,
         speed: Duration,
+        file_path: &str
+    ) -> DivoomAPIResult<()> {
+        let animation_builder = DivoomAnimationBuilder::new(canvas_size, speed)?;
+        let gif = DivoomAnimationResourceLoader::gif(file_path)?;
+        let animation = animation_builder
+            .draw_frames_fit(&gif, 0, DivoomDrawFitMode::Center, 0.0, 1.0, BlendMode::default())
+            .build();
+        self.send_image_animation(animation).await
+    }
+
+    /// Send GIF to the device to play as an animation.
+    ///
+    /// This API is different from `play_gif_file`, which is provided by divoom device directly. This API will try to leverage the animation API,
+    /// create a new animation, load the gif files and draw all the frames into the animation, and send the to device to play.
+    ///
+    /// The API `play_gif_file` doesn't seems to be very stable when the package is published, hence `send_gif_as_animation` is more preferred
+    /// as of now.
+    #[cfg(feature = "animation-builder")]
+    pub async fn send_gif_as_animation_with_options(
+        &self,
+        canvas_size: u32,
+        speed: Duration,
         file_path: &str,
         fit: DivoomDrawFitMode,
         rotation: f32,
