@@ -150,10 +150,10 @@ format:
 # Lint task:
 #
 lint:
-    cargo clippy
+    cargo clippy --all-targets --all-features
 
 lint-fix:
-    cargo clippy --fix --allow-dirty
+    cargo clippy --all-targets --all-features --fix --allow-dirty
 
 
 #
