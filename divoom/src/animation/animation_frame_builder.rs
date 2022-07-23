@@ -23,13 +23,17 @@ pub enum DivoomDrawFitMode {
 impl_divoom_dto_enum_traits_without_raw!(DivoomDrawFitMode, Center: "center", Stretch: "stretch", FitX: "fitX", FitY: "fixY");
 
 pub struct DivoomAnimationFrameBuilder<'a> {
-    pub frame: &'a mut Pixmap,
+    frame: &'a mut Pixmap,
 }
 
 impl DivoomAnimationFrameBuilder<'_> {
     pub fn new(frame: &mut Pixmap) -> DivoomAnimationFrameBuilder {
         DivoomAnimationFrameBuilder { frame }
     }
+
+    pub fn canvas(&self) -> &Pixmap { self.frame }
+
+    pub fn canvas_mut(&mut self) -> &mut Pixmap { self.frame }
 
     pub fn draw_frame(self, frame: &Pixmap) -> Self {
         self.draw_frame_fit(
