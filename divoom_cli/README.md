@@ -79,6 +79,9 @@ brightness: 67
 # frames into it and send to device to play, e.g.:
 > divoom-cli 192.168.0.123 animation image send-gif "logo-16-rotate-4-frames.gif" 16 -s 100
 
+# Create the same GIF animation as above, but with size stretched, rotation 30 degrees and opacity 0.5.
+> divoom-cli 192.168.0.123 animation image send-gif "logo-16-rotate-4-frames.gif" 32 -s 100 -f stretch -o 0.5 -r 30
+
 # Create a text animation
 # Please note that: this API only works after we use "animation image send-gif" API to draw anything. This API call will be ignored, 
 # when the device is showing other things, like clock or channel.

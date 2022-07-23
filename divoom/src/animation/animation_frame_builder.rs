@@ -141,7 +141,9 @@ impl DivoomAnimationFrameBuilder<'_> {
         blend: BlendMode,
     ) -> Self {
         let transform =
-            Transform::from_scale(scale_x, scale_y).post_concat(Transform::from_rotate(rotation));
+            Transform::from_rotate_at(rotation, frame.width() as f32 / 2.0, frame.height() as f32 / 2.0).post_concat(
+                Transform::from_scale(scale_x, scale_y)
+            );
 
         let paint = PixmapPaint {
             opacity,
