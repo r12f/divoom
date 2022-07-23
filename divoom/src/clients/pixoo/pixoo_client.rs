@@ -11,6 +11,9 @@ use std::rc::Rc;
 use std::time::Duration;
 
 #[cfg(feature = "animation-builder")]
+use tiny_skia::BlendMode;
+
+#[cfg(feature = "animation-builder")]
 use crate::animation::*;
 
 /// Pixoo device client
@@ -317,10 +320,16 @@ impl PixooClient {
         canvas_size: u32,
         speed: Duration,
         file_path: &str,
+        fit: DivoomDrawFitMode,
+        rotation: f32,
+        opacity: f32,
+        blend: BlendMode,
     ) -> DivoomAPIResult<()> {
         let animation_builder = DivoomAnimationBuilder::new(canvas_size, speed)?;
         let gif = DivoomAnimationResourceLoader::gif(file_path)?;
-        let animation = animation_builder.draw_frames(&gif, 0).build();
+        let animation = animation_builder
+            .draw_frames_fit(&gif, 0, fit, rotation, opacity, blend)
+            .build();
         self.send_image_animation(animation).await
     }
 

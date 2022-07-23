@@ -1,7 +1,11 @@
+use crate::impl_divoom_dto_enum_traits_without_raw;
+use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
+use std::fmt;
+use std::str::FromStr;
 use tiny_skia::{BlendMode, FilterQuality, Pixmap, PixmapPaint, Transform};
 
 /// Fit mode when drawing the animation frame
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub enum DivoomDrawFitMode {
     /// Draw the image in the center
     Center,
@@ -15,6 +19,8 @@ pub enum DivoomDrawFitMode {
     /// Maintaining the ratio and stretch the image to make the height the same as the canvas
     FitY,
 }
+
+impl_divoom_dto_enum_traits_without_raw!(DivoomDrawFitMode, Center: "center", Stretch: "stretch", FitX: "fitX", FitY: "fixY");
 
 pub struct DivoomAnimationFrameBuilder<'a> {
     pub frame: &'a mut Pixmap,

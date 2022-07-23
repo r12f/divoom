@@ -5,6 +5,7 @@ use divoom::*;
 use serde::Serialize;
 use std::time::Duration;
 use structopt::StructOpt;
+use tiny_skia::BlendMode;
 
 #[tokio::main]
 async fn main() -> DivoomAPIResult<()> {
@@ -284,9 +285,20 @@ async fn handle_image_animation_api(
             file_path,
             size,
             speed_in_ms,
+            fit,
+            rotation,
+            opacity,
         } => {
             pixoo
-                .send_gif_as_animation(size, Duration::from_millis(speed_in_ms), &file_path)
+                .send_gif_as_animation(
+                    size,
+                    Duration::from_millis(speed_in_ms),
+                    &file_path,
+                    fit,
+                    rotation,
+                    opacity,
+                    BlendMode::default(),
+                )
                 .await
         }
     }

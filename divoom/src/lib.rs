@@ -11,5 +11,8 @@ pub use dto::*;
 #[cfg(feature = "animation-builder")]
 mod animation;
 
+#[cfg(feature = "animation-builder")]
+pub use animation::*;
+
 #[cfg(test)]
 mod test_utils;
