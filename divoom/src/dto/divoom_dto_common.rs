@@ -2,7 +2,6 @@ use rgb::RGB8;
 use serde::de::Error;
 use serde::{Deserialize, Deserializer, Serializer};
 
-#[macro_export]
 macro_rules! impl_divoom_dto_enum_traits {
     ($dto_name:ident, $($enum_value:ident: $enum_string:literal),*) => (
         impl FromStr for $dto_name {
@@ -56,7 +55,6 @@ macro_rules! impl_divoom_dto_enum_traits {
     )
 }
 
-#[macro_export]
 macro_rules! impl_divoom_dto_enum_traits_without_raw {
     ($dto_name:ident, $($enum_value:ident: $enum_string:literal),*) => (
         impl FromStr for $dto_name {
@@ -103,8 +101,6 @@ macro_rules! impl_divoom_dto_enum_traits_without_raw {
         }
     )
 }
-
-pub(crate) use impl_divoom_dto_enum_traits;
 
 pub(crate) fn from_rgb_str<'de, D>(deserializer: D) -> Result<RGB8, D::Error>
 where

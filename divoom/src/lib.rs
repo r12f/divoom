@@ -1,6 +1,8 @@
 extern crate core;
 
 mod clients;
+
+#[macro_use]
 mod dto;
 
 pub(crate) mod divoom_contracts;
