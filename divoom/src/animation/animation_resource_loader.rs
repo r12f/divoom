@@ -2,9 +2,11 @@ use crate::{DivoomAPIError, DivoomAPIResult};
 use std::fs::File;
 use tiny_skia::Pixmap;
 
+/// Load resources into a series of `tiny_skia::Pixmap`, so we can use them to build the animations.
 pub struct DivoomAnimationResourceLoader {}
 
 impl DivoomAnimationResourceLoader {
+    /// Load from local gif file
     pub fn gif(file_path: &str) -> DivoomAPIResult<Vec<Pixmap>> {
         let mut frames = vec![];
         let input = File::open(file_path)?;
@@ -41,12 +43,12 @@ mod tests {
                 .unwrap();
         assert_eq!(frames.len(), 1);
 
-        let non_zero_bits: Vec<&u8> = frames[0]
+        let non_zero_bits_count = frames[0]
             .data()
             .as_ref()
             .iter()
             .filter(|x| **x != 0u8)
-            .collect();
-        assert_ne!(non_zero_bits.len(), 0);
+            .count();
+        assert_ne!(non_zero_bits_count, 0);
     }
 }

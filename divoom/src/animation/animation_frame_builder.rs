@@ -1,7 +1,10 @@
+use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
+use std::fmt;
+use std::str::FromStr;
 use tiny_skia::{BlendMode, FilterQuality, Pixmap, PixmapPaint, Transform};
 
 /// Fit mode when drawing the animation frame
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub enum DivoomDrawFitMode {
     /// Draw the image in the center
     Center,
@@ -16,15 +19,30 @@ pub enum DivoomDrawFitMode {
     FitY,
 }
 
+impl_divoom_dto_enum_traits_without_raw!(DivoomDrawFitMode, Center: "center", Stretch: "stretch", FitX: "fitX", FitY: "fixY");
+
+/// Builder of each animation frame
 pub struct DivoomAnimationFrameBuilder<'a> {
-    pub frame: &'a mut Pixmap,
+    frame: &'a mut Pixmap,
 }
 
 impl DivoomAnimationFrameBuilder<'_> {
+    /// Create an new builder on top of a mutable Pixmap reference.
     pub fn new(frame: &mut Pixmap) -> DivoomAnimationFrameBuilder {
         DivoomAnimationFrameBuilder { frame }
     }
 
+    /// Return the internal Pixmap
+    pub fn canvas(&self) -> &Pixmap {
+        self.frame
+    }
+
+    /// Return the mutable reference of the internal Pixmap. This allow us to directly use tiny_skia APIs to do more complicated things.
+    pub fn canvas_mut(&mut self) -> &mut Pixmap {
+        self.frame
+    }
+
+    /// Draw an Pixmap onto the current canvas.
     pub fn draw_frame(self, frame: &Pixmap) -> Self {
         self.draw_frame_fit(
             frame,
@@ -35,6 +53,7 @@ impl DivoomAnimationFrameBuilder<'_> {
         )
     }
 
+    /// Draw an Pixmap onto the current canvas with fit options and other options, like rotation, opacity and blend mode.
     pub fn draw_frame_fit(
         self,
         frame: &Pixmap,
@@ -83,6 +102,7 @@ impl DivoomAnimationFrameBuilder<'_> {
         )
     }
 
+    /// Draw an Pixmap onto the current canvas with position and size specified.
     pub fn draw_frame_sized(
         self,
         frame: &Pixmap,
@@ -108,6 +128,7 @@ impl DivoomAnimationFrameBuilder<'_> {
         self.draw_frame_scaled(frame, x, y, scale_x, scale_y, rotation, opacity, blend)
     }
 
+    /// Draw an Pixmap onto the current canvas with position and scale on X and Y axis specified.
     pub fn draw_frame_scaled(
         self,
         frame: &Pixmap,
@@ -120,7 +141,9 @@ impl DivoomAnimationFrameBuilder<'_> {
         blend: BlendMode,
     ) -> Self {
         let transform =
-            Transform::from_scale(scale_x, scale_y).post_concat(Transform::from_rotate(rotation));
+            Transform::from_rotate_at(rotation, x as f32 + (frame.width() as f32 / 2.0), y as f32 + (frame.height() as f32 / 2.0)).post_concat(
+                Transform::from_scale(scale_x, scale_y)
+            );
 
         let paint = PixmapPaint {
             opacity,

@@ -6,15 +6,19 @@ use std::iter::once;
 use std::time::Duration;
 use tiny_skia::{BlendMode, Pixmap};
 
+/// ## Animation builder
+/// This class holds a series of tiny_skia::Pixmap inside with the same size to provide an interface for building animations.
 pub struct DivoomAnimationBuilder {
     canvas_size: u32,
     speed: Duration,
-
-    pub frames: Vec<Pixmap>,
+    frames: Vec<Pixmap>,
 }
 
 // Ctor and basic functions
 impl DivoomAnimationBuilder {
+    /// Create a new animation builder with canvas size and speed.
+    ///
+    /// For Divoom devices, only 16, 32 and 64 pixels canvas are allowed. When other value is specified, we will return failure.
     pub fn new(canvas_size: u32, speed: Duration) -> DivoomAPIResult<DivoomAnimationBuilder> {
         if canvas_size != 16 && canvas_size != 32 && canvas_size != 64 {
             return Err(DivoomAPIError::ParameterError(format!(
@@ -30,10 +34,15 @@ impl DivoomAnimationBuilder {
         })
     }
 
+    /// Return canvas size
     pub fn canvas_size(&self) -> u32 {
         self.canvas_size
     }
 
+    /// Return a builder for the specified frame.
+    ///
+    /// If the frame is not created or any previous frame is not created for the specified index, we will create all of them and return the builder
+    /// for the last frame.
     pub fn build_frame(&mut self, index: usize) -> DivoomAnimationFrameBuilder {
         while index + 1 > self.frames.len() {
             let pixmap = Pixmap::new(self.canvas_size, self.canvas_size).unwrap();
@@ -46,6 +55,9 @@ impl DivoomAnimationBuilder {
 
 // Draw functions
 impl DivoomAnimationBuilder {
+    /// Draw a series of frames to the canvas.
+    /// - Frames doesn't need to be having the same size, as they will be drawn separately one by one.
+    /// - If we have more frames than what we have internally, the new frames will be automatically created.
     pub fn draw_frames(mut self, frames: &[Pixmap], start_frame_index: usize) -> Self {
         for (frame_offset, frame) in frames.iter().enumerate() {
             let target_frame_index = start_frame_index + frame_offset;
@@ -56,6 +68,8 @@ impl DivoomAnimationBuilder {
         self
     }
 
+    /// Draw a series of frames to the canvas with `DivoomDrawFitMode` option and other options.
+    /// With `DivoomDrawFitMode` option, we provided a few ways to calculate the position and size of each frame to simplify the usage.
     pub fn draw_frames_fit(
         mut self,
         frames: &[Pixmap],
@@ -74,6 +88,7 @@ impl DivoomAnimationBuilder {
         self
     }
 
+    /// Draw a series of frames to the canvas with specified position and size.
     pub fn draw_frames_sized(
         mut self,
         frames: &[Pixmap],
@@ -95,6 +110,7 @@ impl DivoomAnimationBuilder {
         self
     }
 
+    /// Draw a series of frames to the canvas with specified position and scale on X and Y axis.
     pub fn draw_frames_scaled(
         mut self,
         frames: &[Pixmap],
@@ -120,6 +136,7 @@ impl DivoomAnimationBuilder {
 
 // Export function
 impl DivoomAnimationBuilder {
+    /// Create the final animation that is used for being sent to the device, and one animation builder can be reused to create multiple animations.
     pub fn build(&self) -> DivoomImageAnimation {
         let mut animation = DivoomImageAnimation {
             size: self.canvas_size,
@@ -171,6 +188,28 @@ mod tests {
                 _ => panic!("Incorrect error code!"),
             },
         }
+    }
+
+    #[test]
+    fn divoom_animation_builder_can_get_canvas() {
+        let mut builder = DivoomAnimationBuilder::new(64, Duration::from_millis(100)).unwrap();
+        let frame_builder = builder.build_frame(0);
+        let frame = frame_builder.canvas();
+        assert_eq!(frame.width(), 64);
+    }
+
+    #[test]
+    #[allow(unused_mut, unused_assignments)]
+    fn divoom_animation_builder_can_get_canvas_mut() {
+        let mut builder = DivoomAnimationBuilder::new(64, Duration::from_millis(100)).unwrap();
+        let mut frame_builder = builder.build_frame(0);
+        let mut frame = frame_builder.canvas_mut();
+        assert_eq!(frame.width(), 64);
+
+        let frames =
+            DivoomAnimationResourceLoader::gif("test_data/animation_builder_tests/logo-16-0.gif")
+                .unwrap();
+        frame_builder = frame_builder.draw_frame(&frames[0]);
     }
 
     #[test]

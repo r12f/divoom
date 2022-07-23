@@ -326,6 +326,30 @@ pub enum DivoomCliImageAnimationCommand {
             help = "Animation play speed in milliseconds"
         )]
         speed_in_ms: u64,
+
+        #[structopt(
+            short,
+            long = "fit",
+            default_value = "center",
+            help = "Animation fit mode. Can be center, stretch, fitX and fitY"
+        )]
+        fit: DivoomDrawFitMode,
+
+        #[structopt(
+            short,
+            long = "rotate",
+            default_value = "0.0",
+            help = "Animation rotate angle"
+        )]
+        rotation: f32,
+
+        #[structopt(
+            short,
+            long = "opacity",
+            default_value = "1.0",
+            help = "Animation opacity"
+        )]
+        opacity: f32,
     },
 }
 
