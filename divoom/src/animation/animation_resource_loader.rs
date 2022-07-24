@@ -1,23 +1,43 @@
 use crate::{DivoomAPIError, DivoomAPIResult};
 use std::fs::File;
-use std::io::BufReader;
+use std::io::{BufReader, Read};
 use tiny_skia::Pixmap;
 
 /// Load resources into a series of `tiny_skia::Pixmap`, so we can use them to build the animations.
 pub struct DivoomAnimationResourceLoader {}
 
 impl DivoomAnimationResourceLoader {
-    /// Load from local png file
-    pub fn png(file_path: &str) -> DivoomAPIResult<Pixmap> {
+    /// Load png resource from local file
+    pub fn png_file(file_path: &str) -> DivoomAPIResult<Pixmap> {
         let frame = Pixmap::load_png(file_path)?;
         Ok(frame)
     }
 
-    /// Load from jpeg file
+    /// Load png resource from a memory buffer
+    pub fn png_buf(buf: &[u8]) -> DivoomAPIResult<Pixmap> {
+        let frame = Pixmap::decode_png(buf)?;
+        Ok(frame)
+    }
+
+    /// Load png resource from Read trait
+    pub fn png<R: Read>(reader: R) -> DivoomAPIResult<Pixmap> {
+        let mut buffer = Vec::new();
+        let mut buf_reader = BufReader::new(reader);
+        buf_reader.read_to_end(&mut buffer)?;
+        DivoomAnimationResourceLoader::png_buf(&buffer)
+    }
+
+    /// Load jpeg resource from local file
     #[cfg(feature = "resource-loader-jpeg")]
-    pub fn jpeg(file_path: &str) -> DivoomAPIResult<Pixmap> {
+    pub fn jpeg_file(file_path: &str) -> DivoomAPIResult<Pixmap> {
         let file = File::open(file_path)?;
-        let mut decoder = jpeg_decoder::Decoder::new(BufReader::new(file));
+        DivoomAnimationResourceLoader::jpeg(file)
+    }
+
+    /// Load jpeg resource from Read trait
+    #[cfg(feature = "resource-loader-jpeg")]
+    pub fn jpeg<R: Read>(reader: R) -> DivoomAPIResult<Pixmap> {
+        let mut decoder = jpeg_decoder::Decoder::new(BufReader::new(reader));
         let pixels = decoder.decode()?;
 
         let metadata = decoder.info().unwrap();
@@ -80,16 +100,22 @@ impl DivoomAnimationResourceLoader {
         Ok(frame)
     }
 
-    /// Load from local gif file
+    /// Load gif resource from local file
     #[cfg(feature = "resource-loader-gif")]
-    pub fn gif(file_path: &str) -> DivoomAPIResult<Vec<Pixmap>> {
-        let mut frames = vec![];
+    pub fn gif_file(file_path: &str) -> DivoomAPIResult<Vec<Pixmap>> {
         let input = File::open(file_path)?;
+        DivoomAnimationResourceLoader::gif(input)
+    }
+
+    /// Load git resource from Read trait
+    #[cfg(feature = "resource-loader-gif")]
+    pub fn gif<R: Read>(reader: R) -> DivoomAPIResult<Vec<Pixmap>> {
+        let mut frames = vec![];
 
         let mut options = gif::DecodeOptions::new();
         options.set_color_output(gif::ColorOutput::RGBA);
 
-        let mut decoder = options.read_info(input)?;
+        let mut decoder = options.read_info(reader)?;
         while let Some(frame) = decoder.read_next_frame()? {
             let mut frame_pixmap = Pixmap::new(frame.width as u32, frame.height as u32).unwrap();
             assert_eq!(frame_pixmap.data().len(), frame.buffer.len());
@@ -128,7 +154,7 @@ mod tests {
     #[test]
     fn divoom_resource_loader_can_load_png_file() {
         let frame =
-            DivoomAnimationResourceLoader::png("test_data/animation_builder_tests/logo.png")
+            DivoomAnimationResourceLoader::png_file("test_data/animation_builder_tests/logo.png")
                 .unwrap();
 
         let non_zero_bits_count = frame.data().as_ref().iter().filter(|x| **x != 0u8).count();
@@ -137,7 +163,7 @@ mod tests {
 
     #[test]
     fn divoom_resource_loader_can_load_jpeg_grayscale_file() {
-        let frame = DivoomAnimationResourceLoader::jpeg(
+        let frame = DivoomAnimationResourceLoader::jpeg_file(
             "test_data/animation_builder_tests/logo_grayscale.jpg",
         )
         .unwrap();
@@ -149,7 +175,7 @@ mod tests {
     #[test]
     fn divoom_resource_loader_can_load_jpeg_rgb_file() {
         let frame =
-            DivoomAnimationResourceLoader::jpeg("test_data/animation_builder_tests/logo_rgb.jpg")
+            DivoomAnimationResourceLoader::jpeg_file("test_data/animation_builder_tests/logo_rgb.jpg")
                 .unwrap();
 
         let non_zero_bits_count = frame.data().as_ref().iter().filter(|x| **x != 0u8).count();
@@ -159,7 +185,7 @@ mod tests {
     #[test]
     fn divoom_resource_loader_can_load_jpeg_cmyk_file() {
         let frame =
-            DivoomAnimationResourceLoader::jpeg("test_data/animation_builder_tests/logo_cmyk.jpg")
+            DivoomAnimationResourceLoader::jpeg_file("test_data/animation_builder_tests/logo_cmyk.jpg")
                 .unwrap();
 
         let non_zero_bits_count = frame.data().as_ref().iter().filter(|x| **x != 0u8).count();
@@ -169,7 +195,7 @@ mod tests {
     #[test]
     fn divoom_resource_loader_can_load_gif_file() {
         let frames =
-            DivoomAnimationResourceLoader::gif("test_data/animation_builder_tests/logo.gif")
+            DivoomAnimationResourceLoader::gif_file("test_data/animation_builder_tests/logo.gif")
                 .unwrap();
         assert_eq!(frames.len(), 1);
 

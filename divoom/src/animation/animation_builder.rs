@@ -207,7 +207,7 @@ mod tests {
         assert_eq!(frame.width(), 64);
 
         let frames =
-            DivoomAnimationResourceLoader::gif("test_data/animation_builder_tests/logo-16-0.gif")
+            DivoomAnimationResourceLoader::gif_file("test_data/animation_builder_tests/logo-16-0.gif")
                 .unwrap();
         frame_builder = frame_builder.draw_frame(&frames[0]);
     }
@@ -215,7 +215,7 @@ mod tests {
     #[test]
     fn divoom_animation_builder_can_build_single_frame_animation() {
         let frames =
-            DivoomAnimationResourceLoader::gif("test_data/animation_builder_tests/logo-16-0.gif")
+            DivoomAnimationResourceLoader::gif_file("test_data/animation_builder_tests/logo-16-0.gif")
                 .unwrap();
         assert_eq!(frames.len(), 1);
 
@@ -230,7 +230,7 @@ mod tests {
     #[test]
     fn divoom_animation_builder_can_build_animation_with_fit() {
         let frames =
-            DivoomAnimationResourceLoader::gif("test_data/animation_builder_tests/logo-16-0.gif")
+            DivoomAnimationResourceLoader::gif_file("test_data/animation_builder_tests/logo-16-0.gif")
                 .unwrap();
         assert_eq!(frames.len(), 1);
 
@@ -279,7 +279,7 @@ mod tests {
     #[test]
     fn divoom_animation_builder_can_build_animation_with_rotation() {
         let frames =
-            DivoomAnimationResourceLoader::gif("test_data/animation_builder_tests/logo-16-0.gif")
+            DivoomAnimationResourceLoader::gif_file("test_data/animation_builder_tests/logo-16-0.gif")
                 .unwrap();
         assert_eq!(frames.len(), 1);
 
@@ -304,7 +304,7 @@ mod tests {
     #[test]
     fn divoom_animation_builder_can_build_animation_with_opacity() {
         let frames =
-            DivoomAnimationResourceLoader::gif("test_data/animation_builder_tests/logo-16-0.gif")
+            DivoomAnimationResourceLoader::gif_file("test_data/animation_builder_tests/logo-16-0.gif")
                 .unwrap();
         assert_eq!(frames.len(), 1);
 
@@ -329,7 +329,7 @@ mod tests {
     #[test]
     fn divoom_animation_builder_can_build_animation_with_sized() {
         let frames =
-            DivoomAnimationResourceLoader::gif("test_data/animation_builder_tests/logo-16-0.gif")
+            DivoomAnimationResourceLoader::gif_file("test_data/animation_builder_tests/logo-16-0.gif")
                 .unwrap();
         assert_eq!(frames.len(), 1);
 
@@ -347,7 +347,7 @@ mod tests {
     #[test]
     fn divoom_animation_builder_can_build_animation_with_scaled() {
         let frames =
-            DivoomAnimationResourceLoader::gif("test_data/animation_builder_tests/logo-16-0.gif")
+            DivoomAnimationResourceLoader::gif_file("test_data/animation_builder_tests/logo-16-0.gif")
                 .unwrap();
         assert_eq!(frames.len(), 1);
 
@@ -364,7 +364,7 @@ mod tests {
 
     #[test]
     fn divoom_animation_builder_can_build_multi_frame_animation() {
-        let frames = DivoomAnimationResourceLoader::gif(
+        let frames = DivoomAnimationResourceLoader::gif_file(
             "test_data/animation_builder_tests/logo-16-rotate-4-frames.gif",
         )
         .unwrap();
