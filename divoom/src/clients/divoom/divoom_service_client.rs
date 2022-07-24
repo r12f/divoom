@@ -1,6 +1,7 @@
 use crate::clients::common::*;
 use crate::divoom_contracts::divoom::*;
 use crate::dto::*;
+use std::time::Duration;
 
 use serde::de::DeserializeOwned;
 use serde::Serialize;
@@ -28,19 +29,27 @@ impl Default for DivoomServiceClient {
 }
 
 impl DivoomServiceClient {
+    /// Create new DivoomServiceClient
     pub fn new() -> DivoomServiceClient {
-        DivoomServiceClient::with_server_url_base("https://app.divoom-gz.com".into())
+        DivoomServiceClient::with_options(None)
     }
 
-    pub fn with_server_url_base(server_url_base: String) -> DivoomServiceClient {
+    /// Create new DivoomServiceClient with options
+    pub fn with_options(timeout: Option<Duration>) -> DivoomServiceClient {
+        DivoomServiceClient::with_server_url_base("https://app.divoom-gz.com".into(), timeout)
+    }
+
+    /// Create new DivoomServiceClient with specific server URL
+    pub fn with_server_url_base(
+        server_url_base: String,
+        timeout: Option<Duration>,
+    ) -> DivoomServiceClient {
         DivoomServiceClient {
-            client: DivoomRestAPIClient {
-                server_url_base,
-                http_client: reqwest::Client::new(),
-            },
+            client: DivoomRestAPIClient::new(server_url_base, timeout),
         }
     }
 
+    /// Get the server url we send request to
     pub fn server_url_base(&self) -> &str {
         &self.client.server_url_base
     }
@@ -150,7 +159,7 @@ mod tests {
             .with_body("{\"ReturnCode\":0,\"ReturnMessage\":\"\",\"DeviceList\":[{\"DeviceName\":\"Pixoo\",\"DeviceId\":300000001,\"DevicePrivateIP\":\"192.168.0.2\"}]}")
             .create();
 
-        let divoom = DivoomServiceClient::with_server_url_base(mockito::server_url());
+        let divoom = DivoomServiceClient::with_server_url_base(mockito::server_url(), None);
         let devices = divoom.get_same_lan_devices().await.unwrap();
         assert_eq!(
             devices,
@@ -171,7 +180,7 @@ mod tests {
             .with_body("{\"ReturnCode\":0,\"ReturnMessage\":\"\",\"DialTypeList\":[\"Social\",\"financial\",\"Game\",\"normal\",\"HOLIDAYS\",\"TOOLS\",\"Sport\",\"Custom\",\"self\"]}")
             .create();
 
-        let divoom = DivoomServiceClient::with_server_url_base(mockito::server_url());
+        let divoom = DivoomServiceClient::with_server_url_base(mockito::server_url(), None);
         let devices = divoom.get_clock_type().await.unwrap();
         assert_eq!(
             devices,
@@ -198,7 +207,7 @@ mod tests {
             .with_body("{ \"ReturnCode\": 0, \"ReturnMessage\": \"\", \"TotalNum\": 100, \"DialList\": [ { \"ClockId\": 10, \"Name\": \"Classic Digital Clock\" } ]}")
             .create();
 
-        let divoom = DivoomServiceClient::with_server_url_base(mockito::server_url());
+        let divoom = DivoomServiceClient::with_server_url_base(mockito::server_url(), None);
         let devices = divoom.get_clock_list("Social".into(), 1).await.unwrap();
         assert_eq!(
             devices,
@@ -221,7 +230,7 @@ mod tests {
             .with_body("{\"ReturnCode\":0,\"ReturnMessage\":\"\",\"FontList\":[{\"id\":2,\"name\":\"16*16 English letters, Arabic figures,punctuation\",\"width\":\"16\",\"high\":\"16\",\"charset\":\"\",\"type\":0}]}")
             .create();
 
-        let divoom = DivoomServiceClient::with_server_url_base(mockito::server_url());
+        let divoom = DivoomServiceClient::with_server_url_base(mockito::server_url(), None);
         let devices = divoom.get_font_list().await.unwrap();
         assert_eq!(
             devices,

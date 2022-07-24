@@ -342,6 +342,18 @@ async fn handle_batch_api(
     }
 }
 
+async fn new_pixoo_client(common: &DivoomCliDeviceCommandCommonOpts) -> PixooClient {
+    PixooClient::with_options(
+        common
+            .device_address
+            .as_ref()
+            .expect("Device Address is not set!"),
+        common
+            .timeout
+            .map_or(None, |x| Some(Duration::from_millis(x))),
+    )
+}
+
 fn serialize_to_console<Data: Serialize>(v: Data, format: DivoomCliOutputFormat) {
     let output = match format {
         DivoomCliOutputFormat::Yaml => {

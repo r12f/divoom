@@ -2,17 +2,20 @@ use crate::{DivoomAPIError, DivoomAPIResult, DivoomServerErrorInfo};
 use log::debug;
 use reqwest::RequestBuilder;
 use serde::de::DeserializeOwned;
+use std::time::Duration;
 
 pub struct DivoomRestAPIClient {
     pub server_url_base: String,
     pub http_client: reqwest::Client,
+    pub timeout: Duration,
 }
 
 impl DivoomRestAPIClient {
-    pub fn new(server_url_base: String) -> DivoomRestAPIClient {
+    pub fn new(server_url_base: String, timeout: Option<Duration>) -> DivoomRestAPIClient {
         DivoomRestAPIClient {
             server_url_base,
             http_client: reqwest::Client::new(),
+            timeout: timeout.unwrap_or(Duration::from_secs(2)),
         }
     }
 
@@ -63,8 +66,10 @@ impl DivoomRestAPIClient {
 
     async fn send_raw_request_with_request_builder(
         &self,
-        request: RequestBuilder,
+        mut request: RequestBuilder,
     ) -> DivoomAPIResult<String> {
+        request = request.timeout(self.timeout);
+
         let response = request.send().await?;
         debug!(
             "Response header received: StatusCode = {}",

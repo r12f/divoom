@@ -403,7 +403,10 @@ mod tests {
 
     #[test]
     fn pixoo_command_builder_should_work_with_channel_commands_in_batch_mode() {
-        let client = Rc::new(DivoomRestAPIClient::new("http://192.168.0.123".to_string()));
+        let client = Rc::new(DivoomRestAPIClient::new(
+            "http://192.168.0.123".to_string(),
+            None,
+        ));
         let builder = PixooCommandBuilder::start_batch(client)
             .select_channel(DivoomChannelType::Visualizer)
             .get_current_channel()
@@ -422,7 +425,10 @@ mod tests {
 
     #[test]
     fn pixoo_command_builder_should_work_with_system_commands_in_batch_mode() {
-        let client = Rc::new(DivoomRestAPIClient::new("http://192.168.0.123".to_string()));
+        let client = Rc::new(DivoomRestAPIClient::new(
+            "http://192.168.0.123".to_string(),
+            None,
+        ));
         let builder = PixooCommandBuilder::start_batch(client)
             .get_device_settings()
             .get_device_time()
@@ -447,7 +453,10 @@ mod tests {
 
     #[test]
     fn pixoo_command_builder_should_work_with_tool_commands_in_batch_mode() {
-        let client = Rc::new(DivoomRestAPIClient::new("http://192.168.0.123".to_string()));
+        let client = Rc::new(DivoomRestAPIClient::new(
+            "http://192.168.0.123".to_string(),
+            None,
+        ));
         let builder = PixooCommandBuilder::start_batch(client)
             .set_countdown_tool(10, 20, DivoomToolCountdownAction::Start)
             .set_noise_tool(DivoomToolNoiseAction::Start)
@@ -494,7 +503,10 @@ mod tests {
             .frames
             .insert(3, "MockAnotherBase64EncodedString".to_string());
 
-        let client = Rc::new(DivoomRestAPIClient::new("http://192.168.0.123".to_string()));
+        let client = Rc::new(DivoomRestAPIClient::new(
+            "http://192.168.0.123".to_string(),
+            None,
+        ));
         let builder = PixooCommandBuilder::start_batch(client)
             .play_gif_file(
                 DivoomFileAnimationSourceType::Url,
@@ -516,7 +528,10 @@ mod tests {
 
     #[test]
     fn pixoo_command_builder_should_work_with_batch_commands_in_batch_mode() {
-        let client = Rc::new(DivoomRestAPIClient::new("http://192.168.0.123".to_string()));
+        let client = Rc::new(DivoomRestAPIClient::new(
+            "http://192.168.0.123".to_string(),
+            None,
+        ));
         let builder = PixooCommandBuilder::start_batch(client)
             .execute_commands_from_url("http://example.com/commands.txt".to_string());
 
@@ -529,7 +544,10 @@ mod tests {
 
     #[test]
     fn pixoo_command_builder_should_work_with_raw_commands_in_batch_mode() {
-        let client = Rc::new(DivoomRestAPIClient::new("http://192.168.0.123".to_string()));
+        let client = Rc::new(DivoomRestAPIClient::new(
+            "http://192.168.0.123".to_string(),
+            None,
+        ));
         let builder = PixooCommandBuilder::start_batch(client)
             .send_raw_request("{ \"Command\": \"Device/SetHighLightMode\", \"Mode\": 0 }".into());
 
