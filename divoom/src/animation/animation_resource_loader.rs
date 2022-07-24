@@ -6,7 +6,14 @@ use tiny_skia::Pixmap;
 pub struct DivoomAnimationResourceLoader {}
 
 impl DivoomAnimationResourceLoader {
+    /// Load from local png file
+    pub fn png(file_path: &str) -> DivoomAPIResult<Pixmap> {
+        let frame = Pixmap::load_png(file_path)?;
+        Ok(frame)
+    }
+
     /// Load from local gif file
+    #[cfg(feature = "resource-loader-gif")]
     pub fn gif(file_path: &str) -> DivoomAPIResult<Vec<Pixmap>> {
         let mut frames = vec![];
         let input = File::open(file_path)?;
@@ -26,6 +33,12 @@ impl DivoomAnimationResourceLoader {
     }
 }
 
+impl From<png::DecodingError> for DivoomAPIError {
+    fn from(err: png::DecodingError) -> Self {
+        DivoomAPIError::ResourceDecodeError(err.to_string())
+    }
+}
+
 impl From<gif::DecodingError> for DivoomAPIError {
     fn from(err: gif::DecodingError) -> Self {
         DivoomAPIError::ResourceDecodeError(err.to_string())
@@ -35,6 +48,21 @@ impl From<gif::DecodingError> for DivoomAPIError {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn divoom_resource_loader_can_load_png_file() {
+        let frame =
+            DivoomAnimationResourceLoader::png("test_data/animation_builder_tests/logo.png")
+                .unwrap();
+
+        let non_zero_bits_count = frame
+            .data()
+            .as_ref()
+            .iter()
+            .filter(|x| **x != 0u8)
+            .count();
+        assert_ne!(non_zero_bits_count, 0);
+    }
 
     #[test]
     fn divoom_resource_loader_can_load_gif_file() {
