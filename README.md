@@ -31,6 +31,13 @@ clock
 
 ## How to use
 
+To use this library, please add the following into the dependencies in the `Cargo.toml` file:
+
+```toml
+[dependencies]
+divoom = "0.1"
+```
+
 The library contains 2 major parts:
 
 - Divoom service APIs, that is used for talking to Divoom's backend service for device discovery etc.
