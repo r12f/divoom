@@ -50,6 +50,21 @@ mod tests {
     use super::*;
 
     #[test]
+    fn divoom_resource_loader_can_load_png_file() {
+        let frame =
+            DivoomAnimationResourceLoader::png("test_data/animation_builder_tests/logo.png")
+                .unwrap();
+
+        let non_zero_bits_count = frame
+            .data()
+            .as_ref()
+            .iter()
+            .filter(|x| **x != 0u8)
+            .count();
+        assert_ne!(non_zero_bits_count, 0);
+    }
+
+    #[test]
     fn divoom_resource_loader_can_load_gif_file() {
         let frames =
             DivoomAnimationResourceLoader::gif("test_data/animation_builder_tests/logo.gif")
