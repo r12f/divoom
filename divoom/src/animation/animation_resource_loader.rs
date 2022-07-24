@@ -7,6 +7,7 @@ pub struct DivoomAnimationResourceLoader {}
 
 impl DivoomAnimationResourceLoader {
     /// Load from local gif file
+    #[cfg(feature = "resource-loader-gif")]
     pub fn gif(file_path: &str) -> DivoomAPIResult<Vec<Pixmap>> {
         let mut frames = vec![];
         let input = File::open(file_path)?;
