@@ -2,17 +2,20 @@ use crate::{DivoomAPIError, DivoomAPIResult, DivoomServerErrorInfo};
 use log::debug;
 use reqwest::RequestBuilder;
 use serde::de::DeserializeOwned;
+use std::time::Duration;
 
 pub struct DivoomRestAPIClient {
     pub server_url_base: String,
     pub http_client: reqwest::Client,
+    pub timeout: Duration,
 }
 
 impl DivoomRestAPIClient {
-    pub fn new(server_url_base: String) -> DivoomRestAPIClient {
+    pub fn new(server_url_base: String, timeout: Option<Duration>) -> DivoomRestAPIClient {
         DivoomRestAPIClient {
             server_url_base,
             http_client: reqwest::Client::new(),
+            timeout: timeout.unwrap_or(Duration::from_secs(2)),
         }
     }
 
@@ -21,7 +24,12 @@ impl DivoomRestAPIClient {
         url_path: &str,
     ) -> DivoomAPIResult<TResp> {
         let url = format!("{}{}", self.server_url_base, url_path);
-        let request = self.http_client.post(url);
+        debug!(
+            "Sending request without body: Url = \"{}\", Timeout = {:?}",
+            url, self.timeout
+        );
+
+        let request = self.http_client.post(url).timeout(self.timeout);
         let response = self.send_request_with_request_builder(request).await?;
         Ok(response)
     }
@@ -32,9 +40,12 @@ impl DivoomRestAPIClient {
         body: String,
     ) -> DivoomAPIResult<TResp> {
         let url = format!("{}{}", self.server_url_base, url_path);
-        debug!("Sending request: Url = \"{}\", Body = \"{}\"", url, body);
+        debug!(
+            "Sending request: Url = \"{}\", Body = \"{}\", Timeout = {:?}",
+            url, body, self.timeout
+        );
 
-        let request = self.http_client.post(url).body(body);
+        let request = self.http_client.post(url).body(body).timeout(self.timeout);
         let response = self.send_request_with_request_builder(request).await?;
         Ok(response)
     }
@@ -45,9 +56,12 @@ impl DivoomRestAPIClient {
         body: String,
     ) -> DivoomAPIResult<String> {
         let url = format!("{}{}", self.server_url_base, url_path);
-        debug!("Sending request: Url = \"{}\", Body = \"{}\"", url, body);
+        debug!(
+            "Sending request: Url = \"{}\", Body = \"{}\", Timeout = {:?}",
+            url, body, self.timeout
+        );
 
-        let request = self.http_client.post(url).body(body);
+        let request = self.http_client.post(url).body(body).timeout(self.timeout);
         let response = self.send_raw_request_with_request_builder(request).await?;
         Ok(response)
     }

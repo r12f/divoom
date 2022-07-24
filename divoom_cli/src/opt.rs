@@ -27,6 +27,9 @@ pub struct DivoomCliDeviceCommandCommonOpts {
 
     #[structopt(short, long, default_value = "yaml", help = "Output format.")]
     pub output: DivoomCliOutputFormat,
+
+    #[structopt(short, long, help = "Timeout in milliseconds.")]
+    pub timeout: Option<u64>,
 }
 
 #[derive(StructOpt, Debug, Copy, Clone)]

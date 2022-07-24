@@ -72,12 +72,18 @@ macro_rules! impl_pixoo_client_api {
 
 /// Ctor
 impl PixooClient {
+    /// Create new PixooClient
     pub fn new(device_address: &str) -> PixooClient {
+        PixooClient::with_options(device_address, None)
+    }
+
+    /// Create new PixooClient with options
+    pub fn with_options(device_address: &str, timeout: Option<Duration>) -> PixooClient {
         PixooClient {
-            client: Rc::new(DivoomRestAPIClient::new(format!(
-                "http://{}",
-                device_address
-            ))),
+            client: Rc::new(DivoomRestAPIClient::new(
+                format!("http://{}", device_address),
+                timeout,
+            )),
         }
     }
 }
@@ -319,12 +325,19 @@ impl PixooClient {
         &self,
         canvas_size: u32,
         speed: Duration,
-        file_path: &str
+        file_path: &str,
     ) -> DivoomAPIResult<()> {
         let animation_builder = DivoomAnimationBuilder::new(canvas_size, speed)?;
         let gif = DivoomAnimationResourceLoader::gif(file_path)?;
         let animation = animation_builder
-            .draw_frames_fit(&gif, 0, DivoomDrawFitMode::Center, 0.0, 1.0, BlendMode::default())
+            .draw_frames_fit(
+                &gif,
+                0,
+                DivoomDrawFitMode::Center,
+                0.0,
+                1.0,
+                BlendMode::default(),
+            )
             .build();
         self.send_image_animation(animation).await
     }
