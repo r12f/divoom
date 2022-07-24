@@ -1,5 +1,6 @@
 use crate::{DivoomAPIError, DivoomAPIResult};
 use std::fs::File;
+use std::io::BufReader;
 use tiny_skia::Pixmap;
 
 /// Load resources into a series of `tiny_skia::Pixmap`, so we can use them to build the animations.
@@ -9,6 +10,73 @@ impl DivoomAnimationResourceLoader {
     /// Load from local png file
     pub fn png(file_path: &str) -> DivoomAPIResult<Pixmap> {
         let frame = Pixmap::load_png(file_path)?;
+        Ok(frame)
+    }
+
+    /// Load from jpeg file
+    #[cfg(feature = "resource-loader-jpeg")]
+    pub fn jpeg(file_path: &str) -> DivoomAPIResult<Pixmap> {
+        let file = File::open(file_path)?;
+        let mut decoder = jpeg_decoder::Decoder::new(BufReader::new(file));
+        let pixels = decoder.decode()?;
+
+        let metadata = decoder.info().unwrap();
+        let mut frame = Pixmap::new(metadata.width as u32, metadata.height as u32).unwrap();
+
+        match metadata.pixel_format {
+            jpeg_decoder::PixelFormat::L8 => {
+                let mut frame_data_index = 0;
+                let frame_data = frame.data_mut();
+                for gray in pixels {
+                    frame_data[frame_data_index] = gray;
+                    frame_data[frame_data_index + 1] = gray;
+                    frame_data[frame_data_index + 2] = gray;
+                    frame_data[frame_data_index + 3] = 0xFF;
+                    frame_data_index += 4;
+                }
+            }
+
+            // From search, JPEG doesn't look like supports 16 bits image at all.
+            jpeg_decoder::PixelFormat::L16 => Err(DivoomAPIError::ResourceDecodeError(
+                "Unsupported file format: JPEG with 16-bits grayscale.".to_string(),
+            ))?,
+
+            jpeg_decoder::PixelFormat::RGB24 => {
+                let mut frame_data_index = 0;
+                let frame_data = frame.data_mut();
+                for rgb in pixels.chunks(3) {
+                    frame_data[frame_data_index] = rgb[0];
+                    frame_data[frame_data_index + 1] = rgb[1];
+                    frame_data[frame_data_index + 2] = rgb[2];
+                    frame_data[frame_data_index + 3] = 0xFF;
+                    frame_data_index += 4;
+                }
+            }
+
+            jpeg_decoder::PixelFormat::CMYK32 => {
+                let mut frame_data_index = 0;
+                let frame_data = frame.data_mut();
+                for pixel in pixels.chunks(4) {
+                    // Reversed RGB to CMYK formula from https://www.codeproject.com/Articles/4488/XCmyk-CMYK-to-RGB-Calculator-with-source-code.
+                    // - Black   = minimum(1-Red,1-Green,1-Blue)
+                    // - Cyan    = (1-Red-Black)/(1-Black)
+                    // - Magenta = (1-Green-Black)/(1-Black)
+                    // - Yellow  = (1-Blue-Black)/(1-Black)
+                    let (c, m, y, k) = (
+                        pixel[0] as f32 / 255.0,
+                        pixel[1] as f32 / 255.0,
+                        pixel[2] as f32 / 255.0,
+                        pixel[3] as f32 / 255.0,
+                    );
+                    frame_data[frame_data_index] = ((1.0 - c) * (1.0 - k) * 255.0) as u8;
+                    frame_data[frame_data_index + 1] = ((1.0 - m) * (1.0 - k) * 255.0) as u8;
+                    frame_data[frame_data_index + 2] = ((1.0 - y) * (1.0 - k) * 255.0) as u8;
+                    frame_data[frame_data_index + 3] = 0xFF;
+                    frame_data_index += 4;
+                }
+            }
+        };
+
         Ok(frame)
     }
 
@@ -39,8 +107,16 @@ impl From<png::DecodingError> for DivoomAPIError {
     }
 }
 
+#[cfg(feature = "resource-loader-gif")]
 impl From<gif::DecodingError> for DivoomAPIError {
     fn from(err: gif::DecodingError) -> Self {
+        DivoomAPIError::ResourceDecodeError(err.to_string())
+    }
+}
+
+#[cfg(feature = "resource-loader-jpeg")]
+impl From<jpeg_decoder::Error> for DivoomAPIError {
+    fn from(err: jpeg_decoder::Error) -> Self {
         DivoomAPIError::ResourceDecodeError(err.to_string())
     }
 }
@@ -55,12 +131,38 @@ mod tests {
             DivoomAnimationResourceLoader::png("test_data/animation_builder_tests/logo.png")
                 .unwrap();
 
-        let non_zero_bits_count = frame
-            .data()
-            .as_ref()
-            .iter()
-            .filter(|x| **x != 0u8)
-            .count();
+        let non_zero_bits_count = frame.data().as_ref().iter().filter(|x| **x != 0u8).count();
+        assert_ne!(non_zero_bits_count, 0);
+    }
+
+    #[test]
+    fn divoom_resource_loader_can_load_jpeg_grayscale_file() {
+        let frame = DivoomAnimationResourceLoader::jpeg(
+            "test_data/animation_builder_tests/logo_grayscale.jpg",
+        )
+        .unwrap();
+
+        let non_zero_bits_count = frame.data().as_ref().iter().filter(|x| **x != 0u8).count();
+        assert_ne!(non_zero_bits_count, 0);
+    }
+
+    #[test]
+    fn divoom_resource_loader_can_load_jpeg_rgb_file() {
+        let frame =
+            DivoomAnimationResourceLoader::jpeg("test_data/animation_builder_tests/logo_rgb.jpg")
+                .unwrap();
+
+        let non_zero_bits_count = frame.data().as_ref().iter().filter(|x| **x != 0u8).count();
+        assert_ne!(non_zero_bits_count, 0);
+    }
+
+    #[test]
+    fn divoom_resource_loader_can_load_jpeg_cmyk_file() {
+        let frame =
+            DivoomAnimationResourceLoader::jpeg("test_data/animation_builder_tests/logo_cmyk.jpg")
+                .unwrap();
+
+        let non_zero_bits_count = frame.data().as_ref().iter().filter(|x| **x != 0u8).count();
         assert_ne!(non_zero_bits_count, 0);
     }
 
