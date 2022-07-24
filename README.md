@@ -21,7 +21,7 @@ println!(
 // Output: clock
 ```
 
-We have a command line tool as well to help people use and serve as demo! For more docs, feel free to check it here: <https://github.com/r12f/divoom/blob/main/divoom_cli/README.md>.
+We have a command line tool as well to help people use and serve as demo! For more docs, feel free to check it here: <https://github.com/r12f/divoom/tree/main/divoom_cli>.
 
 ```bash
 # Check current channel
