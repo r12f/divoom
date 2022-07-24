@@ -1,6 +1,5 @@
 use divoom::*;
 use std::str::FromStr;
-use std::time::Duration;
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]

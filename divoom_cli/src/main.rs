@@ -41,12 +41,7 @@ async fn main() -> DivoomAPIResult<()> {
         }
 
         DivoomCliSubCommand::Raw { request } => {
-            let pixoo = PixooClient::new(
-                opts.common
-                    .device_address
-                    .as_ref()
-                    .expect("Device Address is not set!"),
-            );
+            let pixoo = new_pixoo_client(&opts.common);
             let response = pixoo.send_raw_request(request).await?;
             serialize_to_console(response, opts.common.output);
             Ok(())
@@ -58,12 +53,7 @@ async fn handle_channel_api(
     common: &DivoomCliDeviceCommandCommonOpts,
     channel_command: DivoomCliChannelCommand,
 ) -> DivoomAPIResult<()> {
-    let pixoo = PixooClient::new(
-        common
-            .device_address
-            .as_ref()
-            .expect("Device Address is not set!"),
-    );
+    let pixoo = new_pixoo_client(common);
 
     match channel_command {
         DivoomCliChannelCommand::Get => {
@@ -100,12 +90,7 @@ async fn handle_system_api(
     common: &DivoomCliDeviceCommandCommonOpts,
     system_command: DivoomCliSystemCommand,
 ) -> DivoomAPIResult<()> {
-    let pixoo = PixooClient::new(
-        common
-            .device_address
-            .as_ref()
-            .expect("Device Address is not set!"),
-    );
+    let pixoo = new_pixoo_client(common);
 
     match system_command {
         DivoomCliSystemCommand::GetSettings => {
@@ -165,12 +150,7 @@ async fn handle_tool_api(
     common: &DivoomCliDeviceCommandCommonOpts,
     tool_command: DivoomCliToolCommand,
 ) -> DivoomAPIResult<()> {
-    let pixoo = PixooClient::new(
-        common
-            .device_address
-            .as_ref()
-            .expect("Device Address is not set!"),
-    );
+    let pixoo = new_pixoo_client(common);
 
     match tool_command {
         DivoomCliToolCommand::Countdown {
@@ -212,12 +192,7 @@ async fn handle_animation_api(
             active_time_in_cycle,
             off_time_in_cycle,
         } => {
-            let pixoo = PixooClient::new(
-                common
-                    .device_address
-                    .as_ref()
-                    .expect("Device Address is not set!"),
-            );
+            let pixoo = new_pixoo_client(common);
             pixoo
                 .play_buzzer(play_total_time, active_time_in_cycle, off_time_in_cycle)
                 .await
@@ -229,12 +204,7 @@ async fn handle_gif_animation_api(
     common: &DivoomCliDeviceCommandCommonOpts,
     gif_animation_command: DivoomCliGifAnimationCommand,
 ) -> DivoomAPIResult<()> {
-    let pixoo = PixooClient::new(
-        common
-            .device_address
-            .as_ref()
-            .expect("Device Address is not set!"),
-    );
+    let pixoo = new_pixoo_client(common);
 
     match gif_animation_command {
         DivoomCliGifAnimationCommand::Play(gif) => {
@@ -265,12 +235,7 @@ async fn handle_image_animation_api(
     common: &DivoomCliDeviceCommandCommonOpts,
     image_animation_command: DivoomCliImageAnimationCommand,
 ) -> DivoomAPIResult<()> {
-    let pixoo = PixooClient::new(
-        common
-            .device_address
-            .as_ref()
-            .expect("Device Address is not set!"),
-    );
+    let pixoo = new_pixoo_client(common);
 
     match image_animation_command {
         DivoomCliImageAnimationCommand::GetNextId => {
@@ -308,12 +273,7 @@ async fn handle_text_animation_api(
     common: &DivoomCliDeviceCommandCommonOpts,
     text_animation_command: DivoomCliTextAnimationCommand,
 ) -> DivoomAPIResult<()> {
-    let pixoo = PixooClient::new(
-        common
-            .device_address
-            .as_ref()
-            .expect("Device Address is not set!"),
-    );
+    let pixoo = new_pixoo_client(common);
 
     match text_animation_command {
         DivoomCliTextAnimationCommand::Clear => pixoo.clear_all_text_area().await,
@@ -328,12 +288,7 @@ async fn handle_batch_api(
     common: &DivoomCliDeviceCommandCommonOpts,
     batch_command: DivoomCliBatchCommand,
 ) -> DivoomAPIResult<()> {
-    let pixoo = PixooClient::new(
-        common
-            .device_address
-            .as_ref()
-            .expect("Device Address is not set!"),
-    );
+    let pixoo = new_pixoo_client(common);
 
     match batch_command {
         DivoomCliBatchCommand::RunUrl { command_url } => {
@@ -342,7 +297,7 @@ async fn handle_batch_api(
     }
 }
 
-async fn new_pixoo_client(common: &DivoomCliDeviceCommandCommonOpts) -> PixooClient {
+fn new_pixoo_client(common: &DivoomCliDeviceCommandCommonOpts) -> PixooClient {
     PixooClient::with_options(
         common
             .device_address

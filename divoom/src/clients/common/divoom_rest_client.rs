@@ -24,7 +24,12 @@ impl DivoomRestAPIClient {
         url_path: &str,
     ) -> DivoomAPIResult<TResp> {
         let url = format!("{}{}", self.server_url_base, url_path);
-        let request = self.http_client.post(url);
+        debug!(
+            "Sending request without body: Url = \"{}\", Timeout = {:?}",
+            url, self.timeout
+        );
+
+        let request = self.http_client.post(url).timeout(self.timeout);
         let response = self.send_request_with_request_builder(request).await?;
         Ok(response)
     }
@@ -35,9 +40,12 @@ impl DivoomRestAPIClient {
         body: String,
     ) -> DivoomAPIResult<TResp> {
         let url = format!("{}{}", self.server_url_base, url_path);
-        debug!("Sending request: Url = \"{}\", Body = \"{}\"", url, body);
+        debug!(
+            "Sending request: Url = \"{}\", Body = \"{}\", Timeout = {:?}",
+            url, body, self.timeout
+        );
 
-        let request = self.http_client.post(url).body(body);
+        let request = self.http_client.post(url).body(body).timeout(self.timeout);
         let response = self.send_request_with_request_builder(request).await?;
         Ok(response)
     }
@@ -48,9 +56,12 @@ impl DivoomRestAPIClient {
         body: String,
     ) -> DivoomAPIResult<String> {
         let url = format!("{}{}", self.server_url_base, url_path);
-        debug!("Sending request: Url = \"{}\", Body = \"{}\"", url, body);
+        debug!(
+            "Sending request: Url = \"{}\", Body = \"{}\", Timeout = {:?}",
+            url, body, self.timeout
+        );
 
-        let request = self.http_client.post(url).body(body);
+        let request = self.http_client.post(url).body(body).timeout(self.timeout);
         let response = self.send_raw_request_with_request_builder(request).await?;
         Ok(response)
     }
@@ -66,10 +77,8 @@ impl DivoomRestAPIClient {
 
     async fn send_raw_request_with_request_builder(
         &self,
-        mut request: RequestBuilder,
+        request: RequestBuilder,
     ) -> DivoomAPIResult<String> {
-        request = request.timeout(self.timeout);
-
         let response = request.send().await?;
         debug!(
             "Response header received: StatusCode = {}",
