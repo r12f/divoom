@@ -107,7 +107,7 @@ impl DivoomAnimationResourceLoader {
         DivoomAnimationResourceLoader::gif(input)
     }
 
-    /// Load git resource from Read trait
+    /// Load gif resource from Read trait
     #[cfg(feature = "resource-loader-gif")]
     pub fn gif<R: Read>(reader: R) -> DivoomAPIResult<Vec<Pixmap>> {
         let mut frames = vec![];
@@ -174,9 +174,10 @@ mod tests {
 
     #[test]
     fn divoom_resource_loader_can_load_jpeg_rgb_file() {
-        let frame =
-            DivoomAnimationResourceLoader::jpeg_file("test_data/animation_builder_tests/logo_rgb.jpg")
-                .unwrap();
+        let frame = DivoomAnimationResourceLoader::jpeg_file(
+            "test_data/animation_builder_tests/logo_rgb.jpg",
+        )
+        .unwrap();
 
         let non_zero_bits_count = frame.data().as_ref().iter().filter(|x| **x != 0u8).count();
         assert_ne!(non_zero_bits_count, 0);
@@ -184,9 +185,10 @@ mod tests {
 
     #[test]
     fn divoom_resource_loader_can_load_jpeg_cmyk_file() {
-        let frame =
-            DivoomAnimationResourceLoader::jpeg_file("test_data/animation_builder_tests/logo_cmyk.jpg")
-                .unwrap();
+        let frame = DivoomAnimationResourceLoader::jpeg_file(
+            "test_data/animation_builder_tests/logo_cmyk.jpg",
+        )
+        .unwrap();
 
         let non_zero_bits_count = frame.data().as_ref().iter().filter(|x| **x != 0u8).count();
         assert_ne!(non_zero_bits_count, 0);
