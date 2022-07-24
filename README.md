@@ -32,6 +32,13 @@ clock
 
 ## How to use
 
+To use this library, please add the following into the dependencies in the `Cargo.toml` file:
+
+```toml
+[dependencies]
+divoom = "0.1"
+```
+
 The library contains 2 major parts:
 
 - Divoom service APIs, that is used for talking to Divoom's backend service for device discovery etc.
@@ -131,7 +138,7 @@ all the GIF frames into it one by one. To help with this process, we created a r
 use divoom::*;
 
 // Load the resource.
-let frames = DivoomAnimationResourceLoader::gif("test_data/animation_builder_tests/logo-16-rotate-4-frames.gif").unwrap();
+let frames = DivoomAnimationResourceLoader::gif_file("test_data/animation_builder_tests/logo-16-rotate-4-frames.gif").unwrap();
 
 // Build animation with 16 pixel canvas and 100ms frame play speed.
 let builder = DivoomAnimationBuilder::new(16, Duration::from_millis(100)).unwrap();
@@ -150,9 +157,9 @@ let pixoo = PixooClient::new("192.168.0.123");
 pixoo.send_gif_as_animation(16, Duration::from_millis(100), "test_data/animation_builder_tests/logo-16-rotate-4-frames.gif").await
 ```
 
-For more on how to use it, feel free to check our doc here: <https://docs.rs/divoom/latest/divoom/struct.DivoomAnimationBuilder.html>.
+Besides gif, we also support png and jpeg format. And besides reading from file, we also support loading resource from any `Read` trait. For more on how to use it, feel free to check our doc here: <https://docs.rs/divoom/latest/divoom/struct.DivoomAnimationBuilder.html>.
 
-And if you don't want this animation builder, we can exclude it by specifying the features with:
+And for any reason, if you don't want the builtin animation builder, we can exclude it by specifying the features with:
 
 ```toml
 [dependencies]

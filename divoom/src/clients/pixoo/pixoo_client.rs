@@ -328,7 +328,7 @@ impl PixooClient {
         file_path: &str,
     ) -> DivoomAPIResult<()> {
         let animation_builder = DivoomAnimationBuilder::new(canvas_size, speed)?;
-        let gif = DivoomAnimationResourceLoader::gif(file_path)?;
+        let gif = DivoomAnimationResourceLoader::gif_file(file_path)?;
         let animation = animation_builder
             .draw_frames_fit(
                 &gif,
@@ -361,7 +361,7 @@ impl PixooClient {
         blend: BlendMode,
     ) -> DivoomAPIResult<()> {
         let animation_builder = DivoomAnimationBuilder::new(canvas_size, speed)?;
-        let gif = DivoomAnimationResourceLoader::gif(file_path)?;
+        let gif = DivoomAnimationResourceLoader::gif_file(file_path)?;
         let animation = animation_builder
             .draw_frames_fit(&gif, 0, fit, rotation, opacity, blend)
             .build();
