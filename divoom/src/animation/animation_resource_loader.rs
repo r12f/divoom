@@ -6,6 +6,12 @@ use tiny_skia::Pixmap;
 pub struct DivoomAnimationResourceLoader {}
 
 impl DivoomAnimationResourceLoader {
+    /// Load from local png file
+    pub fn png(file_path: &str) -> DivoomAPIResult<Pixmap> {
+        let frame = Pixmap::load_png(file_path)?;
+        Ok(frame)
+    }
+
     /// Load from local gif file
     #[cfg(feature = "resource-loader-gif")]
     pub fn gif(file_path: &str) -> DivoomAPIResult<Vec<Pixmap>> {
@@ -24,6 +30,12 @@ impl DivoomAnimationResourceLoader {
         }
 
         Ok(frames)
+    }
+}
+
+impl From<png::DecodingError> for DivoomAPIError {
+    fn from(err: png::DecodingError) -> Self {
+        DivoomAPIError::ResourceDecodeError(err.to_string())
     }
 }
 
