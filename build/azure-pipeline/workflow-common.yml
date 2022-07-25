@@ -246,6 +246,14 @@ stages:
             env:
               BUILD_PROFILE: "release"
               BUILD_ARCH: $(target_arch)
+
+          - script: just pack-scoop divoom_cli
+            displayName: Pack divoom-cli scoop package source
+            condition: and(succeeded(), eq(variables['target_os'], 'windows'), eq(variables['target_arch'], 'x86_64'))
+            env:
+              BUILD_PROFILE: "release"
+              BUILD_ARCH: $(target_arch)
+
           #
           # Copy all files to publish folder
           #
@@ -314,6 +322,12 @@ stages:
 
           - script: just pack-choco
             displayName: Pack chocolatey package for release
+            workingDirectory: '$(System.DefaultWorkingDirectory)/r12f.divoom'
+            env:
+              BUILD_VERSION: $(Build.Version)
+
+          - script: just pack-scoop
+            displayName: Pack scoop package for release
             workingDirectory: '$(System.DefaultWorkingDirectory)/r12f.divoom'
             env:
               BUILD_VERSION: $(Build.Version)

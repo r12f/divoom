@@ -21,6 +21,7 @@ RELEASE_CRATES_FOLDER := RELEASE_FOLDER + "/crates"
 RELEASE_NUGET_FOLDER := RELEASE_FOLDER + "/nuget"
 RELEASE_GITHUB_FOLDER := RELEASE_FOLDER + "/github"
 RELEASE_CHOCO_FOLDER := RELEASE_FOLDER + "/choco"
+RELEASE_SCOOP_FOLDER := RELEASE_FOLDER + "/scoop"
 
 #
 # Preparation tasks
@@ -83,6 +84,22 @@ _pack-choco-with-package PACKAGE="divoom_cli":
 
     @Write-Host "Generating final chocolatey package to {{RELEASE_CHOCO_FOLDER}} ..."
     choco pack "{{INTERMEDIATE_CHOCO_PACKAGE_FOLDER}}/{{PACKAGE}}/choco.nuspec" --outputdirectory "{{RELEASE_CHOCO_FOLDER}}"
+
+#
+# Pack scoop
+#
+pack-scoop:
+    if (Test-Path "{{RELEASE_SCOOP_FOLDER}}") { Remove-Item -Path "{{RELEASE_SCOOP_FOLDER}}" -Recurse -Force }
+    New-Item -ItemType Directory -Path "{{RELEASE_SCOOP_FOLDER}}" -Force | Out-Null
+
+    just _pack-scoop-with-package divoom_cli
+
+_pack-scoop-with-package PACKAGE="divoom_cli":
+    @Write-Host "Generating final scoop package for {{PACKAGE}} to {{RELEASE_SCOOP_FOLDER}} ..."
+
+    just eval-template-dir "{{BUILD_FOLDER_PREFIX}}windowsx64/{{PACKAGE}}/scoop-source" \
+        "{{RELEASE_SCOOP_FOLDER}}" \
+        "{{RELEASE_TEMPLATE_PARAMETER_FOLDER}}" \
 
 #
 # Prepare packages for crate.io release

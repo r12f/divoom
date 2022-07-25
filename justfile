@@ -400,6 +400,17 @@ pack-choco PACKAGE="divoom_cli":
       "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters" \
       "{{PUBLISH_CHECKSUMS_DIR}}"
 
+pack-scoop PACKAGE="divoom_cli":
+    @Write-Host "Current invocation directory: {{invocation_directory()}}"
+
+    if (Test-Path "{{PUBLISH_DIR}}/{{PACKAGE}}/scoop-source") { Remove-Item -Path "{{PUBLISH_DIR}}/{{PACKAGE}}/scoop-source" -Recurse -Force }
+    New-Item -ItemType Directory -Path "{{PUBLISH_DIR}}/{{PACKAGE}}/scoop-source" -Force | Out-Null
+
+    just eval-template "{{justfile_directory()}}/build/package-templates/scoop/scoop.json" \
+      "{{PUBLISH_DIR}}/{{PACKAGE}}/scoop-source/{{replace(PACKAGE, '_', '-')}}.json" \
+      "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters" \
+      "{{PUBLISH_CHECKSUMS_DIR}}"
+
 #
 # Publish tasks:
 #
