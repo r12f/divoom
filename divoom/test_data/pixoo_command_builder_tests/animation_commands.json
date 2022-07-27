@@ -14,7 +14,7 @@
     },
     {
       "Command": "Draw/SendHttpGif",
-      "PicData": "MockFirstBase64EncodedString",
+      "PicData": "AQID",
       "PicId": 1,
       "PicNum": 5,
       "PicOffset": 0,
@@ -23,7 +23,7 @@
     },
     {
       "Command": "Draw/SendHttpGif",
-      "PicData": "MockAnotherBase64EncodedString",
+      "PicData": "BAUG",
       "PicId": 1,
       "PicNum": 5,
       "PicOffset": 3,

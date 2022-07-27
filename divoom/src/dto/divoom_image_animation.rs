@@ -1,6 +1,7 @@
 use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 use std::collections::BTreeMap;
 use std::fmt;
+use std::io::Write;
 use std::str::FromStr;
 
 /// Definition of image animations.
@@ -23,16 +24,16 @@ pub struct DivoomImageAnimation {
 
 pub const DIVOOM_IMAGE_ANIMATION_ID_AUTO: i32 = -1;
 
-/// The data of this frame. It is a base64 encoded RGB data.
+/// The data of this frame.
 ///
-/// The decoded data format looks like below, which goes row by row and column by column, from left to right and top to down,
+/// The data format looks like below, which goes row by row and column by column, from left to right and top to down,
 /// e.g.: (0, 0), (0, 1), (0, 2), ..., (1, 0), (1, 1), (1, 2), ..., (2, 0), (2, 1), (2, 2), ...
 ///
 /// Hex data format looks like below:
 /// ```text
 /// RR GG BB RR GG BB RR GG BB ......
 /// ```
-pub type DivoomImageAnimationFrameData = String;
+pub type DivoomImageAnimationFrameData = Vec<u8>;
 
 /// Type of the image animations file source.
 #[derive(Debug, PartialOrd, PartialEq)]
@@ -44,3 +45,21 @@ pub enum DivoomFileAnimationSourceType {
 }
 
 impl_divoom_dto_enum_traits!(DivoomFileAnimationSourceType, LocalFile: "file", LocalFolder: "folder", Url: "url");
+
+impl DivoomImageAnimation {
+    #[cfg(feature = "resource-format-gif")]
+    pub fn save_gif<W: Write>(&self, image: W) -> anyhow::Result<()> {
+        let color_map = &[0xFF, 0xFF, 0xFF, 0, 0, 0];
+        let mut encoder = gif::Encoder::new(image, self.size as u16, self.size as u16, color_map)?;
+        encoder.set_repeat(gif::Repeat::Infinite)?;
+        for (_, frame_data) in &self.frames {
+            let mut frame = gif::Frame::default();
+            frame.width = self.size as u16;
+            frame.height = self.size as u16;
+            frame.buffer = std::borrow::Cow::Borrowed(&frame_data);
+            encoder.write_frame(&frame)?;
+        }
+
+        Ok(())
+    }
+}

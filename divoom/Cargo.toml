@@ -26,6 +26,7 @@ serde_json = "1.0.70"
 rgb = "0.8.33"
 base64 = "0.13.0"
 tiny-skia = { version = "0.7.0", optional = true }
+anyhow = "1.0.58"
 gif = { version = "0.11.4", optional = true }
 png = { version = "0.17", optional = true }
 jpeg-decoder = { version = "0.2", optional = true }
@@ -39,10 +40,10 @@ mockito = "0.31.0"
 
 
 [features]
-default = ["animation-builder", "resource-loader-full"]
+default = ["animation-builder", "resource-format-full"]
 
 animation-builder = ["dep:tiny-skia", "dep:png"]
 
-resource-loader-full = ["resource-loader-gif", "resource-loader-jpeg"]
-resource-loader-gif = ["dep:tiny-skia", "dep:gif"]
-resource-loader-jpeg = ["dep:tiny-skia", "dep:jpeg-decoder"]
+resource-format-full = ["resource-format-gif", "resource-format-jpeg"]
+resource-format-gif = ["dep:tiny-skia", "dep:gif"]
+resource-format-jpeg = ["dep:tiny-skia", "dep:jpeg-decoder"]
