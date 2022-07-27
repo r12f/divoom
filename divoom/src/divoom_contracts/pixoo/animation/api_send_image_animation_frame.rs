@@ -36,7 +36,7 @@ impl DivoomPixooCommandAnimationSendImageAnimationFrameRequestPayload {
                     pic_offset: entry.0 as i32,
                     pic_id: id,
                     pic_speed: animation.speed_in_ms,
-                    pic_data: entry.1,
+                    pic_data: base64::encode(entry.1),
                 },
             )
             .collect()

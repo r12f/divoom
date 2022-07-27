@@ -154,13 +154,11 @@ impl DivoomAnimationBuilder {
     }
 
     fn build_divoom_animation_frame_buffer(frame: &Pixmap) -> DivoomImageAnimationFrameData {
-        let divoom_frame_buffer: Vec<u8> = frame
+        frame
             .pixels()
             .iter()
             .flat_map(|p| once(p.red()).chain(once(p.green())).chain(once(p.blue())))
-            .collect();
-
-        base64::encode(divoom_frame_buffer)
+            .collect()
     }
 }
 
@@ -223,9 +221,9 @@ mod tests {
 
         let builder = DivoomAnimationBuilder::new(16, Duration::from_millis(100)).unwrap();
         let animation = builder.draw_frames(&frames, 0).build();
-        test_utils::assert_object_equal_with_baseline(
+        test_utils::assert_animation_equal_with_baseline(
             &animation,
-            "test_data/animation_builder_tests/single_frame_animation_expected.json",
+            "test_data/animation_builder_tests/expected_single_frame_animation.gif",
         );
     }
 
@@ -273,9 +271,9 @@ mod tests {
             )
             .build();
 
-        test_utils::assert_object_equal_with_baseline(
+        test_utils::assert_animation_equal_with_baseline(
             &animation,
-            "test_data/animation_builder_tests/animation_with_fit_expected.json",
+            "test_data/animation_builder_tests/expected_animation_with_fit.gif",
         );
     }
 
@@ -299,9 +297,9 @@ mod tests {
             )
             .build();
 
-        test_utils::assert_object_equal_with_baseline(
+        test_utils::assert_animation_equal_with_baseline(
             &animation,
-            "test_data/animation_builder_tests/animation_with_rotation_expected.json",
+            "test_data/animation_builder_tests/expected_animation_with_rotation.gif",
         );
     }
 
@@ -325,9 +323,9 @@ mod tests {
             )
             .build();
 
-        test_utils::assert_object_equal_with_baseline(
+        test_utils::assert_animation_equal_with_baseline(
             &animation,
-            "test_data/animation_builder_tests/animation_with_opacity_expected.json",
+            "test_data/animation_builder_tests/expected_animation_with_opacity.gif",
         );
     }
 
@@ -344,9 +342,9 @@ mod tests {
             .draw_frames_sized(&frames, 0, 6, 6, 28, 18, 0.0, 1.0, BlendMode::default())
             .build();
 
-        test_utils::assert_object_equal_with_baseline(
+        test_utils::assert_animation_equal_with_baseline(
             &animation,
-            "test_data/animation_builder_tests/animation_with_sized_expected.json",
+            "test_data/animation_builder_tests/expected_animation_with_sized.gif",
         );
     }
 
@@ -363,9 +361,9 @@ mod tests {
             .draw_frames_scaled(&frames, 0, 6, 6, 1.2, 0.8, 0.0, 1.0, BlendMode::default())
             .build();
 
-        test_utils::assert_object_equal_with_baseline(
+        test_utils::assert_animation_equal_with_baseline(
             &animation,
-            "test_data/animation_builder_tests/animation_with_scaled_expected.json",
+            "test_data/animation_builder_tests/expected_animation_with_scaled.gif",
         );
     }
 
@@ -379,9 +377,9 @@ mod tests {
 
         let builder = DivoomAnimationBuilder::new(16, Duration::from_millis(100)).unwrap();
         let animation = builder.draw_frames(&frames, 0).build();
-        test_utils::assert_object_equal_with_baseline(
+        test_utils::assert_animation_equal_with_baseline(
             &animation,
-            "test_data/animation_builder_tests/multi_frames_animation_expected.json",
+            "test_data/animation_builder_tests/expected_multi_frames_animation.gif",
         );
     }
 }

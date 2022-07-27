@@ -498,10 +498,10 @@ mod tests {
 
         image_animation
             .frames
-            .insert(0, "MockFirstBase64EncodedString".to_string());
+            .insert(0, vec![1, 2, 3]);
         image_animation
             .frames
-            .insert(3, "MockAnotherBase64EncodedString".to_string());
+            .insert(3, vec![4, 5, 6]);
 
         let client = Rc::new(DivoomRestAPIClient::new(
             "http://192.168.0.123".to_string(),

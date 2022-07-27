@@ -28,14 +28,14 @@ impl DivoomAnimationResourceLoader {
     }
 
     /// Load jpeg resource from local file
-    #[cfg(feature = "resource-loader-jpeg")]
+    #[cfg(feature = "resource-format-jpeg")]
     pub fn jpeg_file(file_path: &str) -> DivoomAPIResult<Pixmap> {
         let file = File::open(file_path)?;
         DivoomAnimationResourceLoader::jpeg(file)
     }
 
     /// Load jpeg resource from Read trait
-    #[cfg(feature = "resource-loader-jpeg")]
+    #[cfg(feature = "resource-format-jpeg")]
     pub fn jpeg<R: Read>(reader: R) -> DivoomAPIResult<Pixmap> {
         let mut decoder = jpeg_decoder::Decoder::new(BufReader::new(reader));
         let pixels = decoder.decode()?;
@@ -101,14 +101,14 @@ impl DivoomAnimationResourceLoader {
     }
 
     /// Load gif resource from local file
-    #[cfg(feature = "resource-loader-gif")]
+    #[cfg(feature = "resource-format-gif")]
     pub fn gif_file(file_path: &str) -> DivoomAPIResult<Vec<Pixmap>> {
         let input = File::open(file_path)?;
         DivoomAnimationResourceLoader::gif(input)
     }
 
     /// Load gif resource from Read trait
-    #[cfg(feature = "resource-loader-gif")]
+    #[cfg(feature = "resource-format-gif")]
     pub fn gif<R: Read>(reader: R) -> DivoomAPIResult<Vec<Pixmap>> {
         let mut frames = vec![];
 
@@ -133,14 +133,14 @@ impl From<png::DecodingError> for DivoomAPIError {
     }
 }
 
-#[cfg(feature = "resource-loader-gif")]
+#[cfg(feature = "resource-format-gif")]
 impl From<gif::DecodingError> for DivoomAPIError {
     fn from(err: gif::DecodingError) -> Self {
         DivoomAPIError::ResourceDecodeError(err.to_string())
     }
 }
 
-#[cfg(feature = "resource-loader-jpeg")]
+#[cfg(feature = "resource-format-jpeg")]
 impl From<jpeg_decoder::Error> for DivoomAPIError {
     fn from(err: jpeg_decoder::Error) -> Self {
         DivoomAPIError::ResourceDecodeError(err.to_string())
