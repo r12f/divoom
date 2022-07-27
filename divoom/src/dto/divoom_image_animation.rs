@@ -53,10 +53,7 @@ impl DivoomImageAnimation {
         let mut encoder = gif::Encoder::new(image, self.size as u16, self.size as u16, color_map)?;
         encoder.set_repeat(gif::Repeat::Infinite)?;
         for (_, frame_data) in &self.frames {
-            let mut frame = gif::Frame::default();
-            frame.width = self.size as u16;
-            frame.height = self.size as u16;
-            frame.buffer = std::borrow::Cow::Borrowed(&frame_data);
+            let mut frame = gif::Frame::from_rgb(self.size as u16, self.size as u16, &frame_data);
             encoder.write_frame(&frame)?;
         }
 
