@@ -496,12 +496,8 @@ mod tests {
             frames: BTreeMap::new(),
         };
 
-        image_animation
-            .frames
-            .insert(0, vec![1, 2, 3]);
-        image_animation
-            .frames
-            .insert(3, vec![4, 5, 6]);
+        image_animation.frames.insert(0, vec![1, 2, 3]);
+        image_animation.frames.insert(3, vec![4, 5, 6]);
 
         let client = Rc::new(DivoomRestAPIClient::new(
             "http://192.168.0.123".to_string(),

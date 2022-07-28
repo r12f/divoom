@@ -1,9 +1,10 @@
+use crate::DivoomImageAnimation;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
 use std::fmt::Debug;
 use std::{env, fs};
-use crate::DivoomImageAnimation;
 
+#[allow(dead_code)]
 pub fn assert_object_equal_with_baseline<T: Serialize + DeserializeOwned + PartialEq + Debug>(
     actual: &T,
     reference_file_path: &str,
@@ -31,7 +32,10 @@ pub fn assert_object_equal_with_baseline<T: Serialize + DeserializeOwned + Parti
     assert_eq!(actual, &expected);
 }
 
-pub fn assert_animation_equal_with_baseline(animation: &DivoomImageAnimation, reference_file_path: &str) {
+pub fn assert_animation_equal_with_baseline(
+    animation: &DivoomImageAnimation,
+    reference_file_path: &str,
+) {
     let mut actual_gif: Vec<u8> = Vec::new();
     animation.save_gif(&mut actual_gif).unwrap();
 

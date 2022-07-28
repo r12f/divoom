@@ -167,7 +167,7 @@ mod tests {
     use crate::animation::*;
     use crate::{test_utils, DivoomAPIError};
     use std::time::Duration;
-    use tiny_skia::BlendMode;
+    use tiny_skia::{BlendMode, Pixmap};
 
     #[test]
     fn divoom_animation_builder_can_be_created() {
@@ -204,33 +204,82 @@ mod tests {
         let mut frame = frame_builder.canvas_mut();
         assert_eq!(frame.width(), 64);
 
-        let frames = DivoomAnimationResourceLoader::gif_file(
-            "test_data/animation_builder_tests/logo-16-0.gif",
+        let frames = DivoomAnimationResourceLoader::from_gif_file(
+            "test_data/animation_builder_tests/input/logo-16-0.gif",
         )
         .unwrap();
         frame_builder = frame_builder.draw_frame(&frames[0]);
     }
 
+    fn divoom_animation_builder_can_build_single_frame_animation_from_resource_file(
+        resource_file_path: &str,
+        reference_file_path: &str,
+    ) {
+        let frame = DivoomAnimationResourceLoader::from_image_file(resource_file_path).unwrap();
+        divoom_animation_builder_can_build_single_frame_animation_from_resource(&frame, reference_file_path);
+    }
+
+    fn divoom_animation_builder_can_build_single_frame_animation_from_resource(
+        frame: &Pixmap,
+        reference_file_path: &str,
+    ) {
+        let mut builder = DivoomAnimationBuilder::new(64, Duration::from_millis(100)).unwrap();
+        builder.build_frame(0).draw_frame(&frame);
+
+        let animation = builder.build();
+        test_utils::assert_animation_equal_with_baseline(&animation, reference_file_path);
+    }
+
+    #[test]
+    fn divoom_animation_builder_can_build_single_frame_animation_from_png_file() {
+        divoom_animation_builder_can_build_single_frame_animation_from_resource_file(
+            "test_data/animation_builder_tests/input/logo.png",
+            "test_data/animation_builder_tests/expected_single_frame_animation_from_png_file.gif",
+        );
+    }
+
+    #[test]
+    fn divoom_animation_builder_can_build_single_frame_animation_from_jpeg_grayscale_file() {
+        divoom_animation_builder_can_build_single_frame_animation_from_resource_file(
+            "test_data/animation_builder_tests/input/logo_grayscale.jpg",
+            "test_data/animation_builder_tests/expected_single_frame_animation_from_jpeg_grayscale_file.gif"
+        );
+    }
+
+    #[test]
+    fn divoom_animation_builder_can_build_single_frame_animation_from_jpeg_rgb_file() {
+        divoom_animation_builder_can_build_single_frame_animation_from_resource_file(
+            "test_data/animation_builder_tests/input/logo_rgb.jpg",
+            "test_data/animation_builder_tests/expected_single_frame_animation_from_jpeg_rgb_file.gif"
+        );
+    }
+
+    #[test]
+    fn divoom_animation_builder_can_build_single_frame_animation_from_jpeg_cmyk_file() {
+        divoom_animation_builder_can_build_single_frame_animation_from_resource_file(
+            "test_data/animation_builder_tests/input/logo_cmyk.jpg",
+            "test_data/animation_builder_tests/expected_single_frame_animation_from_jpeg_cmyk_file.gif"
+        );
+    }
+
     #[test]
     fn divoom_animation_builder_can_build_single_frame_animation() {
-        let frames = DivoomAnimationResourceLoader::gif_file(
-            "test_data/animation_builder_tests/logo-16-0.gif",
+        let frames = DivoomAnimationResourceLoader::from_gif_file(
+            "test_data/animation_builder_tests/input/logo.gif",
         )
         .unwrap();
         assert_eq!(frames.len(), 1);
 
-        let builder = DivoomAnimationBuilder::new(16, Duration::from_millis(100)).unwrap();
-        let animation = builder.draw_frames(&frames, 0).build();
-        test_utils::assert_animation_equal_with_baseline(
-            &animation,
-            "test_data/animation_builder_tests/expected_single_frame_animation.gif",
+        divoom_animation_builder_can_build_single_frame_animation_from_resource(
+            &frames[0],
+            "test_data/animation_builder_tests/expected_single_frame_animation_from_gif_file.gif",
         );
     }
 
     #[test]
     fn divoom_animation_builder_can_build_animation_with_fit() {
-        let frames = DivoomAnimationResourceLoader::gif_file(
-            "test_data/animation_builder_tests/logo-16-0.gif",
+        let frames = DivoomAnimationResourceLoader::from_gif_file(
+            "test_data/animation_builder_tests/input/logo-16-0.gif",
         )
         .unwrap();
         assert_eq!(frames.len(), 1);
@@ -279,8 +328,8 @@ mod tests {
 
     #[test]
     fn divoom_animation_builder_can_build_animation_with_rotation() {
-        let frames = DivoomAnimationResourceLoader::gif_file(
-            "test_data/animation_builder_tests/logo-16-0.gif",
+        let frames = DivoomAnimationResourceLoader::from_gif_file(
+            "test_data/animation_builder_tests/input/logo-16-0.gif",
         )
         .unwrap();
         assert_eq!(frames.len(), 1);
@@ -305,8 +354,8 @@ mod tests {
 
     #[test]
     fn divoom_animation_builder_can_build_animation_with_opacity() {
-        let frames = DivoomAnimationResourceLoader::gif_file(
-            "test_data/animation_builder_tests/logo-16-0.gif",
+        let frames = DivoomAnimationResourceLoader::from_gif_file(
+            "test_data/animation_builder_tests/input/logo-16-0.gif",
         )
         .unwrap();
         assert_eq!(frames.len(), 1);
@@ -331,8 +380,8 @@ mod tests {
 
     #[test]
     fn divoom_animation_builder_can_build_animation_with_sized() {
-        let frames = DivoomAnimationResourceLoader::gif_file(
-            "test_data/animation_builder_tests/logo-16-0.gif",
+        let frames = DivoomAnimationResourceLoader::from_gif_file(
+            "test_data/animation_builder_tests/input/logo-16-0.gif",
         )
         .unwrap();
         assert_eq!(frames.len(), 1);
@@ -350,8 +399,8 @@ mod tests {
 
     #[test]
     fn divoom_animation_builder_can_build_animation_with_scaled() {
-        let frames = DivoomAnimationResourceLoader::gif_file(
-            "test_data/animation_builder_tests/logo-16-0.gif",
+        let frames = DivoomAnimationResourceLoader::from_gif_file(
+            "test_data/animation_builder_tests/input/logo-16-0.gif",
         )
         .unwrap();
         assert_eq!(frames.len(), 1);
@@ -369,8 +418,8 @@ mod tests {
 
     #[test]
     fn divoom_animation_builder_can_build_multi_frame_animation() {
-        let frames = DivoomAnimationResourceLoader::gif_file(
-            "test_data/animation_builder_tests/logo-16-rotate-4-frames.gif",
+        let frames = DivoomAnimationResourceLoader::from_gif_file(
+            "test_data/animation_builder_tests/input/logo-16-rotate-4-frames.gif",
         )
         .unwrap();
         assert_eq!(frames.len(), 4);
@@ -380,6 +429,30 @@ mod tests {
         test_utils::assert_animation_equal_with_baseline(
             &animation,
             "test_data/animation_builder_tests/expected_multi_frames_animation.gif",
+        );
+    }
+
+    #[test]
+    fn divoom_animation_builder_can_downscale_animation() {
+        let frames = DivoomAnimationResourceLoader::from_gif_file(
+            "test_data/animation_builder_tests/input/logo.gif",
+        )
+        .unwrap();
+
+        let builder = DivoomAnimationBuilder::new(64, Duration::from_millis(100)).unwrap();
+        let animation = builder
+            .draw_frames_fit(
+                &frames,
+                0,
+                DivoomDrawFitMode::Stretch,
+                0.0,
+                1.0,
+                BlendMode::default(),
+            )
+            .build();
+        test_utils::assert_animation_equal_with_baseline(
+            &animation,
+            "test_data/animation_builder_tests/expected_downscaled_animation.gif",
         );
     }
 }
