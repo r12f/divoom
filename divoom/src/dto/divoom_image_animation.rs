@@ -55,7 +55,8 @@ impl DivoomImageAnimation {
 
         for (_, frame_data) in &self.frames {
             let frame_image = RgbaImage::from_fn(self.size, self.size, |x, y| {
-                let pixel_start = 3 * (x * self.size + y) as usize;
+                // In image crate pixel enumeration, x means width not height, and y means height not width. It is different from other image format.
+                let pixel_start = 3 * (x + y * self.size) as usize;
                 image::Rgba::from([frame_data[pixel_start], frame_data[pixel_start + 1], frame_data[pixel_start + 2], 255])
             });
             encoder.encode_frame(Frame::new(frame_image))?
