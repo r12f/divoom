@@ -228,7 +228,7 @@ mod tests {
         reference_file_path: &str,
     ) {
         let mut builder = DivoomAnimationBuilder::new(64, Duration::from_millis(100)).unwrap();
-        builder.build_frame(0).draw_frame(&frame);
+        builder.build_frame(0).draw_frame_fit(&frame, DivoomDrawFitMode::Stretch, 0.0, 1.0, BlendMode::default());
 
         let animation = builder.build();
         test_utils::assert_animation_equal_with_baseline(&animation, reference_file_path);
@@ -263,6 +263,14 @@ mod tests {
         divoom_animation_builder_can_build_single_frame_animation_from_resource_file(
             "test_data/animation_builder_tests/input/logo_cmyk.jpg",
             "test_data/animation_builder_tests/expected_single_frame_animation_from_jpeg_cmyk_file.gif"
+        );
+    }
+
+    #[test]
+    fn divoom_animation_builder_can_build_single_frame_animation_from_bmp_file() {
+        divoom_animation_builder_can_build_single_frame_animation_from_resource_file(
+            "test_data/animation_builder_tests/input/logo.bmp",
+            "test_data/animation_builder_tests/expected_single_frame_animation_from_bmp_file.gif"
         );
     }
 
