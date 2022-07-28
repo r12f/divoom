@@ -157,7 +157,11 @@ impl DivoomAnimationBuilder {
         frame
             .pixels()
             .iter()
-            .flat_map(|p| once(p.red()).chain(once(p.green())).chain(once(p.blue())))
+            .flat_map(|p| {
+                once((p.red() as u32 * p.alpha() as u32 / 255) as u8)
+                    .chain(once((p.green() as u32 * p.alpha() as u32 / 255) as u8))
+                    .chain(once((p.blue() as u32 * p.alpha() as u32 / 255) as u8))
+            })
             .collect()
     }
 }
