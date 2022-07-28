@@ -1,8 +1,8 @@
 use crate::{DivoomAPIError, DivoomAPIResult};
-use image::codecs::gif::GifDecoder;
 use image::AnimationDecoder;
 use std::fs::File;
 use std::io::{BufReader, Cursor, Read};
+use image::codecs::gif::GifDecoder;
 use tiny_skia::Pixmap;
 use image::io::Reader as ImageReader;
 
@@ -36,14 +36,12 @@ impl DivoomAnimationResourceLoader {
     }
 
     /// Load gif resource from local file
-    #[cfg(feature = "resource-format-gif")]
     pub fn from_gif_file(file_path: &str) -> DivoomAPIResult<Vec<Pixmap>> {
         let input = File::open(file_path)?;
         DivoomAnimationResourceLoader::from_gif(input)
     }
 
     /// Load gif resource from Read trait
-    #[cfg(feature = "resource-format-gif")]
     pub fn from_gif<R: Read>(reader: R) -> DivoomAPIResult<Vec<Pixmap>> {
         let mut frames = vec![];
 
@@ -65,7 +63,6 @@ impl DivoomAnimationResourceLoader {
     }
 }
 
-#[cfg(feature = "resource-format-gif")]
 impl From<image::ImageError> for DivoomAPIError {
     fn from(err: image::ImageError) -> Self {
         DivoomAPIError::ResourceDecodeError(err.to_string())

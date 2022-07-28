@@ -3,6 +3,8 @@ use std::collections::BTreeMap;
 use std::fmt;
 use std::io::Write;
 use std::str::FromStr;
+use image::codecs::gif::{GifEncoder, Repeat};
+use image::{Frame, RgbaImage};
 
 /// Definition of image animations.
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
@@ -47,14 +49,16 @@ pub enum DivoomFileAnimationSourceType {
 impl_divoom_dto_enum_traits!(DivoomFileAnimationSourceType, LocalFile: "file", LocalFolder: "folder", Url: "url");
 
 impl DivoomImageAnimation {
-    #[cfg(feature = "resource-format-gif")]
     pub fn save_gif<W: Write>(&self, image: W) -> anyhow::Result<()> {
-        let color_map = &[0xFF, 0xFF, 0xFF, 0, 0, 0];
-        let mut encoder = gif::Encoder::new(image, self.size as u16, self.size as u16, color_map)?;
-        encoder.set_repeat(gif::Repeat::Infinite)?;
+        let mut encoder = GifEncoder::new(image);
+        encoder.set_repeat(Repeat::Infinite)?;
+
         for (_, frame_data) in &self.frames {
-            let frame = gif::Frame::from_rgb(self.size as u16, self.size as u16, &frame_data);
-            encoder.write_frame(&frame)?;
+            let frame_image = RgbaImage::from_fn(self.size, self.size, |x, y| {
+                let pixel_start = 3 * (x * self.size + y) as usize;
+                image::Rgba::from([frame_data[pixel_start], frame_data[pixel_start + 1], frame_data[pixel_start + 2], 255])
+            });
+            encoder.encode_frame(Frame::new(frame_image))?
         }
 
         Ok(())
