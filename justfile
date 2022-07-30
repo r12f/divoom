@@ -160,7 +160,7 @@ lint-fix:
 # Build / test tasks:
 #
 fix-ver:
-    @("divoom", "divoom_cli") | ForEach-Object { \
+    @("divoom", "divoom_cli", "divoom_gateway") | ForEach-Object { \
       $cargoFilePath = "{{(justfile_directory())}}/$_/Cargo.toml"; \
       Write-Host "Updating version in file: $cargoFilePath"; \
       (Get-Content $cargoFilePath) -Replace '"0.0.1"', '"{{BUILD_VERSION}}"' | Set-Content $cargoFilePath; \
@@ -232,10 +232,15 @@ _make-symbols OBJCOPY_PATH="objcopy" STRIP_PATH="strip" FILE_NAME="divoom-cli":
 #
 install:
     cargo install --profile release --path ./divoom_cli
+    cargo install --profile release --path ./divoom_gateway
 
 #
 # Pack tasks:
 #
+pack-prepare_all:
+    just pack-prepare divoom_cli
+    just pack-prepare divoom_gateway
+
 pack-prepare PACKAGE="divoom_cli":
     @Write-Host "Current invocation directory: {{invocation_directory()}}"
 
@@ -265,6 +270,7 @@ pack-source:
     Copy-Item -Path "{{justfile_directory()}}/build" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/source" -Recurse
     Copy-Item -Path "{{justfile_directory()}}/divoom" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/source" -Recurse
     Copy-Item -Path "{{justfile_directory()}}/divoom_cli" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/source" -Recurse
+    Copy-Item -Path "{{justfile_directory()}}/divoom_gateway" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/source" -Recurse
     Copy-Item -Path "{{justfile_directory()}}/Cargo.*" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/source" -Recurse
     Copy-Item -Path "{{justfile_directory()}}/justfile" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/source" -Recurse
     Copy-Item -Path "{{justfile_directory()}}/LICENSE" -Destination "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/source" -Recurse
@@ -278,6 +284,10 @@ pack-source:
 
 pack-post-build:
     Copy-Item -Path "{{justfile_directory()}}/build/post-build/post-build.justfile" -Destination "{{PUBLISH_DIR}}"
+
+pack-binary-all:
+    just pack-binary divoom_cli
+    just pack-binary divoom_gateway
 
 pack-binary PACKAGE="divoom_cli":
     @Write-Host "Current invocation directory: {{invocation_directory()}}"
@@ -297,6 +307,10 @@ pack-binary PACKAGE="divoom_cli":
       } \
     }
 
+pack-symbols-all:
+    just pack-symbols divoom_cli
+    just pack-symbols divoom_gateway
+
 pack-symbols PACKAGE="divoom_cli":
     @Write-Host "Current invocation directory: {{invocation_directory()}}"
 
@@ -312,6 +326,10 @@ pack-symbols PACKAGE="divoom_cli":
         just gen-checksum "symbols.{{PACKAGE}}.{{BUILD_OS}}.{{BUILD_ARCH}}" $filePath; \
       } \
     }
+
+pack-binary-zip-all:
+    just pack-binary-zip divoom_cli
+    just pack-binary-zip divoom_gateway
 
 pack-binary-zip PACKAGE="divoom_cli":
     @Write-Host "Current invocation directory: {{invocation_directory()}}"
@@ -336,6 +354,10 @@ pack-binary-zip PACKAGE="divoom_cli":
         $packageName = "${packageName}.gz"; \
         just gen-checksum "packages.{{PACKAGE}}.binary.{{BUILD_OS}}.{{BUILD_ARCH}}" "{{PUBLISH_PACKAGES_DIR}}/${packageName}"; \
     }
+
+pack-msix-all:
+    just pack-msix divoom_cli
+    just pack-msix divoom_gateway
 
 pack-msix PACKAGE="divoom_cli":
     @Write-Host "Current invocation directory: {{invocation_directory()}}"
@@ -368,6 +390,10 @@ pack-msix PACKAGE="divoom_cli":
     if (-not (Test-Path "{{PUBLISH_PACKAGES_DIR}}")) { New-Item -ItemType Directory -Path "{{PUBLISH_PACKAGES_DIR}}" -Force | Out-Null }
     Copy-Item -Path "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/msix/*.msix" -Destination "{{PUBLISH_PACKAGES_DIR}}" -Force
 
+pack-nuget-all:
+    just pack-nuget divoom_cli
+    just pack-nuget divoom_gateway
+
 pack-nuget PACKAGE="divoom_cli":
     @Write-Host "Current invocation directory: {{invocation_directory()}}"
 
@@ -389,6 +415,10 @@ pack-nuget PACKAGE="divoom_cli":
     if (-not (Test-Path "{{PUBLISH_PACKAGES_DIR}}")) { New-Item -ItemType Directory -Path "{{PUBLISH_PACKAGES_DIR}}" -Force | Out-Null }
     Copy-Item -Path "{{BUILD_OUTPUT_FOLDER}}/publish-prepare/nuget/output/*.nupkg" -Destination "{{PUBLISH_PACKAGES_DIR}}" -Force
 
+pack-choco-all:
+    just pack-choco divoom_cli
+    just pack-choco divoom_gateway
+
 pack-choco PACKAGE="divoom_cli":
     @Write-Host "Current invocation directory: {{invocation_directory()}}"
 
@@ -399,6 +429,10 @@ pack-choco PACKAGE="divoom_cli":
       "{{PUBLISH_DIR}}/{{PACKAGE}}/choco-source" \
       "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters" \
       "{{PUBLISH_CHECKSUMS_DIR}}"
+
+pack-scoop-all:
+    just pack-scoop divoom_cli
+    just pack-scoop divoom_gateway
 
 pack-scoop PACKAGE="divoom_cli":
     @Write-Host "Current invocation directory: {{invocation_directory()}}"

@@ -177,7 +177,7 @@ stages:
           #
           # Pack
           #
-          - script: just pack-prepare
+          - script: just pack-prepare-all
             displayName: Prepare to pack packages
             env:
               BUILD_PROFILE: "release"
@@ -197,8 +197,8 @@ stages:
               BUILD_PROFILE: "release"
               BUILD_ARCH: $(target_arch)
 
-          - script: just pack-binary divoom_cli
-            displayName: Pack divoom-cli binaries
+          - script: just pack-binary-all
+            displayName: Pack divoom binaries
             env:
               BUILD_PROFILE: "release"
               BUILD_ARCH: $(target_arch)
@@ -209,26 +209,26 @@ stages:
               BUILD_SIGNING_CLIENT_SECRET: $(BuildSigningClientSecret)
               BUILD_SIGNING_CERT_NAME: $(BuildSigningCertName)
 
-          - script: just pack-symbols divoom_cli
-            displayName: Pack divoom-cli symbols
+          - script: just pack-symbols-all
+            displayName: Pack divoom binary symbols
             env:
               BUILD_PROFILE: "release"
               BUILD_ARCH: $(target_arch)
 
-          - script: just pack-binary-zip divoom_cli
-            displayName: Zip divoom-cli binaries
+          - script: just pack-binary-zip-all
+            displayName: Zip divoom binaries
             env:
               BUILD_PROFILE: "release"
               BUILD_ARCH: $(target_arch)
 
-          - script: just pack-nuget divoom_cli
-            displayName: Pack divoom-cli nuget package
+          - script: just pack-nuget-all
+            displayName: Pack divoom nuget packages
             env:
               BUILD_PROFILE: "release"
               BUILD_ARCH: $(target_arch)
 
-          - script: just pack-msix divoom_cli
-            displayName: Pack divoom-cli msix package
+          - script: just pack-msix-all
+            displayName: Pack divoom msix packages
             condition: and(succeeded(), eq(variables['target_os'], 'windows'))
             env:
               BUILD_PROFILE: "release"
@@ -240,15 +240,15 @@ stages:
               BUILD_SIGNING_CLIENT_SECRET: $(BuildSigningClientSecret)
               BUILD_SIGNING_CERT_NAME: $(BuildSigningCertName)
 
-          - script: just pack-choco divoom_cli
-            displayName: Pack divoom-cli chocolatey package source
+          - script: just pack-choco-all
+            displayName: Pack divoom chocolatey package sources
             condition: and(succeeded(), eq(variables['target_os'], 'windows'), eq(variables['target_arch'], 'x86_64'))
             env:
               BUILD_PROFILE: "release"
               BUILD_ARCH: $(target_arch)
 
-          - script: just pack-scoop divoom_cli
-            displayName: Pack divoom-cli scoop package source
+          - script: just pack-scoop-all
+            displayName: Pack divoom scoop package sources
             condition: and(succeeded(), eq(variables['target_os'], 'windows'), eq(variables['target_arch'], 'x86_64'))
             env:
               BUILD_PROFILE: "release"

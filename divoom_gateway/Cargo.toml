@@ -1,5 +1,5 @@
 [package]
-name = "divoom-cli"
+name = "divoom-gateway"
 version = "0.0.1"
 authors = ["r12f <r12f.code@gmail.com>"]
 edition = "2021"
@@ -17,12 +17,12 @@ env_logger = "0.9.0"
 tokio = { version = "1.13.0", features = ["rt-multi-thread", "time", "sync", "macros", "net", "io-util"] }
 thiserror = "1.0.30"
 serde = { version = "1.0.130", features = ["derive"] }
-serde_yaml = "0.9"
 serde_json = "1.0.82"
 rgb = "0.8.33"
-structopt = "0.3.26"
 divoom = { version = "0.0.1", path = "../divoom" }
-tiny-skia = "0.7.0"
+poem = "1"
+poem-openapi = { version = "2", features = ["swagger-ui"]}
+clap = { version = "3.2.16", features = ["derive"] }
 
 [build-dependencies]
 winres = "0.1.12"
