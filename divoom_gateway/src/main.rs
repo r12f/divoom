@@ -2,7 +2,6 @@ mod server;
 
 use crate::server::*;
 use clap::Parser;
-use divoom::*;
 
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]

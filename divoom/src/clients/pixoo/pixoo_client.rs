@@ -7,7 +7,7 @@ use crate::divoom_contracts::pixoo::common::*;
 use crate::divoom_contracts::pixoo::system::*;
 use crate::divoom_contracts::pixoo::tool::*;
 use crate::dto::*;
-use std::rc::Rc;
+use std::sync::Arc;
 use std::time::Duration;
 
 #[cfg(feature = "animation-builder")]
@@ -27,7 +27,7 @@ use crate::animation::*;
 /// // println!("{:?}", result);
 /// ```
 pub struct PixooClient {
-    client: Rc<DivoomRestAPIClient>,
+    client: Arc<DivoomRestAPIClient>,
 }
 
 macro_rules! impl_pixoo_client_api {
@@ -80,7 +80,7 @@ impl PixooClient {
     /// Create new PixooClient with options
     pub fn with_options(device_address: &str, timeout: Option<Duration>) -> PixooClient {
         PixooClient {
-            client: Rc::new(DivoomRestAPIClient::new(
+            client: Arc::new(DivoomRestAPIClient::new(
                 format!("http://{}", device_address),
                 timeout,
             )),
