@@ -445,6 +445,21 @@ mod tests {
     }
 
     #[test]
+    fn divoom_animation_builder_can_crop_animation() {
+        let frames = DivoomAnimationResourceLoader::from_gif_file(
+            "test_data/animation_builder_tests/input/logo.gif",
+        )
+            .unwrap();
+
+        let builder = DivoomAnimationBuilder::new(64, Duration::from_millis(100)).unwrap();
+        let animation = builder.draw_frames(&frames, 0).build();
+        test_utils::assert_animation_equal_with_baseline(
+            &animation,
+            "test_data/animation_builder_tests/expected_cropped_animation.gif",
+        );
+    }
+
+    #[test]
     fn divoom_animation_builder_can_downscale_animation() {
         let frames = DivoomAnimationResourceLoader::from_gif_file(
             "test_data/animation_builder_tests/input/logo.gif",
