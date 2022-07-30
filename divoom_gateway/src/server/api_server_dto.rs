@@ -1,11 +1,7 @@
-
-use poem::{Error};
-
-
+use poem::Error;
 use poem_openapi::payload::Json;
 use poem_openapi::types::{ParseFromJSON, ToJSON};
 use poem_openapi::{ApiResponse, Object};
-
 
 #[derive(Object)]
 pub struct GatewayResponseDTO<T: ParseFromJSON + ToJSON + Send + Sync> {
