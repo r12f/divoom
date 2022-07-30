@@ -14,7 +14,7 @@ struct CliOptions {
         long = "server",
         help = "Server address.",
         value_parser,
-        default_value = "0.0.0.0"
+        default_value = "127.0.0.1"
     )]
     server_address: String,
 

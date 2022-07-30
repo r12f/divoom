@@ -32,8 +32,8 @@ impl ApiServer {
         let spec = api_service.spec_endpoint();
         let app = Route::new()
             .nest("/api", api_service)
-            .nest("/", ui)
-            .nest("/openapi.json", spec);
+            .nest("/openapi.json", spec)
+            .nest("/", ui);
 
         let server_endpoint = format!("{}:{}", self.server_address, self.server_port);
         let server_listener = TcpListener::bind(server_endpoint);
