@@ -1,6 +1,11 @@
+use super::api_server_dto::*;
 use divoom::*;
-use poem_openapi::{param::Query, payload::PlainText, OpenApi, Tags};
+use poem::{http::StatusCode, Error, Result, Route};
+use poem_openapi::error::ParseRequestPayloadError;
 use poem_openapi::param::Path;
+use poem_openapi::payload::Json;
+use poem_openapi::types::{ParseFromJSON, ToJSON};
+use poem_openapi::{param::Query, payload::PlainText, ApiResponse, Object, OpenApi, Tags};
 
 pub struct ApiHandler {}
 
@@ -15,11 +20,14 @@ impl ApiHandler {
         ApiHandler {}
     }
 
-    #[oai(path = "/devices/:device_address/channel", method = "get", tag = "ApiTags::Channel")]
-    async fn channel_get(&self, device_address: Path<String>) -> PlainText<String> {
+    #[oai(
+        path = "/devices/:device_address/channel",
+        method = "get",
+        tag = "ApiTags::Channel"
+    )]
+    async fn channel_get(&self, device_address: Path<String>) -> GatewayResponse<String> {
         let pixoo = PixooClient::new(&device_address.0);
         let result = pixoo.get_current_channel().await.unwrap();
-        let response = serde_json::to_string(&result).unwrap();
-        PlainText(response)
+        GatewayResponse::Ok(Json(GatewayResponseDTO::ok(result.to_string())))
     }
 }

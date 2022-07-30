@@ -8,8 +8,8 @@ use crate::divoom_contracts::pixoo::system::*;
 use crate::divoom_contracts::pixoo::tool::*;
 use crate::*;
 use crate::{DivoomAPIError, DivoomAPIResult};
-use std::sync::{Arc, Mutex};
 use serde::de::DeserializeOwned;
+use std::sync::{Arc, Mutex};
 
 /// Pixoo command builder for creating the JSON payload of Pixoo commands.
 pub struct PixooCommandBuilder {
@@ -34,7 +34,13 @@ impl PixooCommandBuilder {
     }
 
     pub(crate) fn build(self) -> (Arc<DivoomRestAPIClient>, usize, String) {
-        let (command_count, request_body) = self.command_store.lock().unwrap().take().unwrap().to_payload();
+        let (command_count, request_body) = self
+            .command_store
+            .lock()
+            .unwrap()
+            .take()
+            .unwrap()
+            .to_payload();
         (self.client, command_count, request_body)
     }
 
@@ -67,7 +73,9 @@ impl PixooCommandBuilder {
     }
 
     pub async fn execute(self) -> DivoomAPIResult<()> {
-        if self.command_store.lock().unwrap().as_ref().unwrap().mode() == PixooCommandStoreMode::Single {
+        if self.command_store.lock().unwrap().as_ref().unwrap().mode()
+            == PixooCommandStoreMode::Single
+        {
             return Err(DivoomAPIError::ParameterError(
                 "Command builder is not running in batch mode. Please use start_batch() instead."
                     .to_string(),
@@ -346,7 +354,12 @@ impl PixooCommandBuilder {
             let request = DivoomPixooCommandAnimationSendImageAnimationFrameRequest::new(payload);
             let serialized_request =
                 serde_json::to_string(&request).expect("Serializing pixoo command failed!");
-            self.command_store.lock().unwrap().as_mut().unwrap().append(serialized_request);
+            self.command_store
+                .lock()
+                .unwrap()
+                .as_mut()
+                .unwrap()
+                .append(serialized_request);
         });
         self
     }
@@ -390,7 +403,12 @@ impl PixooCommandBuilder {
 /// Raw API implementations
 impl PixooCommandBuilder {
     pub fn send_raw_request(self, request: String) -> PixooCommandBuilder {
-        self.command_store.lock().unwrap().as_mut().unwrap().append(request);
+        self.command_store
+            .lock()
+            .unwrap()
+            .as_mut()
+            .unwrap()
+            .append(request);
         self
     }
 }
@@ -399,10 +417,10 @@ impl PixooCommandBuilder {
 mod tests {
     use super::*;
     use std::collections::BTreeMap;
-    use std::{env, fs};
     use std::sync::Arc;
+    use std::{env, fs};
 
-    fn is_send<T: Send>(_: T) { }
+    fn is_send<T: Send>(_: T) {}
 
     #[test]
     fn pixoo_command_builder_should_be_send() {
