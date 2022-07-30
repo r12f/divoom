@@ -19,6 +19,7 @@ impl ApiServer {
         let api_service = OpenApiService::new(ApiHandler::new(), "Divoom Gateway", "1.0").server(
             format!("http://{}:{}/api", self.server_address, self.server_port),
         );
+
         let ui = api_service.swagger_ui();
         let spec = api_service.spec_endpoint();
         let app = Route::new()
@@ -26,11 +27,8 @@ impl ApiServer {
             .nest("/", ui)
             .nest("/openapi.json", spec);
 
-        poem::Server::new(TcpListener::bind(format!(
-            "{}:{}",
-            self.server_address, self.server_port
-        )))
-        .run(app)
-        .await
+        let server_endpoint = format!("{}:{}", self.server_address, self.server_port);
+        let server_listener = TcpListener::bind(server_endpoint);
+        poem::Server::new(server_listener).run(app).await
     }
 }
