@@ -68,8 +68,8 @@ impl DivoomAnimationFrameBuilder<'_> {
 
         match fit {
             DivoomDrawFitMode::Center => {
-                x = ((self.frame.width() - draw_width) / 2) as i32;
-                y = ((self.frame.height() - draw_height) / 2) as i32;
+                x = (self.frame.width() as i32 - draw_width as i32) / 2;
+                y = (self.frame.height() as i32 - draw_height as i32) / 2;
             }
 
             DivoomDrawFitMode::FitX => {
@@ -81,7 +81,7 @@ impl DivoomAnimationFrameBuilder<'_> {
             DivoomDrawFitMode::FitY => {
                 draw_height = self.frame.height();
                 draw_width = (draw_height as f32 * frame_ratio).round() as u32;
-                x = ((self.frame.width() - draw_width) / 2) as i32;
+                x = (self.frame.width() as i32 - draw_width as i32) / 2;
             }
 
             DivoomDrawFitMode::Stretch => {

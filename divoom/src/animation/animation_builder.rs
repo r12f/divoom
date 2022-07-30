@@ -451,7 +451,7 @@ mod tests {
         )
             .unwrap();
 
-        let builder = DivoomAnimationBuilder::new(64, Duration::from_millis(100)).unwrap();
+        let builder = DivoomAnimationBuilder::new(32, Duration::from_millis(100)).unwrap();
         let animation = builder.draw_frames(&frames, 0).build();
         test_utils::assert_animation_equal_with_baseline(
             &animation,
@@ -466,7 +466,7 @@ mod tests {
         )
         .unwrap();
 
-        let builder = DivoomAnimationBuilder::new(64, Duration::from_millis(100)).unwrap();
+        let builder = DivoomAnimationBuilder::new(32, Duration::from_millis(100)).unwrap();
         let animation = builder
             .draw_frames_fit(
                 &frames,
