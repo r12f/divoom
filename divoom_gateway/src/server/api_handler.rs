@@ -5,7 +5,7 @@ pub struct ApiHandler {}
 #[OpenApi]
 impl ApiHandler {
     pub fn new() -> ApiHandler {
-        ApiHandler{}
+        ApiHandler {}
     }
 
     #[oai(path = "/hello", method = "get")]
@@ -16,4 +16,3 @@ impl ApiHandler {
         }
     }
 }
-

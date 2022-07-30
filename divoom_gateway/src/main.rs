@@ -1,16 +1,28 @@
-mod api_server;
+mod server;
 
-use divoom::*;
-use crate::api_server::*;
+use crate::server::*;
 use clap::Parser;
+use divoom::*;
 
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
 struct CliOptions {
-    #[clap(short, long, help = "Server address. E.g. 127.0.0.0", value_parser, default_value = "127.0.0.1")]
+    #[clap(
+        short,
+        long,
+        help = "Server address. E.g. 127.0.0.0",
+        value_parser,
+        default_value = "127.0.0.1"
+    )]
     server: String,
 
-    #[clap(short, long, help = "Server port. E.g. 127.0.0.0", value_parser, default_value_t = 20821)]
+    #[clap(
+        short,
+        long,
+        help = "Server port. E.g. 127.0.0.0",
+        value_parser,
+        default_value_t = 20821
+    )]
     port: u16,
 }
 
