@@ -1,10 +1,10 @@
 use crate::{DivoomAPIError, DivoomAPIResult};
+use image::codecs::gif::GifDecoder;
+use image::io::Reader as ImageReader;
 use image::AnimationDecoder;
 use std::fs::File;
 use std::io::{BufReader, Cursor, Read};
-use image::codecs::gif::GifDecoder;
 use tiny_skia::Pixmap;
-use image::io::Reader as ImageReader;
 
 /// Load resources into a series of `tiny_skia::Pixmap`, so we can use them to build the animations.
 pub struct DivoomAnimationResourceLoader {}
@@ -25,7 +25,9 @@ impl DivoomAnimationResourceLoader {
     }
 
     pub fn from_image_buf(buf: &[u8]) -> DivoomAPIResult<Pixmap> {
-        let image = ImageReader::new(Cursor::new(buf)).with_guessed_format()?.decode()?;
+        let image = ImageReader::new(Cursor::new(buf))
+            .with_guessed_format()?
+            .decode()?;
         let image_rgba8 = image.into_rgba8();
 
         let (width, height) = (image_rgba8.width(), image_rgba8.height());

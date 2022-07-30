@@ -1,10 +1,10 @@
+use image::codecs::gif::{GifEncoder, Repeat};
+use image::{Frame, RgbaImage};
 use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 use std::collections::BTreeMap;
 use std::fmt;
 use std::io::Write;
 use std::str::FromStr;
-use image::codecs::gif::{GifEncoder, Repeat};
-use image::{Frame, RgbaImage};
 
 /// Definition of image animations.
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
@@ -53,11 +53,16 @@ impl DivoomImageAnimation {
         let mut encoder = GifEncoder::new(image);
         encoder.set_repeat(Repeat::Infinite)?;
 
-        for (_, frame_data) in &self.frames {
+        for frame_data in self.frames.values() {
             let frame_image = RgbaImage::from_fn(self.size, self.size, |x, y| {
                 // In image crate pixel enumeration, x means width not height, and y means height not width. It is different from other image format.
                 let pixel_start = 3 * (x + y * self.size) as usize;
-                image::Rgba::from([frame_data[pixel_start], frame_data[pixel_start + 1], frame_data[pixel_start + 2], 255])
+                image::Rgba::from([
+                    frame_data[pixel_start],
+                    frame_data[pixel_start + 1],
+                    frame_data[pixel_start + 2],
+                    255,
+                ])
             });
             encoder.encode_frame(Frame::new(frame_image))?
         }
