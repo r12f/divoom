@@ -69,14 +69,14 @@ macro_rules! invoke_pixoo_api_no_response {
     ($self:ident, $api_name:ident) => (
         match PixooClient::new(&$self.device_address).$api_name().await {
             Err(e) => return e.into(),
-            Ok(_) => DivoomGatewayResponse::Ok(Json(DivoomGatewayResponseExtDto::ok())),
+            Ok(_) => DivoomGatewayResponse::Ok(Json(DivoomGatewayResponsePayload::ok())),
         }
     );
 
     ($self:ident, $api_name:ident, $($api_arg:ident),*) => (
         match PixooClient::new(&$self.device_address).$api_name($($api_arg),*).await {
             Err(e) => return e.into(),
-            Ok(_) => DivoomGatewayResponse::Ok(Json(DivoomGatewayResponseExtDto::ok())),
+            Ok(_) => DivoomGatewayResponse::Ok(Json(DivoomGatewayResponsePayload::ok())),
         }
     )
 }
@@ -85,14 +85,14 @@ macro_rules! invoke_pixoo_api_respond_string {
     ($self:ident, $api_name:ident) => (
         match PixooClient::new(&$self.device_address).$api_name().await {
             Err(e) => return e.into(),
-            Ok(result) => DivoomGatewayResponse::Ok(Json(DivoomGatewayResponseExtDto::ok_with_data(result.to_string()))),
+            Ok(result) => DivoomGatewayResponse::Ok(Json(DivoomGatewayResponsePayload::ok_with_data(result.to_string()))),
         }
     );
 
     ($self:ident, $api_name:ident, $($api_arg:ident),*) => (
         match PixooClient::new(&$self.device_address).$api_name($($api_arg),*).await {
             Err(e) => return e.into(),
-            Ok(result) => DivoomGatewayResponse::Ok(Json(DivoomGatewayResponseExtDto::ok_with_data(result.to_string()))),
+            Ok(result) => DivoomGatewayResponse::Ok(Json(DivoomGatewayResponsePayload::ok_with_data(result.to_string()))),
         }
     )
 }
@@ -101,14 +101,14 @@ macro_rules! invoke_pixoo_api_respond_object {
     ($self:ident, $api_name:ident) => (
         match PixooClient::new(&$self.device_address).$api_name().await {
             Err(e) => return e.into(),
-            Ok(result) => DivoomGatewayResponse::Ok(Json(DivoomGatewayResponseExtDto::ok_with_data(result.into()))),
+            Ok(result) => DivoomGatewayResponse::Ok(Json(DivoomGatewayResponsePayload::ok_with_data(result.into()))),
         }
     );
 
     ($self:ident, $api_name:ident, $($api_arg:ident),*) => (
         match PixooClient::new(&$self.device_address).$api_name($($api_arg),*).await {
             Err(e) => return e.into(),
-            Ok(result) => DivoomGatewayResponse::Ok(Json(DivoomGatewayResponseExtDto::ok_with_data(result.into()))),
+            Ok(result) => DivoomGatewayResponse::Ok(Json(DivoomGatewayResponsePayload::ok_with_data(result.into()))),
         }
     )
 }
@@ -137,7 +137,7 @@ impl ApiHandler {
     }
 
     #[oai(path = "/channel/clock", method = "get", tag = "ApiTags::Channel")]
-    async fn get_selected_clock_info(&self) -> DivoomGatewayResponse<DivoomSelectedClockInfoExtDto> {
+    async fn get_selected_clock_info(&self) -> DivoomGatewayResponse<DivoomGatewayGetSelectedClockInfoResponse> {
         return invoke_pixoo_api_respond_object!(self, get_selected_clock_info);
     }
 
@@ -160,7 +160,7 @@ impl ApiHandler {
     }
 
     #[oai(path = "/system/device-settings", method = "get", tag = "ApiTags::System")]
-    async fn get_device_settings(&self) -> DivoomGatewayResponse<DivoomPixooDeviceSettingsExtDto> {
+    async fn get_device_settings(&self) -> DivoomGatewayResponse<DivoomGatewayGetDeviceSettingsResponse> {
         return invoke_pixoo_api_respond_object!(self, get_device_settings);
     }
 
@@ -275,12 +275,12 @@ impl ApiHandler {
         };
 
         let animation_builder = match DivoomAnimationBuilder::new(request.canvas_size, Duration::from_millis(request.speed_in_ms)) {
-            Err(e) => return DivoomGatewayResponse::BadRequest(Json(DivoomGatewayResponseExtDto::error(format!("{:?}", e)))),
+            Err(e) => return DivoomGatewayResponse::BadRequest(Json(DivoomGatewayResponsePayload::error(format!("{:?}", e)))),
             Ok(v) => v,
         };
 
         let gif = match DivoomAnimationResourceLoader::from_gif(Cursor::new(gif_data)) {
-            Err(e) => return DivoomGatewayResponse::BadRequest(Json(DivoomGatewayResponseExtDto::error(format!("Invalid uploaded file: {:?}", e)))),
+            Err(e) => return DivoomGatewayResponse::BadRequest(Json(DivoomGatewayResponsePayload::error(format!("Invalid uploaded file: {:?}", e)))),
             Ok(v) => v,
         };
 
@@ -298,7 +298,7 @@ impl ApiHandler {
         let pixoo = PixooClient::new(&self.device_address);
         match pixoo.send_image_animation(animation).await {
             Err(e) => return e.into(),
-            Ok(_) => DivoomGatewayResponse::Ok(Json(DivoomGatewayResponseExtDto::ok())),
+            Ok(_) => DivoomGatewayResponse::Ok(Json(DivoomGatewayResponsePayload::ok())),
         }
     }
 

@@ -8,14 +8,14 @@ use poem_openapi::types::multipart::Upload;
 use serde::{Serialize, Deserialize};
 
 #[derive(Object)]
-pub struct DivoomGatewayResponseExtDto<T: ParseFromJSON + ToJSON + Send + Sync> {
+pub struct DivoomGatewayResponsePayload<T: ParseFromJSON + ToJSON + Send + Sync> {
     error: String,
     server_status_code: i32,
     server_error_code: i32,
     data: Option<T>,
 }
 
-impl<T: ParseFromJSON + ToJSON + Send + Sync> DivoomGatewayResponseExtDto<T> {
+impl<T: ParseFromJSON + ToJSON + Send + Sync> DivoomGatewayResponsePayload<T> {
     pub fn ok() -> Self {
         Self {
             error: "OK".to_string(),
@@ -57,47 +57,47 @@ impl<T: ParseFromJSON + ToJSON + Send + Sync> DivoomGatewayResponseExtDto<T> {
 #[oai(bad_request_handler = "gateway_bad_request_handler")]
 pub enum DivoomGatewayResponse<T: ParseFromJSON + ToJSON + Send + Sync> {
     #[oai(status = 200)]
-    Ok(Json<DivoomGatewayResponseExtDto<T>>),
+    Ok(Json<DivoomGatewayResponsePayload<T>>),
 
     #[oai(status = 400)]
-    BadRequest(Json<DivoomGatewayResponseExtDto<T>>),
+    BadRequest(Json<DivoomGatewayResponsePayload<T>>),
 
     #[oai(status = 404)]
-    NotFound(Json<DivoomGatewayResponseExtDto<T>>),
+    NotFound(Json<DivoomGatewayResponsePayload<T>>),
 
     #[oai(status = 500)]
-    InternalServerError(Json<DivoomGatewayResponseExtDto<T>>),
+    InternalServerError(Json<DivoomGatewayResponsePayload<T>>),
 
     #[oai(status = 503)]
-    ServiceUnavailable(Json<DivoomGatewayResponseExtDto<T>>),
+    ServiceUnavailable(Json<DivoomGatewayResponsePayload<T>>),
 }
 
 pub fn gateway_bad_request_handler<T: ParseFromJSON + ToJSON + Send + Sync>(
     err: Error,
 ) -> DivoomGatewayResponse<T> {
-    DivoomGatewayResponse::BadRequest(Json(DivoomGatewayResponseExtDto::error(err.to_string())))
+    DivoomGatewayResponse::BadRequest(Json(DivoomGatewayResponsePayload::error(err.to_string())))
 }
 
 impl<T: ParseFromJSON + ToJSON + Send + Sync> From<DivoomAPIError> for DivoomGatewayResponse<T> {
     fn from(err: DivoomAPIError) -> Self {
         match err {
             DivoomAPIError::ParameterError(e) => DivoomGatewayResponse::BadRequest(Json(
-                DivoomGatewayResponseExtDto::error(format!("Invalid parameter: {}", e)),
+                DivoomGatewayResponsePayload::error(format!("Invalid parameter: {}", e)),
             )),
             DivoomAPIError::ResourceLoadError { source: e } => {
-                DivoomGatewayResponse::BadRequest(Json(DivoomGatewayResponseExtDto::error(e.to_string())))
+                DivoomGatewayResponse::BadRequest(Json(DivoomGatewayResponsePayload::error(e.to_string())))
             }
             DivoomAPIError::ResourceDecodeError(e) => {
-                DivoomGatewayResponse::BadRequest(Json(DivoomGatewayResponseExtDto::error(e.to_string())))
+                DivoomGatewayResponse::BadRequest(Json(DivoomGatewayResponsePayload::error(e.to_string())))
             }
             DivoomAPIError::RequestError { source: e } => {
-                DivoomGatewayResponse::ServiceUnavailable(Json(DivoomGatewayResponseExtDto::error(e.to_string())))
+                DivoomGatewayResponse::ServiceUnavailable(Json(DivoomGatewayResponsePayload::error(e.to_string())))
             }
             DivoomAPIError::ResponseDeserializationError { source: e } => {
-                DivoomGatewayResponse::InternalServerError(Json(DivoomGatewayResponseExtDto::error(e.to_string())))
+                DivoomGatewayResponse::InternalServerError(Json(DivoomGatewayResponsePayload::error(e.to_string())))
             }
             DivoomAPIError::ServerError(e) => {
-                DivoomGatewayResponse::BadRequest(Json(DivoomGatewayResponseExtDto::server_error(
+                DivoomGatewayResponse::BadRequest(Json(DivoomGatewayResponsePayload::server_error(
                     e.http_status_code as i32,
                     e.error_code,
                     e.error_message,
@@ -107,16 +107,15 @@ impl<T: ParseFromJSON + ToJSON + Send + Sync> From<DivoomAPIError> for DivoomGat
     }
 }
 
-/// Clock info that returned from Divoom device, such as Pixoo-64 (not service).
 #[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize, Object)]
-pub struct DivoomSelectedClockInfoExtDto {
+pub struct DivoomGatewayGetSelectedClockInfoResponse {
     pub clock_id: i32,
     pub brightness: i32,
 }
 
-impl From<DivoomSelectedClockInfo> for DivoomSelectedClockInfoExtDto {
+impl From<DivoomSelectedClockInfo> for DivoomGatewayGetSelectedClockInfoResponse {
     fn from(v: DivoomSelectedClockInfo) -> Self {
-        DivoomSelectedClockInfoExtDto {
+        DivoomGatewayGetSelectedClockInfoResponse {
             clock_id: v.clock_id,
             brightness: v.brightness,
         }
@@ -124,7 +123,7 @@ impl From<DivoomSelectedClockInfo> for DivoomSelectedClockInfoExtDto {
 }
 
 #[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize, Object)]
-pub struct DivoomPixooDeviceSettingsExtDto {
+pub struct DivoomGatewayGetDeviceSettingsResponse {
     pub brightness: i32,
     pub rotation_flag: i32,
     pub clock_time: i32,
@@ -140,9 +139,9 @@ pub struct DivoomPixooDeviceSettingsExtDto {
     pub light_switch: i32,
 }
 
-impl From<DivoomPixooDeviceSettings> for DivoomPixooDeviceSettingsExtDto {
+impl From<DivoomPixooDeviceSettings> for DivoomGatewayGetDeviceSettingsResponse {
     fn from(v: DivoomPixooDeviceSettings) -> Self {
-        DivoomPixooDeviceSettingsExtDto {
+        DivoomGatewayGetDeviceSettingsResponse {
             brightness: v.brightness,
             rotation_flag: v.rotation_flag,
             clock_time: v.clock_time,
