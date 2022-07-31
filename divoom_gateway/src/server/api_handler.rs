@@ -17,6 +17,43 @@ enum ApiTags {
     Batch,
 }
 
+// Cannot reduce code with macro here, because we are running into compile error below:
+//
+// ```
+// error: cannot find attribute `oai` in this scope
+// --> divoom_gateway\src\server\api_handler.rs:75:11
+// |
+// 75 |         #[oai(path = "/channel", method = "get", tag = "ApiTags::Channel")]
+// |           ^^^
+// ```
+//
+// Sample code below:
+//
+// ```
+// macro_rules! impl_gateway_api_get_as_string_handler {
+//     (
+//         $(#[$docs:meta])* $api_name:ident
+//     ) => (
+//         $(#[$docs])*
+//         async fn $api_name(&self) -> GatewayResponse<String> {
+//             let pixoo = PixooClient::new(&self.device_address);
+//
+//             match pixoo.$api_name().await {
+//                 Err(e) => e.into(),
+//                 Ok(result) => {
+//                     GatewayResponse::Ok(Json(GatewayResponseDTO::ok_with_data(result.to_string())))
+//                 }
+//             }
+//         }
+//     );
+// }
+//
+// impl_gateway_api_get_as_string_handler!(
+//     #[oai(path = "/channel", method = "get", tag = "ApiTags::Channel")]
+//     get_current_channel
+// );
+// ```
+
 #[OpenApi]
 impl ApiHandler {
     pub fn new(device_address: String) -> ApiHandler {
