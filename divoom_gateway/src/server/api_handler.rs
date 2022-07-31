@@ -1,7 +1,10 @@
+use std::io::Cursor;
+use std::time::Duration;
 use super::api_server_dto::*;
 use divoom::*;
 use poem_openapi::payload::Json;
 use poem_openapi::{OpenApi, Tags};
+use tiny_skia::BlendMode;
 
 pub struct ApiHandler {
     device_address: String,
@@ -264,6 +267,41 @@ impl ApiHandler {
         return invoke_pixoo_api_no_response!(self, play_gif_file, parsed_file_type, file_name);
     }
 
+    #[oai(path = "/animation/send-gif", method = "post", tag = "ApiTags::Animation")]
+    async fn send_gif_as_animation(&self, request: DivoomGatewaySendGifAsAnimationRequest) -> DivoomGatewayResponse<String> {
+        let gif_data = match request.file.into_vec().await {
+            Err(_) => return DivoomAPIError::ParameterError("file".to_string()).into(),
+            Ok(v) => v,
+        };
+
+        let animation_builder = match DivoomAnimationBuilder::new(request.canvas_size, Duration::from_millis(request.speed_in_ms)) {
+            Err(e) => return DivoomGatewayResponse::BadRequest(Json(DivoomGatewayResponseExtDto::error(format!("{:?}", e)))),
+            Ok(v) => v,
+        };
+
+        let gif = match DivoomAnimationResourceLoader::from_gif(Cursor::new(gif_data)) {
+            Err(e) => return DivoomGatewayResponse::BadRequest(Json(DivoomGatewayResponseExtDto::error(format!("Invalid uploaded file: {:?}", e)))),
+            Ok(v) => v,
+        };
+
+        let animation = animation_builder
+            .draw_frames_fit(
+                &gif,
+                0,
+                DivoomDrawFitMode::Center,
+                0.0,
+                1.0,
+                BlendMode::default(),
+            )
+            .build();
+
+        let pixoo = PixooClient::new(&self.device_address);
+        match pixoo.send_image_animation(animation).await {
+            Err(e) => return e.into(),
+            Ok(_) => DivoomGatewayResponse::Ok(Json(DivoomGatewayResponseExtDto::ok())),
+        }
+    }
+
     #[oai(path = "/animation/next-id", method = "get", tag = "ApiTags::Animation")]
     async fn get_next_animation_id(&self) -> DivoomGatewayResponse<i32> {
         return invoke_pixoo_api_respond_object!(self, get_next_animation_id);
@@ -301,101 +339,3 @@ impl ApiHandler {
         return invoke_pixoo_api_no_response!(self, execute_commands_from_url, url);
     }
 }
-/*
-/// # Animation API implementations
-impl PixooClient {
-    /// Send GIF to the device to play as an animation.
-    ///
-    /// This API is different from `play_gif_file`, which is provided by divoom device directly. This API will try to leverage the animation API,
-    /// create a new animation, load the gif files and draw all the frames into the animation, and send the to device to play.
-    ///
-    /// The API `play_gif_file` doesn't seems to be very stable when the package is published, hence `send_gif_as_animation` is more preferred
-    /// as of now.
-    #[cfg(feature = "animation-builder")]
-    pub async fn send_gif_as_animation(
-        &self,
-        canvas_size: u32,
-        speed: Duration,
-        file_path: &str,
-    ) -> DivoomAPIResult<()> {
-        let animation_builder = DivoomAnimationBuilder::new(canvas_size, speed)?;
-        let gif = DivoomAnimationResourceLoader::from_gif_file(file_path)?;
-        let animation = animation_builder
-            .draw_frames_fit(
-                &gif,
-                0,
-                DivoomDrawFitMode::Center,
-                0.0,
-                1.0,
-                BlendMode::default(),
-            )
-            .build();
-        self.send_image_animation(animation).await
-    }
-
-    /// Send GIF to the device to play as an animation.
-    ///
-    /// This API is different from `play_gif_file`, which is provided by divoom device directly. This API will try to leverage the animation API,
-    /// create a new animation, load the gif files and draw all the frames into the animation, and send the to device to play.
-    ///
-    /// The API `play_gif_file` doesn't seems to be very stable when the package is published, hence `send_gif_as_animation` is more preferred
-    /// as of now.
-    #[cfg(feature = "animation-builder")]
-    pub async fn send_gif_as_animation_with_options(
-        &self,
-        canvas_size: u32,
-        speed: Duration,
-        file_path: &str,
-        fit: DivoomDrawFitMode,
-        rotation: f32,
-        opacity: f32,
-        blend: BlendMode,
-    ) -> DivoomAPIResult<()> {
-        let animation_builder = DivoomAnimationBuilder::new(canvas_size, speed)?;
-        let gif = DivoomAnimationResourceLoader::from_gif_file(file_path)?;
-        let animation = animation_builder
-            .draw_frames_fit(&gif, 0, fit, rotation, opacity, blend)
-            .build();
-        self.send_image_animation(animation).await
-    }
-
-    #[doc = include_str!("../../divoom_contracts/pixoo/animation/api_send_image_animation_frame.md")]
-    pub async fn send_image_animation(
-        &self,
-        animation: DivoomImageAnimation,
-    ) -> DivoomAPIResult<()> {
-        self.send_image_animation_with_id(DIVOOM_IMAGE_ANIMATION_ID_AUTO, animation)
-            .await
-    }
-
-    #[doc = include_str!("../../divoom_contracts/pixoo/animation/api_send_image_animation_frame.md")]
-    pub async fn send_image_animation_with_id(
-        &self,
-        id: i32,
-        animation: DivoomImageAnimation,
-    ) -> DivoomAPIResult<()> {
-        let animation_id = if id == DIVOOM_IMAGE_ANIMATION_ID_AUTO {
-            self.get_next_animation_id().await?
-        } else {
-            id
-        };
-
-        let response: DivoomPixooCommandBatchExecuteCommandsResponse =
-            PixooCommandBuilder::start_batch(self.client.clone())
-                .send_image_animation(animation_id, animation)
-                .execute_with_parsed_response::<DivoomPixooCommandBatchExecuteCommandsResponse>()
-                .await?;
-
-        let error_code = response.error_code();
-        if error_code != 0 {
-            return Err(DivoomAPIError::ServerError(
-                DivoomServerErrorInfo::server_error(error_code),
-            ));
-        }
-
-        response.destructive_into();
-        Ok(())
-    }
-}
-
-*/

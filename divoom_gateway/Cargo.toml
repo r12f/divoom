@@ -23,6 +23,7 @@ divoom = { version = "0.0.1", path = "../divoom" }
 poem = "1"
 poem-openapi = { version = "2", features = ["swagger-ui"]}
 clap = { version = "3.2.16", features = ["derive"] }
+tiny-skia = { version = "0.7.0", features = ["std", "simd"]}
 
 [build-dependencies]
 winres = "0.1.12"

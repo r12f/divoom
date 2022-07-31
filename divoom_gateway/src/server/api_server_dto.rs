@@ -3,7 +3,8 @@ use divoom::*;
 use poem::Error;
 use poem_openapi::payload::Json;
 use poem_openapi::types::{ParseFromJSON, ToJSON};
-use poem_openapi::{ApiResponse, Object};
+use poem_openapi::{ApiResponse, Object, Multipart};
+use poem_openapi::types::multipart::Upload;
 use serde::{Serialize, Deserialize};
 
 #[derive(Object)]
@@ -312,4 +313,11 @@ impl DivoomGatewaySendTextAnimationRequest {
             align: DivoomTextAnimationAlign::from_str(&self.align)?,
         })
     }
+}
+
+#[derive(Debug, Multipart)]
+pub struct DivoomGatewaySendGifAsAnimationRequest {
+    pub canvas_size: u32,
+    pub speed_in_ms: u64,
+    pub file: Upload,
 }

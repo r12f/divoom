@@ -22,7 +22,7 @@ serde_json = "1.0.82"
 rgb = "0.8.33"
 structopt = "0.3.26"
 divoom = { version = "0.0.1", path = "../divoom" }
-tiny-skia = "0.7.0"
+tiny-skia = { version = "0.7.0", features = ["std", "simd"]}
 
 [build-dependencies]
 winres = "0.1.12"
