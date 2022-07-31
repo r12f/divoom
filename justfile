@@ -237,7 +237,7 @@ install:
 #
 # Pack tasks:
 #
-pack-prepare_all:
+pack-prepare-all:
     just pack-prepare divoom_cli
     just pack-prepare divoom_gateway
 
