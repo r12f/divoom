@@ -1,11 +1,11 @@
-use std::str::FromStr;
 use divoom::*;
 use poem::Error;
 use poem_openapi::payload::Json;
-use poem_openapi::types::{ParseFromJSON, ToJSON};
-use poem_openapi::{ApiResponse, Object, Multipart};
 use poem_openapi::types::multipart::Upload;
-use serde::{Serialize, Deserialize};
+use poem_openapi::types::{ParseFromJSON, ToJSON};
+use poem_openapi::{ApiResponse, Multipart, Object};
+use serde::{Deserialize, Serialize};
+use std::str::FromStr;
 
 #[derive(Object)]
 pub struct DivoomGatewayResponsePayload<T: ParseFromJSON + ToJSON + Send + Sync> {
@@ -84,17 +84,21 @@ impl<T: ParseFromJSON + ToJSON + Send + Sync> From<DivoomAPIError> for DivoomGat
             DivoomAPIError::ParameterError(e) => DivoomGatewayResponse::BadRequest(Json(
                 DivoomGatewayResponsePayload::error(format!("Invalid parameter: {}", e)),
             )),
-            DivoomAPIError::ResourceLoadError { source: e } => {
-                DivoomGatewayResponse::BadRequest(Json(DivoomGatewayResponsePayload::error(e.to_string())))
-            }
-            DivoomAPIError::ResourceDecodeError(e) => {
-                DivoomGatewayResponse::BadRequest(Json(DivoomGatewayResponsePayload::error(e.to_string())))
-            }
+            DivoomAPIError::ResourceLoadError { source: e } => DivoomGatewayResponse::BadRequest(
+                Json(DivoomGatewayResponsePayload::error(e.to_string())),
+            ),
+            DivoomAPIError::ResourceDecodeError(e) => DivoomGatewayResponse::BadRequest(Json(
+                DivoomGatewayResponsePayload::error(e),
+            )),
             DivoomAPIError::RequestError { source: e } => {
-                DivoomGatewayResponse::ServiceUnavailable(Json(DivoomGatewayResponsePayload::error(e.to_string())))
+                DivoomGatewayResponse::ServiceUnavailable(Json(
+                    DivoomGatewayResponsePayload::error(e.to_string()),
+                ))
             }
             DivoomAPIError::ResponseDeserializationError { source: e } => {
-                DivoomGatewayResponse::InternalServerError(Json(DivoomGatewayResponsePayload::error(e.to_string())))
+                DivoomGatewayResponse::InternalServerError(Json(
+                    DivoomGatewayResponsePayload::error(e.to_string()),
+                ))
             }
             DivoomAPIError::ServerError(e) => {
                 DivoomGatewayResponse::BadRequest(Json(DivoomGatewayResponsePayload::server_error(
