@@ -264,6 +264,16 @@ impl ApiHandler {
         return invoke_pixoo_api_no_response!(self, play_gif_file, parsed_file_type, file_name);
     }
 
+    #[oai(path = "/animation/next-id", method = "get", tag = "ApiTags::Animation")]
+    async fn get_next_animation_id(&self) -> DivoomGatewayResponse<i32> {
+        return invoke_pixoo_api_respond_object!(self, get_next_animation_id);
+    }
+
+    #[oai(path = "/animation/reset-id", method = "post", tag = "ApiTags::Animation")]
+    async fn reset_next_animation_id(&self) -> DivoomGatewayResponse<String> {
+        return invoke_pixoo_api_no_response!(self, reset_next_animation_id);
+    }
+
     #[oai(path = "/animation/clear-all-text", method = "post", tag = "ApiTags::Animation")]
     async fn clear_all_text_area(&self) -> DivoomGatewayResponse<String> {
         return invoke_pixoo_api_no_response!(self, clear_all_text_area);
@@ -294,20 +304,6 @@ impl ApiHandler {
 /*
 /// # Animation API implementations
 impl PixooClient {
-    impl_pixoo_client_api!(
-        get_next_animation_id,
-        "../../divoom_contracts/pixoo/animation/api_get_next_animation_id.md",
-        DivoomPixooCommandAnimationGetNextAnimationIdResponse,
-        i32
-    );
-
-    impl_pixoo_client_api!(
-        reset_next_animation_id,
-        "../../divoom_contracts/pixoo/animation/api_reset_next_animation_id.md",
-        DivoomPixooCommandAnimationResetNextAnimationIdResponse,
-        ()
-    );
-
     /// Send GIF to the device to play as an animation.
     ///
     /// This API is different from `play_gif_file`, which is provided by divoom device directly. This API will try to leverage the animation API,
