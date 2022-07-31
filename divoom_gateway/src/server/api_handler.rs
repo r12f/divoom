@@ -212,43 +212,18 @@ impl ApiHandler {
         let parsed_time_zone = time_zone.0;
         return invoke_pixoo_api_no_response!(self, set_device_time_zone, parsed_time_zone);
     }
+
+    #[oai(path = "/system/weather_area", method = "put", tag = "ApiTags::System")]
+    async fn set_device_weather_area(&self, longitude: Json<String>, latitude: Json<String>) -> GatewayResponse<String> {
+        let parsed_longitude = longitude.0;
+        let parsed_latitude = latitude.0;
+        return invoke_pixoo_api_no_response!(self, set_device_weather_area, parsed_longitude, parsed_latitude);
+    }
 }
 
 /*
 /// # System API implementations
 impl PixooClient {
-    impl_pixoo_client_api!(
-        set_device_rotation_angle,
-        "../../divoom_contracts/pixoo/system/api_set_device_rotation_angle.md",
-        DivoomPixooCommandSystemSetRotationAngleResponse,
-        (),
-        mode: DivoomDeviceRotationAngle
-    );
-
-    impl_pixoo_client_api!(
-        set_device_screen_power_state,
-        "../../divoom_contracts/pixoo/system/api_set_device_screen_power_state.md",
-        DivoomPixooCommandSystemSetScreenPowerStateResponse,
-        (),
-        power_state: DivoomDeviceScreenPowerState
-    );
-
-    impl_pixoo_client_api!(
-        set_device_temperature_unit,
-        "../../divoom_contracts/pixoo/system/api_set_device_temperature_unit.md",
-        DivoomPixooCommandSystemSetTemperatureUnitResponse,
-        (),
-        unit: DivoomDeviceTemperatureUnit
-    );
-
-    impl_pixoo_client_api!(
-        set_device_time_zone,
-        "../../divoom_contracts/pixoo/system/api_set_device_time_zone.md",
-        DivoomPixooCommandSystemSetTimeZoneResponse,
-        (),
-        time_zone: String
-    );
-
     impl_pixoo_client_api!(
         set_device_weather_area,
         "../../divoom_contracts/pixoo/system/api_set_device_weather_area.md",
