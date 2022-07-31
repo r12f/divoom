@@ -1,6 +1,6 @@
 use super::api_server_dto::*;
 use divoom::*;
-use poem::error::InternalServerError;
+use poem::web::Data;
 use poem_openapi::payload::{Json, PlainText};
 use poem_openapi::{OpenApi, Tags};
 
@@ -41,7 +41,7 @@ enum ApiTags {
 //             match pixoo.$api_name().await {
 //                 Err(e) => e.into(),
 //                 Ok(result) => {
-//                     GatewayResponse::Ok(Json(GatewayResponseDTO::ok_with_data(result.to_string())))
+//                     GatewayResponse::Ok(Json(GatewayResponseExDTO::ok_with_data(result.to_string())))
 //                 }
 //             }
 //         }
@@ -54,6 +54,56 @@ enum ApiTags {
 // );
 // ```
 
+macro_rules! parse_gateway_api_arg {
+    ($arg_name:ident, $arg_type:ident) => (
+        match $arg_name.0.parse::<$arg_type>().map_err(|_| DivoomAPIError::ParameterError(stringify!($arg_name).into())) {
+            Err(e) => return e.into(),
+            Ok(parsed) => parsed,
+        }
+    )
+}
+
+macro_rules! invoke_pixoo_api_no_response {
+    ($self:ident, $api_name:ident, $($api_arg:ident),*) => (
+        match PixooClient::new(&$self.device_address).$api_name($($api_arg),*).await {
+            Err(e) => return e.into(),
+            Ok(_) => GatewayResponse::Ok(Json(GatewayResponseExDTO::ok())),
+        }
+    )
+}
+
+macro_rules! invoke_pixoo_api_respond_string {
+    ($self:ident, $api_name:ident) => (
+        match PixooClient::new(&$self.device_address).$api_name().await {
+            Err(e) => return e.into(),
+            Ok(result) => GatewayResponse::Ok(Json(GatewayResponseExDTO::ok_with_data(result.to_string()))),
+        }
+    );
+
+    ($self:ident, $api_name:ident, $($api_arg:ident),*) => (
+        match PixooClient::new(&$self.device_address).$api_name($($api_arg),*).await {
+            Err(e) => return e.into(),
+            Ok(result) => GatewayResponse::Ok(Json(GatewayResponseExDTO::ok_with_data(result.to_string()))),
+        }
+    )
+}
+
+macro_rules! invoke_pixoo_api_respond_object {
+    ($self:ident, $api_name:ident) => (
+        match PixooClient::new(&$self.device_address).$api_name().await {
+            Err(e) => return e.into(),
+            Ok(result) => GatewayResponse::Ok(Json(GatewayResponseExDTO::ok_with_data(result.into()))),
+        }
+    );
+
+    ($self:ident, $api_name:ident, $($api_arg:ident),*) => (
+        match PixooClient::new(&$self.device_address).$api_name($($api_arg),*).await {
+            Err(e) => return e.into(),
+            Ok(result) => GatewayResponse::Ok(Json(GatewayResponseExDTO::ok_with_data(result.into()))),
+        }
+    )
+}
+
 #[OpenApi]
 impl ApiHandler {
     pub fn new(device_address: String) -> ApiHandler {
@@ -62,49 +112,46 @@ impl ApiHandler {
 
     #[oai(path = "/channel", method = "put", tag = "ApiTags::Channel")]
     async fn select_channel(&self, channel: PlainText<String>) -> GatewayResponse<String> {
-        let pixoo = PixooClient::new(&self.device_address);
-
-        match channel
-            .0
-            .parse::<DivoomChannelType>()
-            .map_err(|_| DivoomAPIError::ParameterError("channel".into()))
-        {
-            Err(e) => e.into(),
-            Ok(parsed_channel) => match pixoo.select_channel(parsed_channel).await {
-                Err(e) => e.into(),
-                Ok(_) => GatewayResponse::Ok(Json(GatewayResponseDTO::ok())),
-            },
-        }
+        let parsed_channel = parse_gateway_api_arg!(channel, DivoomChannelType);
+        return invoke_pixoo_api_no_response!(self, select_channel, parsed_channel);
     }
 
     #[oai(path = "/channel", method = "get", tag = "ApiTags::Channel")]
     async fn get_current_channel(&self) -> GatewayResponse<String> {
-        let pixoo = PixooClient::new(&self.device_address);
+        return invoke_pixoo_api_respond_string!(self, get_current_channel);
+    }
 
-        match pixoo.get_current_channel().await {
-            Err(e) => e.into(),
-            Ok(result) => {
-                GatewayResponse::Ok(Json(GatewayResponseDTO::ok_with_data(result.to_string())))
-            }
-        }
+    #[oai(path = "/channel/clock", method = "put", tag = "ApiTags::Channel")]
+    async fn select_clock(&self, clock_id: PlainText<String>) -> GatewayResponse<String> {
+        let parsed_clock_id = parse_gateway_api_arg!(clock_id, i32);
+        return invoke_pixoo_api_no_response!(self, select_clock, parsed_clock_id);
+    }
+
+    #[oai(path = "/channel/clock", method = "get", tag = "ApiTags::Channel")]
+    async fn get_selected_clock_info(&self) -> GatewayResponse<DivoomSelectedClockInfoExDTO> {
+        return invoke_pixoo_api_respond_object!(self, get_selected_clock_info);
+    }
+
+    #[oai(path = "/channel/cloud", method = "put", tag = "ApiTags::Channel")]
+    async fn select_cloud_channel(&self, channel_type: PlainText<String>) -> GatewayResponse<String> {
+        let parsed_channel_type = parse_gateway_api_arg!(channel_type, DivoomCloudChannelType);
+        return invoke_pixoo_api_no_response!(self, select_cloud_channel, parsed_channel_type);
+    }
+
+    #[oai(path = "/channel/visualizer", method = "put", tag = "ApiTags::Channel")]
+    async fn select_visualizer(&self, visualizer: PlainText<String>) -> GatewayResponse<String> {
+        let parsed_visualizer = parse_gateway_api_arg!(visualizer, i32);
+        return invoke_pixoo_api_no_response!(self, select_visualizer, parsed_visualizer);
+    }
+
+    #[oai(path = "/channel/custom", method = "put", tag = "ApiTags::Channel")]
+    async fn select_custom_page(&self, custom_page: PlainText<String>) -> GatewayResponse<String> {
+        let parsed_custom_page = parse_gateway_api_arg!(custom_page, i32);
+        return invoke_pixoo_api_no_response!(self, select_custom_page, parsed_custom_page);
     }
 }
+
 /*
-impl_pixoo_client_api!(
-        select_channel,
-        "../../divoom_contracts/pixoo/channel/api_select_channel.md",
-        DivoomPixooCommandChannelSelectChannelResponse,
-        (),
-        channel_type: DivoomChannelType
-    );
-
-impl_pixoo_client_api!(
-        get_current_channel,
-        "../../divoom_contracts/pixoo/channel/api_get_current_channel.md",
-        DivoomPixooCommandChannelGetCurrentChannelResponse,
-        DivoomChannelType
-    );
-
 impl_pixoo_client_api!(
         select_clock,
         "../../divoom_contracts/pixoo/channel/api_select_clock.md",
