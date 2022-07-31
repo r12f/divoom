@@ -1,0 +1,2750 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Divoom Gateway",
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:20821/api"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Animation"
+    },
+    {
+      "name": "Batch"
+    },
+    {
+      "name": "Channel"
+    },
+    {
+      "name": "System"
+    },
+    {
+      "name": "Tool"
+    }
+  ],
+  "paths": {
+    "/channel": {
+      "put": {
+        "tags": [
+          "Channel"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DivoomGatewaySelectChannelRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Channel"
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/channel/clock": {
+      "put": {
+        "tags": [
+          "Channel"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DivoomGatewaySelectClockRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Channel"
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<DivoomGatewayGetSelectedClockInfoResponse>"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<DivoomGatewayGetSelectedClockInfoResponse>"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<DivoomGatewayGetSelectedClockInfoResponse>"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<DivoomGatewayGetSelectedClockInfoResponse>"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<DivoomGatewayGetSelectedClockInfoResponse>"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/channel/cloud": {
+      "put": {
+        "tags": [
+          "Channel"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DivoomGatewaySelectCloudChannelRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/channel/visualizer": {
+      "put": {
+        "tags": [
+          "Channel"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DivoomGatewaySelectVisualizerRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/channel/custom": {
+      "put": {
+        "tags": [
+          "Channel"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DivoomGatewaySelectCustomPageRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/system/device-settings": {
+      "get": {
+        "tags": [
+          "System"
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<DivoomGatewayGetDeviceSettingsResponse>"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<DivoomGatewayGetDeviceSettingsResponse>"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<DivoomGatewayGetDeviceSettingsResponse>"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<DivoomGatewayGetDeviceSettingsResponse>"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<DivoomGatewayGetDeviceSettingsResponse>"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/system/device-time": {
+      "get": {
+        "tags": [
+          "System"
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<integer(uint64)>"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<integer(uint64)>"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<integer(uint64)>"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<integer(uint64)>"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<integer(uint64)>"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "System"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DivoomGatewaySetDeviceTimeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/system/brightness": {
+      "put": {
+        "tags": [
+          "System"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DivoomGatewaySetDeviceBrightnessRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/system/high-light-mode": {
+      "put": {
+        "tags": [
+          "System"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DivoomGatewaySetDeviceHighLightModeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/system/hour-mode": {
+      "put": {
+        "tags": [
+          "System"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DivoomGatewaySetDeviceHourModeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/system/mirror-mode": {
+      "put": {
+        "tags": [
+          "System"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DivoomGatewaySetDeviceMirrorModeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/system/rotation-angle": {
+      "put": {
+        "tags": [
+          "System"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DivoomGatewaySetDeviceRotationAngleRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/system/screen-power-state": {
+      "put": {
+        "tags": [
+          "System"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DivoomGatewaySetDeviceScreenPowerStateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/system/temperature-unit": {
+      "put": {
+        "tags": [
+          "System"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DivoomGatewaySetDeviceTemperatureUnitRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/system/time-zone": {
+      "put": {
+        "tags": [
+          "System"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DivoomGatewaySetDeviceTimeZoneRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/system/weather_area": {
+      "put": {
+        "tags": [
+          "System"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DivoomGatewaySetDeviceWeatherAreaRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/system/white-balance": {
+      "put": {
+        "tags": [
+          "System"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DivoomGatewaySetDeviceWhiteBalanceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tool/countdown": {
+      "post": {
+        "tags": [
+          "Tool"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DivoomGatewaySetCountdownToolRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tool/noise": {
+      "post": {
+        "tags": [
+          "Tool"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DivoomGatewaySetNoiseToolRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tool/scoreboard": {
+      "post": {
+        "tags": [
+          "Tool"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DivoomGatewaySetScoreboardToolRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tool/stopwatch": {
+      "put": {
+        "tags": [
+          "Tool"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DivoomGatewaySetStopwatchToolRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/animation/play-gif": {
+      "post": {
+        "tags": [
+          "Animation"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DivoomGatewayPlayGifRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/animation/send-gif": {
+      "post": {
+        "tags": [
+          "Animation"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "canvas_size",
+                  "speed_in_ms",
+                  "file"
+                ],
+                "properties": {
+                  "canvas_size": {
+                    "type": "integer",
+                    "format": "uint32"
+                  },
+                  "speed_in_ms": {
+                    "type": "integer",
+                    "format": "uint64"
+                  },
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/animation/next-id": {
+      "get": {
+        "tags": [
+          "Animation"
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<integer(int32)>"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<integer(int32)>"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<integer(int32)>"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<integer(int32)>"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<integer(int32)>"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/animation/reset-id": {
+      "post": {
+        "tags": [
+          "Animation"
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/animation/clear-all-text": {
+      "post": {
+        "tags": [
+          "Animation"
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/animation/send-text": {
+      "post": {
+        "tags": [
+          "Animation"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DivoomGatewaySendTextAnimationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/animation/play-buzzer": {
+      "post": {
+        "tags": [
+          "Animation"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DivoomGatewayPlayBuzzerRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/batch/execute-commands-from-url": {
+      "post": {
+        "tags": [
+          "Batch"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DivoomGatewayExecuteCommandsFromUrlRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DivoomGatewayResponsePayload<string>"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "DivoomGatewayExecuteCommandsFromUrlRequest": {
+        "type": "object",
+        "required": [
+          "url"
+        ],
+        "properties": {
+          "url": {
+            "type": "string"
+          }
+        }
+      },
+      "DivoomGatewayGetDeviceSettingsResponse": {
+        "type": "object",
+        "required": [
+          "brightness",
+          "rotation_flag",
+          "clock_time",
+          "gallery_time",
+          "single_gallery_time",
+          "power_on_channel_id",
+          "gallery_show_time_flag",
+          "cur_clock_id",
+          "time24_flag",
+          "temperature_mode",
+          "gyrate_angle",
+          "mirror_flag",
+          "light_switch"
+        ],
+        "properties": {
+          "brightness": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "rotation_flag": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "clock_time": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "gallery_time": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "single_gallery_time": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "power_on_channel_id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "gallery_show_time_flag": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "cur_clock_id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "time24_flag": {
+            "type": "string"
+          },
+          "temperature_mode": {
+            "type": "string"
+          },
+          "gyrate_angle": {
+            "type": "string"
+          },
+          "mirror_flag": {
+            "type": "string"
+          },
+          "light_switch": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "DivoomGatewayGetSelectedClockInfoResponse": {
+        "type": "object",
+        "required": [
+          "clock_id",
+          "brightness"
+        ],
+        "properties": {
+          "clock_id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "brightness": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "DivoomGatewayPlayBuzzerRequest": {
+        "type": "object",
+        "required": [
+          "play_total_time",
+          "active_time_in_cycle",
+          "off_time_in_cycle"
+        ],
+        "properties": {
+          "play_total_time": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "active_time_in_cycle": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "off_time_in_cycle": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "DivoomGatewayPlayGifRequest": {
+        "type": "object",
+        "required": [
+          "file_type",
+          "file_name"
+        ],
+        "properties": {
+          "file_type": {
+            "type": "string"
+          },
+          "file_name": {
+            "type": "string"
+          }
+        }
+      },
+      "DivoomGatewayResponsePayload<DivoomGatewayGetDeviceSettingsResponse>": {
+        "type": "object",
+        "required": [
+          "error",
+          "server_status_code",
+          "server_error_code"
+        ],
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "server_status_code": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "server_error_code": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "data": {
+            "$ref": "#/components/schemas/DivoomGatewayGetDeviceSettingsResponse"
+          }
+        }
+      },
+      "DivoomGatewayResponsePayload<DivoomGatewayGetSelectedClockInfoResponse>": {
+        "type": "object",
+        "required": [
+          "error",
+          "server_status_code",
+          "server_error_code"
+        ],
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "server_status_code": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "server_error_code": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "data": {
+            "$ref": "#/components/schemas/DivoomGatewayGetSelectedClockInfoResponse"
+          }
+        }
+      },
+      "DivoomGatewayResponsePayload<integer(int32)>": {
+        "type": "object",
+        "required": [
+          "error",
+          "server_status_code",
+          "server_error_code"
+        ],
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "server_status_code": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "server_error_code": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "data": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "DivoomGatewayResponsePayload<integer(uint64)>": {
+        "type": "object",
+        "required": [
+          "error",
+          "server_status_code",
+          "server_error_code"
+        ],
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "server_status_code": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "server_error_code": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "data": {
+            "type": "integer",
+            "format": "uint64"
+          }
+        }
+      },
+      "DivoomGatewayResponsePayload<string>": {
+        "type": "object",
+        "required": [
+          "error",
+          "server_status_code",
+          "server_error_code"
+        ],
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "server_status_code": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "server_error_code": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "data": {
+            "type": "string"
+          }
+        }
+      },
+      "DivoomGatewaySelectChannelRequest": {
+        "type": "object",
+        "required": [
+          "channel"
+        ],
+        "properties": {
+          "channel": {
+            "type": "string"
+          }
+        }
+      },
+      "DivoomGatewaySelectClockRequest": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "DivoomGatewaySelectCloudChannelRequest": {
+        "type": "object",
+        "required": [
+          "channel"
+        ],
+        "properties": {
+          "channel": {
+            "type": "string"
+          }
+        }
+      },
+      "DivoomGatewaySelectCustomPageRequest": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "DivoomGatewaySelectVisualizerRequest": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "DivoomGatewaySendTextAnimationRequest": {
+        "type": "object",
+        "required": [
+          "text_id",
+          "x",
+          "y",
+          "scroll_direction",
+          "font_index",
+          "text_width",
+          "speed_in_ms",
+          "text_string",
+          "color",
+          "align"
+        ],
+        "properties": {
+          "text_id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "x": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "y": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "scroll_direction": {
+            "type": "string"
+          },
+          "font_index": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "text_width": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "speed_in_ms": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "text_string": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          },
+          "align": {
+            "type": "string"
+          }
+        }
+      },
+      "DivoomGatewaySetCountdownToolRequest": {
+        "type": "object",
+        "required": [
+          "minute",
+          "second",
+          "action"
+        ],
+        "properties": {
+          "minute": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "second": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "action": {
+            "type": "string"
+          }
+        }
+      },
+      "DivoomGatewaySetDeviceBrightnessRequest": {
+        "type": "object",
+        "required": [
+          "brightness"
+        ],
+        "properties": {
+          "brightness": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "DivoomGatewaySetDeviceHighLightModeRequest": {
+        "type": "object",
+        "required": [
+          "mode"
+        ],
+        "properties": {
+          "mode": {
+            "type": "string"
+          }
+        }
+      },
+      "DivoomGatewaySetDeviceHourModeRequest": {
+        "type": "object",
+        "required": [
+          "mode"
+        ],
+        "properties": {
+          "mode": {
+            "type": "string"
+          }
+        }
+      },
+      "DivoomGatewaySetDeviceMirrorModeRequest": {
+        "type": "object",
+        "required": [
+          "mode"
+        ],
+        "properties": {
+          "mode": {
+            "type": "string"
+          }
+        }
+      },
+      "DivoomGatewaySetDeviceRotationAngleRequest": {
+        "type": "object",
+        "required": [
+          "mode"
+        ],
+        "properties": {
+          "mode": {
+            "type": "string"
+          }
+        }
+      },
+      "DivoomGatewaySetDeviceScreenPowerStateRequest": {
+        "type": "object",
+        "required": [
+          "state"
+        ],
+        "properties": {
+          "state": {
+            "type": "string"
+          }
+        }
+      },
+      "DivoomGatewaySetDeviceTemperatureUnitRequest": {
+        "type": "object",
+        "required": [
+          "unit"
+        ],
+        "properties": {
+          "unit": {
+            "type": "string"
+          }
+        }
+      },
+      "DivoomGatewaySetDeviceTimeRequest": {
+        "type": "object",
+        "required": [
+          "time"
+        ],
+        "properties": {
+          "time": {
+            "type": "integer",
+            "format": "uint64"
+          }
+        }
+      },
+      "DivoomGatewaySetDeviceTimeZoneRequest": {
+        "type": "object",
+        "required": [
+          "time_zone"
+        ],
+        "properties": {
+          "time_zone": {
+            "type": "string"
+          }
+        }
+      },
+      "DivoomGatewaySetDeviceWeatherAreaRequest": {
+        "type": "object",
+        "required": [
+          "longitude",
+          "latitude"
+        ],
+        "properties": {
+          "longitude": {
+            "type": "string"
+          },
+          "latitude": {
+            "type": "string"
+          }
+        }
+      },
+      "DivoomGatewaySetDeviceWhiteBalanceRequest": {
+        "type": "object",
+        "required": [
+          "r",
+          "g",
+          "b"
+        ],
+        "properties": {
+          "r": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "g": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "b": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "DivoomGatewaySetNoiseToolRequest": {
+        "type": "object",
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "type": "string"
+          }
+        }
+      },
+      "DivoomGatewaySetScoreboardToolRequest": {
+        "type": "object",
+        "required": [
+          "blue_score",
+          "red_score"
+        ],
+        "properties": {
+          "blue_score": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "red_score": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "DivoomGatewaySetStopwatchToolRequest": {
+        "type": "object",
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
