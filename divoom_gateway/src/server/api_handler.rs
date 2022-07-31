@@ -1,6 +1,5 @@
 use super::api_server_dto::*;
 use divoom::*;
-use poem::web::Data;
 use poem_openapi::payload::{Json, PlainText};
 use poem_openapi::{OpenApi, Tags};
 
@@ -171,35 +170,53 @@ impl ApiHandler {
         let parsed_device_time = parse_gateway_api_arg!(device_time, u64);
         return invoke_pixoo_api_no_response!(self, set_device_time, parsed_device_time);
     }
+
+    #[oai(path = "/system/high-light-mode", method = "put", tag = "ApiTags::System")]
+    async fn set_device_high_light_mode(&self, high_light_mode: PlainText<String>) -> GatewayResponse<String> {
+        let parsed_high_light_mode = parse_gateway_api_arg!(high_light_mode, DivoomDeviceHighLightMode);
+        return invoke_pixoo_api_no_response!(self, set_device_high_light_mode, parsed_high_light_mode);
+    }
+
+    #[oai(path = "/system/hour-mode", method = "put", tag = "ApiTags::System")]
+    async fn set_device_hour_mode(&self, hour_mode: PlainText<String>) -> GatewayResponse<String> {
+        let parsed_hour_mode = parse_gateway_api_arg!(hour_mode, DivoomDeviceHourMode);
+        return invoke_pixoo_api_no_response!(self, set_device_hour_mode, parsed_hour_mode);
+    }
+
+    #[oai(path = "/system/mirror-mode", method = "put", tag = "ApiTags::System")]
+    async fn set_device_mirror_mode(&self, mirror_mode: PlainText<String>) -> GatewayResponse<String> {
+        let parsed_mirror_mode = parse_gateway_api_arg!(mirror_mode, DivoomDeviceMirrorMode);
+        return invoke_pixoo_api_no_response!(self, set_device_mirror_mode, parsed_mirror_mode);
+    }
+
+    #[oai(path = "/system/rotation-angle", method = "put", tag = "ApiTags::System")]
+    async fn set_device_rotation_angle(&self, rotation_angle: PlainText<String>) -> GatewayResponse<String> {
+        let parsed_rotation_angle = parse_gateway_api_arg!(rotation_angle, DivoomDeviceRotationAngle);
+        return invoke_pixoo_api_no_response!(self, set_device_rotation_angle, parsed_rotation_angle);
+    }
+
+    #[oai(path = "/system/screen-power-state", method = "put", tag = "ApiTags::System")]
+    async fn set_device_screen_power_state(&self, screen_power_state: PlainText<String>) -> GatewayResponse<String> {
+        let parsed_screen_power_state = parse_gateway_api_arg!(screen_power_state, DivoomDeviceScreenPowerState);
+        return invoke_pixoo_api_no_response!(self, set_device_screen_power_state, parsed_screen_power_state);
+    }
+
+    #[oai(path = "/system/temperature-unit", method = "put", tag = "ApiTags::System")]
+    async fn set_device_temperature_unit(&self, temperature_unit: PlainText<String>) -> GatewayResponse<String> {
+        let parsed_temperature_unit = parse_gateway_api_arg!(temperature_unit, DivoomDeviceTemperatureUnit);
+        return invoke_pixoo_api_no_response!(self, set_device_temperature_unit, parsed_temperature_unit);
+    }
+
+    #[oai(path = "/system/time-zone", method = "put", tag = "ApiTags::System")]
+    async fn set_device_time_zone(&self, time_zone: PlainText<String>) -> GatewayResponse<String> {
+        let parsed_time_zone = time_zone.0;
+        return invoke_pixoo_api_no_response!(self, set_device_time_zone, parsed_time_zone);
+    }
 }
 
 /*
 /// # System API implementations
 impl PixooClient {
-    impl_pixoo_client_api!(
-        set_device_high_light_mode,
-        "../../divoom_contracts/pixoo/system/api_set_device_high_light_mode.md",
-        DivoomPixooCommandSystemSetHighLightModeResponse,
-        (),
-        mode: DivoomDeviceHighLightMode
-    );
-
-    impl_pixoo_client_api!(
-        set_device_hour_mode,
-        "../../divoom_contracts/pixoo/system/api_set_device_hour_mode.md",
-        DivoomPixooCommandSystemSetHourModeResponse,
-        (),
-        mode: DivoomDeviceHourMode
-    );
-
-    impl_pixoo_client_api!(
-        set_device_mirror_mode,
-        "../../divoom_contracts/pixoo/system/api_set_device_mirror_mode.md",
-        DivoomPixooCommandSystemSetMirrorModeResponse,
-        (),
-        mode: DivoomDeviceMirrorMode
-    );
-
     impl_pixoo_client_api!(
         set_device_rotation_angle,
         "../../divoom_contracts/pixoo/system/api_set_device_rotation_angle.md",
