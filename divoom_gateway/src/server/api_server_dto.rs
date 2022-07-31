@@ -6,14 +6,14 @@ use poem_openapi::{ApiResponse, Object};
 use serde::{Serialize, Deserialize};
 
 #[derive(Object)]
-pub struct GatewayResponseExtDto<T: ParseFromJSON + ToJSON + Send + Sync> {
+pub struct DivoomGatewayResponseExtDto<T: ParseFromJSON + ToJSON + Send + Sync> {
     error: String,
     server_status_code: i32,
     server_error_code: i32,
     data: Option<T>,
 }
 
-impl<T: ParseFromJSON + ToJSON + Send + Sync> GatewayResponseExtDto<T> {
+impl<T: ParseFromJSON + ToJSON + Send + Sync> DivoomGatewayResponseExtDto<T> {
     pub fn ok() -> Self {
         Self {
             error: "OK".to_string(),
@@ -53,49 +53,49 @@ impl<T: ParseFromJSON + ToJSON + Send + Sync> GatewayResponseExtDto<T> {
 
 #[derive(ApiResponse)]
 #[oai(bad_request_handler = "gateway_bad_request_handler")]
-pub enum GatewayResponse<T: ParseFromJSON + ToJSON + Send + Sync> {
+pub enum DivoomGatewayResponse<T: ParseFromJSON + ToJSON + Send + Sync> {
     #[oai(status = 200)]
-    Ok(Json<GatewayResponseExtDto<T>>),
+    Ok(Json<DivoomGatewayResponseExtDto<T>>),
 
     #[oai(status = 400)]
-    BadRequest(Json<GatewayResponseExtDto<T>>),
+    BadRequest(Json<DivoomGatewayResponseExtDto<T>>),
 
     #[oai(status = 404)]
-    NotFound(Json<GatewayResponseExtDto<T>>),
+    NotFound(Json<DivoomGatewayResponseExtDto<T>>),
 
     #[oai(status = 500)]
-    InternalServerError(Json<GatewayResponseExtDto<T>>),
+    InternalServerError(Json<DivoomGatewayResponseExtDto<T>>),
 
     #[oai(status = 503)]
-    ServiceUnavailable(Json<GatewayResponseExtDto<T>>),
+    ServiceUnavailable(Json<DivoomGatewayResponseExtDto<T>>),
 }
 
 pub fn gateway_bad_request_handler<T: ParseFromJSON + ToJSON + Send + Sync>(
     err: Error,
-) -> GatewayResponse<T> {
-    GatewayResponse::BadRequest(Json(GatewayResponseExtDto::error(err.to_string())))
+) -> DivoomGatewayResponse<T> {
+    DivoomGatewayResponse::BadRequest(Json(DivoomGatewayResponseExtDto::error(err.to_string())))
 }
 
-impl<T: ParseFromJSON + ToJSON + Send + Sync> From<DivoomAPIError> for GatewayResponse<T> {
+impl<T: ParseFromJSON + ToJSON + Send + Sync> From<DivoomAPIError> for DivoomGatewayResponse<T> {
     fn from(err: DivoomAPIError) -> Self {
         match err {
-            DivoomAPIError::ParameterError(e) => GatewayResponse::BadRequest(Json(
-                GatewayResponseExtDto::error(format!("Invalid parameter: {}", e)),
+            DivoomAPIError::ParameterError(e) => DivoomGatewayResponse::BadRequest(Json(
+                DivoomGatewayResponseExtDto::error(format!("Invalid parameter: {}", e)),
             )),
             DivoomAPIError::ResourceLoadError { source: e } => {
-                GatewayResponse::BadRequest(Json(GatewayResponseExtDto::error(e.to_string())))
+                DivoomGatewayResponse::BadRequest(Json(DivoomGatewayResponseExtDto::error(e.to_string())))
             }
             DivoomAPIError::ResourceDecodeError(e) => {
-                GatewayResponse::BadRequest(Json(GatewayResponseExtDto::error(e.to_string())))
+                DivoomGatewayResponse::BadRequest(Json(DivoomGatewayResponseExtDto::error(e.to_string())))
             }
             DivoomAPIError::RequestError { source: e } => {
-                GatewayResponse::ServiceUnavailable(Json(GatewayResponseExtDto::error(e.to_string())))
+                DivoomGatewayResponse::ServiceUnavailable(Json(DivoomGatewayResponseExtDto::error(e.to_string())))
             }
             DivoomAPIError::ResponseDeserializationError { source: e } => {
-                GatewayResponse::InternalServerError(Json(GatewayResponseExtDto::error(e.to_string())))
+                DivoomGatewayResponse::InternalServerError(Json(DivoomGatewayResponseExtDto::error(e.to_string())))
             }
             DivoomAPIError::ServerError(e) => {
-                GatewayResponse::BadRequest(Json(GatewayResponseExtDto::server_error(
+                DivoomGatewayResponse::BadRequest(Json(DivoomGatewayResponseExtDto::server_error(
                     e.http_status_code as i32,
                     e.error_code,
                     e.error_message,
@@ -158,4 +158,128 @@ impl From<DivoomPixooDeviceSettings> for DivoomPixooDeviceSettingsExtDto {
             light_switch: v.light_switch,
         }
     }
+}
+
+#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize, Object)]
+pub struct DivoomGatewaySelectChannelRequest {
+    pub channel: String,
+}
+
+#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize, Object)]
+pub struct DivoomGatewaySelectClockRequest {
+    pub id: i32,
+}
+
+#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize, Object)]
+pub struct DivoomGatewaySelectCloudChannelRequest {
+    pub channel: String,
+}
+
+#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize, Object)]
+pub struct DivoomGatewaySelectVisualizerRequest {
+    pub id: i32,
+}
+
+#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize, Object)]
+pub struct DivoomGatewaySelectCustomPageRequest {
+    pub id: i32,
+}
+
+#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize, Object)]
+pub struct DivoomGatewaySetDeviceBrightnessRequest {
+    pub brightness: i32,
+}
+
+#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize, Object)]
+pub struct DivoomGatewaySetDeviceTimeRequest {
+    pub time: u64,
+}
+
+#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize, Object)]
+pub struct DivoomGatewaySetDeviceHighLightModeRequest {
+    pub mode: String,
+}
+
+#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize, Object)]
+pub struct DivoomGatewaySetDeviceHourModeRequest {
+    pub mode: String,
+}
+
+#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize, Object)]
+pub struct DivoomGatewaySetDeviceMirrorModeRequest {
+    pub mode: String,
+}
+
+#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize, Object)]
+pub struct DivoomGatewaySetDeviceRotationAngleRequest {
+    pub mode: String,
+}
+
+#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize, Object)]
+pub struct DivoomGatewaySetDeviceScreenPowerStateRequest {
+    pub state: String,
+}
+
+#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize, Object)]
+pub struct DivoomGatewaySetDeviceTemperatureUnitRequest {
+    pub unit: String,
+}
+
+#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize, Object)]
+pub struct DivoomGatewaySetDeviceTimeZoneRequest {
+    pub time_zone: String,
+}
+
+#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize, Object)]
+pub struct DivoomGatewaySetDeviceWeatherAreaRequest {
+    pub longitude: String,
+    pub latitude: String,
+}
+
+#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize, Object)]
+pub struct DivoomGatewaySetDeviceWhiteBalanceRequest {
+    pub r: i32,
+    pub g: i32,
+    pub b: i32,
+}
+
+#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize, Object)]
+pub struct DivoomGatewaySetCountdownToolRequest {
+    pub minute: i32,
+    pub second: i32,
+    pub action: String,
+}
+
+#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize, Object)]
+pub struct DivoomGatewaySetNoiseToolRequest {
+    pub action: String,
+}
+
+#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize, Object)]
+pub struct DivoomGatewaySetScoreboardToolRequest {
+    pub blue_score: i32,
+    pub red_score: i32,
+}
+
+#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize, Object)]
+pub struct DivoomGatewaySetStopwatchToolRequest {
+    pub action: String,
+}
+
+#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize, Object)]
+pub struct DivoomGatewayExecuteCommandsFromUrlRequest {
+    pub url: String,
+}
+
+#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize, Object)]
+pub struct DivoomGatewayPlayGifRequest {
+    pub file_type: String,
+    pub file_name: String,
+}
+
+#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize, Object)]
+pub struct DivoomGatewayPlayBuzzerRequest {
+    pub play_total_time: i32,
+    pub active_time_in_cycle: i32,
+    pub off_time_in_cycle: i32,
 }
