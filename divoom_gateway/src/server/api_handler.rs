@@ -41,7 +41,7 @@ enum ApiTags {
 //             match pixoo.$api_name().await {
 //                 Err(e) => e.into(),
 //                 Ok(result) => {
-//                     GatewayResponse::Ok(Json(GatewayResponseExDTO::ok_with_data(result.to_string())))
+//                     GatewayResponse::Ok(Json(GatewayResponseExtDto::ok_with_data(result.to_string())))
 //                 }
 //             }
 //         }
@@ -67,7 +67,7 @@ macro_rules! invoke_pixoo_api_no_response {
     ($self:ident, $api_name:ident, $($api_arg:ident),*) => (
         match PixooClient::new(&$self.device_address).$api_name($($api_arg),*).await {
             Err(e) => return e.into(),
-            Ok(_) => GatewayResponse::Ok(Json(GatewayResponseExDTO::ok())),
+            Ok(_) => GatewayResponse::Ok(Json(GatewayResponseExtDto::ok())),
         }
     )
 }
@@ -76,14 +76,14 @@ macro_rules! invoke_pixoo_api_respond_string {
     ($self:ident, $api_name:ident) => (
         match PixooClient::new(&$self.device_address).$api_name().await {
             Err(e) => return e.into(),
-            Ok(result) => GatewayResponse::Ok(Json(GatewayResponseExDTO::ok_with_data(result.to_string()))),
+            Ok(result) => GatewayResponse::Ok(Json(GatewayResponseExtDto::ok_with_data(result.to_string()))),
         }
     );
 
     ($self:ident, $api_name:ident, $($api_arg:ident),*) => (
         match PixooClient::new(&$self.device_address).$api_name($($api_arg),*).await {
             Err(e) => return e.into(),
-            Ok(result) => GatewayResponse::Ok(Json(GatewayResponseExDTO::ok_with_data(result.to_string()))),
+            Ok(result) => GatewayResponse::Ok(Json(GatewayResponseExtDto::ok_with_data(result.to_string()))),
         }
     )
 }
@@ -92,14 +92,14 @@ macro_rules! invoke_pixoo_api_respond_object {
     ($self:ident, $api_name:ident) => (
         match PixooClient::new(&$self.device_address).$api_name().await {
             Err(e) => return e.into(),
-            Ok(result) => GatewayResponse::Ok(Json(GatewayResponseExDTO::ok_with_data(result.into()))),
+            Ok(result) => GatewayResponse::Ok(Json(GatewayResponseExtDto::ok_with_data(result.into()))),
         }
     );
 
     ($self:ident, $api_name:ident, $($api_arg:ident),*) => (
         match PixooClient::new(&$self.device_address).$api_name($($api_arg),*).await {
             Err(e) => return e.into(),
-            Ok(result) => GatewayResponse::Ok(Json(GatewayResponseExDTO::ok_with_data(result.into()))),
+            Ok(result) => GatewayResponse::Ok(Json(GatewayResponseExtDto::ok_with_data(result.into()))),
         }
     )
 }
@@ -128,7 +128,7 @@ impl ApiHandler {
     }
 
     #[oai(path = "/channel/clock", method = "get", tag = "ApiTags::Channel")]
-    async fn get_selected_clock_info(&self) -> GatewayResponse<DivoomSelectedClockInfoExDTO> {
+    async fn get_selected_clock_info(&self) -> GatewayResponse<DivoomSelectedClockInfoExtDto> {
         return invoke_pixoo_api_respond_object!(self, get_selected_clock_info);
     }
 
@@ -149,78 +149,33 @@ impl ApiHandler {
         let parsed_custom_page = parse_gateway_api_arg!(custom_page, i32);
         return invoke_pixoo_api_no_response!(self, select_custom_page, parsed_custom_page);
     }
+
+    #[oai(path = "/system/device-settings", method = "get", tag = "ApiTags::System")]
+    async fn get_device_settings(&self) -> GatewayResponse<DivoomPixooDeviceSettingsExtDto> {
+        return invoke_pixoo_api_respond_object!(self, get_device_settings);
+    }
+
+    #[oai(path = "/system/device-time", method = "get", tag = "ApiTags::System")]
+    async fn get_device_time(&self) -> GatewayResponse<u64> {
+        return invoke_pixoo_api_respond_object!(self, get_device_time);
+    }
+
+    #[oai(path = "/system/brightness", method = "put", tag = "ApiTags::System")]
+    async fn set_device_brightness(&self, brightness: PlainText<String>) -> GatewayResponse<String> {
+        let parsed_brightness = parse_gateway_api_arg!(brightness, i32);
+        return invoke_pixoo_api_no_response!(self, set_device_brightness, parsed_brightness);
+    }
+
+    #[oai(path = "/system/device-time", method = "put", tag = "ApiTags::System")]
+    async fn set_device_time(&self, device_time: PlainText<String>) -> GatewayResponse<String> {
+        let parsed_device_time = parse_gateway_api_arg!(device_time, u64);
+        return invoke_pixoo_api_no_response!(self, set_device_time, parsed_device_time);
+    }
 }
 
 /*
-impl_pixoo_client_api!(
-        select_clock,
-        "../../divoom_contracts/pixoo/channel/api_select_clock.md",
-        DivoomPixooCommandChannelSelectClockResponse,
-        (),
-        clock_id: i32
-    );
-
-impl_pixoo_client_api!(
-        get_selected_clock_info,
-        "../../divoom_contracts/pixoo/channel/api_get_selected_clock_info.md",
-        DivoomPixooCommandChannelGetClockInfoResponse,
-        DivoomSelectedClockInfo
-    );
-impl_pixoo_client_api!(
-        select_cloud_channel,
-        "../../divoom_contracts/pixoo/channel/api_select_cloud_channel.md",
-        DivoomPixooCommandChannelSelectCloudChannelResponse,
-        (),
-        channel_type: DivoomCloudChannelType
-    );
-impl_pixoo_client_api!(
-        select_visualizer,
-        "../../divoom_contracts/pixoo/channel/api_select_visualizer.md",
-        DivoomPixooCommandChannelSelectVisualizerResponse,
-        (),
-        visializer_index: i32
-    );
-impl_pixoo_client_api!(
-        select_custom_page,
-        "../../divoom_contracts/pixoo/channel/api_select_custom_page.md",
-        DivoomPixooCommandChannelSelectCustomPageResponse,
-        (),
-        custom_page_index: i32
-    );
-}
-
 /// # System API implementations
 impl PixooClient {
-    impl_pixoo_client_api!(
-        get_device_settings,
-        "../../divoom_contracts/pixoo/system/api_get_device_settings.md",
-        DivoomPixooCommandSystemGetAllSettingsResponse,
-        DivoomPixooDeviceSettings
-    );
-
-    impl_pixoo_client_api!(
-        get_device_time,
-        "../../divoom_contracts/pixoo/system/api_get_device_time.md",
-        DivoomPixooCommandSystemGetDeviceTimeResponse,
-        u64
-    );
-
-    impl_pixoo_client_api!(
-        set_device_brightness,
-        "../../divoom_contracts/pixoo/system/api_set_device_brightness.md",
-        DivoomPixooCommandSystemSetBrightnessResponse,
-        (),
-        brightness: i32
-    );
-
-    impl_pixoo_client_api!(
-        set_device_time,
-        "../../divoom_contracts/pixoo/system/api_set_device_time.md",
-        DivoomPixooCommandSystemSetSystemTimeResponse,
-        (),
-        utc: u64
-    );
-
     impl_pixoo_client_api!(
         set_device_high_light_mode,
         "../../divoom_contracts/pixoo/system/api_set_device_high_light_mode.md",
