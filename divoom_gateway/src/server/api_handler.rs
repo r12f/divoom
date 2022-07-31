@@ -269,6 +269,16 @@ impl ApiHandler {
         return invoke_pixoo_api_no_response!(self, clear_all_text_area);
     }
 
+    #[oai(path = "/animation/send-text", method = "post", tag = "ApiTags::Animation")]
+    async fn send_text_animation(&self, request: Json<DivoomGatewaySendTextAnimationRequest>) -> DivoomGatewayResponse<String> {
+        let animation: DivoomTextAnimation = match request.0.into() {
+            Err(e) => return DivoomAPIError::ParameterError(e).into(),
+            Ok(v) => v,
+        };
+
+        return invoke_pixoo_api_no_response!(self, send_text_animation, animation);
+    }
+
     #[oai(path = "/animation/play-buzzer", method = "post", tag = "ApiTags::Animation")]
     async fn play_buzzer(&self, request: Json<DivoomGatewayPlayBuzzerRequest>) -> DivoomGatewayResponse<String> {
         let DivoomGatewayPlayBuzzerRequest { play_total_time, active_time_in_cycle, off_time_in_cycle } = request.0;
@@ -390,21 +400,6 @@ impl PixooClient {
         response.destructive_into();
         Ok(())
     }
-
-    impl_pixoo_client_api!(
-        send_text_animation,
-        "../../divoom_contracts/pixoo/animation/api_send_text_animation.md",
-        DivoomPixooCommandAnimationSendTextAnimationResponse,
-        (),
-        animation: DivoomTextAnimation
-    );
-
-    impl_pixoo_client_api!(
-        clear_all_text_area,
-        "../../divoom_contracts/pixoo/animation/api_clear_all_text_area.md",
-        DivoomPixooCommandAnimationClearAllTextAreaResponse,
-        ()
-    );
 }
 
 */

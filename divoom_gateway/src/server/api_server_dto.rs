@@ -1,3 +1,4 @@
+use std::str::FromStr;
 use divoom::*;
 use poem::Error;
 use poem_openapi::payload::Json;
@@ -107,7 +108,6 @@ impl<T: ParseFromJSON + ToJSON + Send + Sync> From<DivoomAPIError> for DivoomGat
 
 /// Clock info that returned from Divoom device, such as Pixoo-64 (not service).
 #[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize, Object)]
-#[serde(rename_all = "kebab-case")]
 pub struct DivoomSelectedClockInfoExtDto {
     pub clock_id: i32,
     pub brightness: i32,
@@ -123,7 +123,6 @@ impl From<DivoomSelectedClockInfo> for DivoomSelectedClockInfoExtDto {
 }
 
 #[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize, Object)]
-#[serde(rename_all = "kebab-case")]
 pub struct DivoomPixooDeviceSettingsExtDto {
     pub brightness: i32,
     pub rotation_flag: i32,
@@ -282,4 +281,35 @@ pub struct DivoomGatewayPlayBuzzerRequest {
     pub play_total_time: i32,
     pub active_time_in_cycle: i32,
     pub off_time_in_cycle: i32,
+}
+
+#[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize, Object)]
+pub struct DivoomGatewaySendTextAnimationRequest {
+    pub text_id: i32,
+    pub x: i32,
+    pub y: i32,
+    pub scroll_direction: String,
+    pub font_index: i32,
+    pub text_width: i32,
+    pub speed_in_ms: i32,
+    pub text_string: String,
+    pub color: String,
+    pub align: String,
+}
+
+impl DivoomGatewaySendTextAnimationRequest {
+    pub fn into(self) -> Result<DivoomTextAnimation, String> {
+        Ok(DivoomTextAnimation {
+            text_id: self.text_id,
+            x: self.x,
+            y: self.y,
+            scroll_direction: DivoomTextAnimationScrollDirection::from_str(&self.scroll_direction)?,
+            font_index: self.font_index,
+            text_width: self.text_width,
+            speed_in_ms: self.speed_in_ms,
+            text_string: self.text_string,
+            color: Default::default(),
+            align: DivoomTextAnimationAlign::from_str(&self.align)?,
+        })
+    }
 }
