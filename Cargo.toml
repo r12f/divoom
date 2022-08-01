@@ -1,7 +1,8 @@
 [workspace]
 members = [
     "divoom",
-    "divoom_cli"
+    "divoom_cli",
+    "divoom_gateway",
 ]
 
 [profile.dev]

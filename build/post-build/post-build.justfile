@@ -9,7 +9,6 @@ set dotenv-load
 # Global variables
 BUILD_VERSION := env_var_or_default("BUILD_VERSION", "")
 BUILD_FOLDER_PREFIX := "./Build.Build."
-BUILD_MODULES := "divoom_cli"
 
 INTERMEDIATE_FOLDER := "./temp"
 INTERMEDIATE_SYMBOL_PACKAGE_FOLDER := INTERMEDIATE_FOLDER + "/symbols"
@@ -72,6 +71,7 @@ pack-choco:
     New-Item -ItemType Directory -Path "{{RELEASE_CHOCO_FOLDER}}" -Force | Out-Null
 
     just _pack-choco-with-package divoom_cli
+    just _pack-choco-with-package divoom_gateway
 
 _pack-choco-with-package PACKAGE="divoom_cli":
     if (-not (Test-Path "{{INTERMEDIATE_CHOCO_PACKAGE_FOLDER}}/{{PACKAGE}}")) { \
@@ -93,6 +93,7 @@ pack-scoop:
     New-Item -ItemType Directory -Path "{{RELEASE_SCOOP_FOLDER}}" -Force | Out-Null
 
     just _pack-scoop-with-package divoom_cli
+    just _pack-scoop-with-package divoom_gateway
 
 _pack-scoop-with-package PACKAGE="divoom_cli":
     @Write-Host "Generating final scoop package for {{PACKAGE}} to {{RELEASE_SCOOP_FOLDER}} ..."

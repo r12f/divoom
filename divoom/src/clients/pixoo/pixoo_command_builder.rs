@@ -9,32 +9,38 @@ use crate::divoom_contracts::pixoo::tool::*;
 use crate::*;
 use crate::{DivoomAPIError, DivoomAPIResult};
 use serde::de::DeserializeOwned;
-use std::rc::Rc;
+use std::sync::{Arc, Mutex};
 
 /// Pixoo command builder for creating the JSON payload of Pixoo commands.
 pub struct PixooCommandBuilder {
-    command_store: Box<dyn PixooCommandStore>,
-    client: Rc<DivoomRestAPIClient>,
+    command_store: Arc<Mutex<Option<Box<dyn PixooCommandStore + Send>>>>,
+    client: Arc<DivoomRestAPIClient>,
 }
 
 /// Constructors, builder and executor
 impl PixooCommandBuilder {
-    pub(crate) fn start(client: Rc<DivoomRestAPIClient>) -> PixooCommandBuilder {
+    pub(crate) fn start(client: Arc<DivoomRestAPIClient>) -> PixooCommandBuilder {
         PixooCommandBuilder {
-            command_store: Box::new(PixooSingleCommandStore::new()),
+            command_store: Arc::new(Mutex::new(Some(Box::new(PixooSingleCommandStore::new())))),
             client,
         }
     }
 
-    pub(crate) fn start_batch(client: Rc<DivoomRestAPIClient>) -> PixooCommandBuilder {
+    pub(crate) fn start_batch(client: Arc<DivoomRestAPIClient>) -> PixooCommandBuilder {
         PixooCommandBuilder {
-            command_store: Box::new(PixooBatchedCommandStore::new()),
+            command_store: Arc::new(Mutex::new(Some(Box::new(PixooBatchedCommandStore::new())))),
             client,
         }
     }
 
-    pub(crate) fn build(self) -> (Rc<DivoomRestAPIClient>, usize, String) {
-        let (command_count, request_body) = self.command_store.to_payload();
+    pub(crate) fn build(self) -> (Arc<DivoomRestAPIClient>, usize, String) {
+        let (command_count, request_body) = self
+            .command_store
+            .lock()
+            .unwrap()
+            .take()
+            .unwrap()
+            .to_payload();
         (self.client, command_count, request_body)
     }
 
@@ -67,7 +73,9 @@ impl PixooCommandBuilder {
     }
 
     pub async fn execute(self) -> DivoomAPIResult<()> {
-        if self.command_store.mode() == PixooCommandStoreMode::Single {
+        if self.command_store.lock().unwrap().as_ref().unwrap().mode()
+            == PixooCommandStoreMode::Single
+        {
             return Err(DivoomAPIError::ParameterError(
                 "Command builder is not running in batch mode. Please use start_batch() instead."
                     .to_string(),
@@ -90,21 +98,21 @@ impl PixooCommandBuilder {
 macro_rules! impl_command_builder {
     ($api_name:ident, $api_doc_path:literal, $req_type:ty) => (
         #[doc = include_str!($api_doc_path)]
-        pub fn $api_name(mut self) -> PixooCommandBuilder {
+        pub fn $api_name(self) -> PixooCommandBuilder {
             let request = <$req_type>::new();
             let serialized_request = serde_json::to_string(&request).expect("Serializing pixoo command failed!");
-            self.command_store.append(serialized_request);
+            self.command_store.lock().unwrap().as_mut().unwrap().append(serialized_request);
             self
         }
     );
 
     ($api_name:ident, $api_doc_path:literal, $req_type:ty, $req_payload_type:ty, $($api_arg:ident: $api_arg_type:ty),*) => (
         #[doc = include_str!($api_doc_path)]
-        pub fn $api_name(mut self, $($api_arg: $api_arg_type),*) -> PixooCommandBuilder {
+        pub fn $api_name(self, $($api_arg: $api_arg_type),*) -> PixooCommandBuilder {
             let payload = <$req_payload_type>::new($($api_arg),*);
             let request = <$req_type>::new(payload);
             let serialized_request = serde_json::to_string(&request).expect("Serializing pixoo command failed!");
-            self.command_store.append(serialized_request);
+            self.command_store.lock().unwrap().as_mut().unwrap().append(serialized_request);
             self
         }
     )
@@ -334,7 +342,7 @@ impl PixooCommandBuilder {
 
     #[doc = include_str!("../../divoom_contracts/pixoo/animation/api_send_image_animation_frame.md")]
     pub fn send_image_animation(
-        mut self,
+        self,
         id: i32,
         animation: DivoomImageAnimation,
     ) -> PixooCommandBuilder {
@@ -346,7 +354,12 @@ impl PixooCommandBuilder {
             let request = DivoomPixooCommandAnimationSendImageAnimationFrameRequest::new(payload);
             let serialized_request =
                 serde_json::to_string(&request).expect("Serializing pixoo command failed!");
-            self.command_store.append(serialized_request);
+            self.command_store
+                .lock()
+                .unwrap()
+                .as_mut()
+                .unwrap()
+                .append(serialized_request);
         });
         self
     }
@@ -389,8 +402,13 @@ impl PixooCommandBuilder {
 
 /// Raw API implementations
 impl PixooCommandBuilder {
-    pub fn send_raw_request(mut self, request: String) -> PixooCommandBuilder {
-        self.command_store.append(request);
+    pub fn send_raw_request(self, request: String) -> PixooCommandBuilder {
+        self.command_store
+            .lock()
+            .unwrap()
+            .as_mut()
+            .unwrap()
+            .append(request);
         self
     }
 }
@@ -399,11 +417,24 @@ impl PixooCommandBuilder {
 mod tests {
     use super::*;
     use std::collections::BTreeMap;
+    use std::sync::Arc;
     use std::{env, fs};
+
+    fn is_send<T: Send>(_: T) {}
+
+    #[test]
+    fn pixoo_command_builder_should_be_send() {
+        let client = Arc::new(DivoomRestAPIClient::new(
+            "http://192.168.0.123".to_string(),
+            None,
+        ));
+        let builder = PixooCommandBuilder::start_batch(client);
+        is_send(builder);
+    }
 
     #[test]
     fn pixoo_command_builder_should_work_with_channel_commands_in_batch_mode() {
-        let client = Rc::new(DivoomRestAPIClient::new(
+        let client = Arc::new(DivoomRestAPIClient::new(
             "http://192.168.0.123".to_string(),
             None,
         ));
@@ -425,7 +456,7 @@ mod tests {
 
     #[test]
     fn pixoo_command_builder_should_work_with_system_commands_in_batch_mode() {
-        let client = Rc::new(DivoomRestAPIClient::new(
+        let client = Arc::new(DivoomRestAPIClient::new(
             "http://192.168.0.123".to_string(),
             None,
         ));
@@ -453,7 +484,7 @@ mod tests {
 
     #[test]
     fn pixoo_command_builder_should_work_with_tool_commands_in_batch_mode() {
-        let client = Rc::new(DivoomRestAPIClient::new(
+        let client = Arc::new(DivoomRestAPIClient::new(
             "http://192.168.0.123".to_string(),
             None,
         ));
@@ -499,7 +530,7 @@ mod tests {
         image_animation.frames.insert(0, vec![1, 2, 3]);
         image_animation.frames.insert(3, vec![4, 5, 6]);
 
-        let client = Rc::new(DivoomRestAPIClient::new(
+        let client = Arc::new(DivoomRestAPIClient::new(
             "http://192.168.0.123".to_string(),
             None,
         ));
@@ -524,7 +555,7 @@ mod tests {
 
     #[test]
     fn pixoo_command_builder_should_work_with_batch_commands_in_batch_mode() {
-        let client = Rc::new(DivoomRestAPIClient::new(
+        let client = Arc::new(DivoomRestAPIClient::new(
             "http://192.168.0.123".to_string(),
             None,
         ));
@@ -540,7 +571,7 @@ mod tests {
 
     #[test]
     fn pixoo_command_builder_should_work_with_raw_commands_in_batch_mode() {
-        let client = Rc::new(DivoomRestAPIClient::new(
+        let client = Arc::new(DivoomRestAPIClient::new(
             "http://192.168.0.123".to_string(),
             None,
         ));
