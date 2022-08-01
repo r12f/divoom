@@ -41,7 +41,7 @@ winget install DivoomCli
 ```
 
 ### via scoop
-Since we haven't reached the criteria for Main bucket, we need to use our own bucket at this moment.
+Since we haven't reached the [criteria for Scoop Main bucket](https://github.com/ScoopInstaller/Scoop/wiki/Criteria-for-including-apps-in-the-main-bucket), we need to use our own bucket at this moment.
 
 ```powershell
 # Add our scoop bucket for the first time.
