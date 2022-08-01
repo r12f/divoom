@@ -52,6 +52,7 @@ To start the gateway, we need 3 steps:
 There are multiple ways to discover the address:
 
 1. Get the address in divoom app.
+
    ![image](https://user-images.githubusercontent.com/1533278/182060485-09cd2481-7031-4121-b21f-a5c0d6476069.png)
 
 2. Or, try our [divoom-cli command line](https://github.com/r12f/divoom/tree/main/divoom_cli) tool and discover all devices.
