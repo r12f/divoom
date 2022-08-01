@@ -7,7 +7,7 @@ use poem_openapi::{ApiResponse, Multipart, Object};
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 
-#[derive(Object)]
+#[derive(Serialize, Deserialize, Object)]
 pub struct DivoomGatewayResponsePayload<T: ParseFromJSON + ToJSON + Send + Sync> {
     error: String,
     server_status_code: i32,
@@ -112,6 +112,7 @@ impl<T: ParseFromJSON + ToJSON + Send + Sync> From<DivoomAPIError> for DivoomGat
 }
 
 #[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize, Object)]
+#[serde(rename_all = "camelCase")]
 pub struct DivoomGatewayGetSelectedClockInfoResponse {
     pub clock_id: i32,
     pub brightness: i32,

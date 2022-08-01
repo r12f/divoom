@@ -28,7 +28,7 @@ clock-id: 100
 brightness: 100
 ```
 
-## Installation
+## How to install
 
 ### via Cargo
 ```bash
@@ -138,7 +138,7 @@ customPage
 
 ### More help
 
-We can find more info in the commmand help like below.
+We can find more info in the command help like below.
 
 ```bash
 > divoom-cli
@@ -174,7 +174,7 @@ SUBCOMMANDS:
 
 To debug and see the logs and the raw request that we send, we can use `RUST_LOG` environment variable to change the logging level to `debug` to enable the logs:
 
-On windows with powershell:
+On Windows with powershell:
 
 ```powershell
 $env:RUST_LOG="debug"; divoom-cli 192.168.0.123 channel get
