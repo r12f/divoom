@@ -38,7 +38,7 @@ pub const DIVOOM_IMAGE_ANIMATION_ID_AUTO: i32 = -1;
 pub type DivoomImageAnimationFrameData = Vec<u8>;
 
 /// Type of the image animations file source.
-#[derive(Debug, PartialOrd, PartialEq)]
+#[derive(Debug, PartialOrd, PartialEq, Copy, Clone)]
 pub enum DivoomFileAnimationSourceType {
     LocalFile,
     LocalFolder,

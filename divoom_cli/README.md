@@ -116,7 +116,7 @@ brightness: 67
 # Send a raw request
 #
 # NOTICE: the double quotes in json string passed into the program needs to escaped with '\',
-# otherwise, rust runtime (not structopt) will eat them before reaching main function, even we 
+# otherwise, rust runtime (not clap) will eat them before reaching main function, even we 
 # pass the whole string as a string.
 > divoom-cli 192.168.0.164 raw '{\"Command\": \"Device/SetHighLightMode\", \"Mode\": 0}'
 ```

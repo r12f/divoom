@@ -5,7 +5,7 @@ use std::fmt;
 use std::str::FromStr;
 
 /// Font types
-#[derive(Debug, PartialOrd, PartialEq)]
+#[derive(Debug, PartialOrd, PartialEq, Copy, Clone)]
 pub enum DivoomFontType {
     Scrollable,
     NotScrollable,
@@ -27,7 +27,7 @@ pub struct DivoomFontInfo {
 }
 
 /// Text animation scrolling direction
-#[derive(Debug, PartialOrd, PartialEq)]
+#[derive(Debug, PartialOrd, PartialEq, Copy, Clone)]
 pub enum DivoomTextAnimationScrollDirection {
     Left,
     Right,
@@ -37,7 +37,7 @@ pub enum DivoomTextAnimationScrollDirection {
 impl_divoom_dto_enum_traits!(DivoomTextAnimationScrollDirection, Left: "left", Right: "right");
 
 /// Text animation text alignment
-#[derive(Debug, PartialOrd, PartialEq)]
+#[derive(Debug, PartialOrd, PartialEq, Copy, Clone)]
 pub enum DivoomTextAnimationAlign {
     Left,
     Middle,

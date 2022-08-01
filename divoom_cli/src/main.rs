@@ -4,21 +4,27 @@ use crate::opt::*;
 use divoom::*;
 use serde::Serialize;
 use std::time::Duration;
-use structopt::StructOpt;
 use tiny_skia::BlendMode;
+use clap::Parser;
 
 #[tokio::main]
 async fn main() -> DivoomAPIResult<()> {
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("debug")).init();
 
-    let opts = DivoomCliOptions::from_args();
+    let opts = DivoomCliOptions::parse();
+    if let DivoomCliSubCommand::Discover = opts.command {
+        let divoom = DivoomServiceClient::new();
+        let devices = divoom.get_same_lan_devices().await?;
+        serialize_to_console(devices, opts.common.output);
+        return Ok(());
+    }
+
+    if opts.common.device_address.is_none() || opts.common.device_address.as_ref().unwrap().len() == 0 {
+        return Err(DivoomAPIError::ParameterError("Device address cannot be empty!".into()));
+    }
+
     match opts.command {
-        DivoomCliSubCommand::Discover => {
-            let divoom = DivoomServiceClient::new();
-            let devices = divoom.get_same_lan_devices().await?;
-            serialize_to_console(devices, opts.common.output);
-            Ok(())
-        }
+        DivoomCliSubCommand::Discover => Ok(()),
 
         DivoomCliSubCommand::Channel(channel_command) => {
             handle_channel_api(&opts.common, channel_command).await

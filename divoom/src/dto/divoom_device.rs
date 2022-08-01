@@ -32,7 +32,7 @@ pub struct DivoomPixooDeviceSettings {
 }
 
 /// High light mode
-#[derive(Debug, PartialOrd, PartialEq)]
+#[derive(Debug, PartialOrd, PartialEq, Copy, Clone)]
 pub enum DivoomDeviceHighLightMode {
     Off,
     On,

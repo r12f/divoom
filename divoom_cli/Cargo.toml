@@ -20,9 +20,9 @@ serde = { version = "1.0.130", features = ["derive"] }
 serde_yaml = "0.9"
 serde_json = "1.0.82"
 rgb = "0.8.33"
-structopt = "0.3.26"
 divoom = { version = "0.0.1", path = "../divoom" }
 tiny-skia = { version = "0.7.0", features = ["std", "simd"]}
+clap = { version = "3.2", features = ["derive"] }
 
 [build-dependencies]
 winres = "0.1.12"

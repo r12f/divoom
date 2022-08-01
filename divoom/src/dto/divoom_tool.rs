@@ -3,7 +3,7 @@ use std::fmt;
 use std::str::FromStr;
 
 /// Countdown tool action
-#[derive(Debug, PartialOrd, PartialEq)]
+#[derive(Debug, PartialOrd, PartialEq, Copy, Clone)]
 pub enum DivoomToolCountdownAction {
     Stop,
     Start,
@@ -13,7 +13,7 @@ pub enum DivoomToolCountdownAction {
 impl_divoom_dto_enum_traits!(DivoomToolCountdownAction, Stop: "stop", Start: "start");
 
 /// Noise tool action
-#[derive(Debug, PartialOrd, PartialEq)]
+#[derive(Debug, PartialOrd, PartialEq, Copy, Clone)]
 pub enum DivoomToolNoiseAction {
     Stop,
     Start,
@@ -23,7 +23,7 @@ pub enum DivoomToolNoiseAction {
 impl_divoom_dto_enum_traits!(DivoomToolNoiseAction, Stop: "stop", Start: "start");
 
 /// Stopwatch tool action
-#[derive(Debug, PartialOrd, PartialEq)]
+#[derive(Debug, PartialOrd, PartialEq, Copy, Clone)]
 pub enum DivoomToolStopwatchAction {
     Stop,
     Start,
