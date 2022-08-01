@@ -40,6 +40,17 @@ cargo install divoom-cli
 winget install DivoomCli
 ```
 
+### via scoop
+Since we haven't reached the [criteria for Scoop Main bucket](https://github.com/ScoopInstaller/Scoop/wiki/Criteria-for-including-apps-in-the-main-bucket), we need to use our own bucket at this moment.
+
+```powershell
+# Add our scoop bucket for the first time.
+scoop bucket add r12f https://github.com/r12f/scoop-bucket
+
+# Install
+scoop install divoom-cli
+```
+
 ## How to use
 
 It is straight forward to use the command line tool. Usually, we do it in 2 steps:
