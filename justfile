@@ -23,6 +23,14 @@ BUILD_ARCH := if env_var_or_default("BUILD_ARCH", arch()) == "x86_64" {
     env_var_or_default("BUILD_ARCH", arch())
 }
 
+SNAP_PACKAGE_ARCH := if BUILD_ARCH == "arm" {
+    "armhf"
+} else if BUILD_ARCH == "x64" {
+    "amd64"
+} else {
+    BUILD_ARCH
+}
+
 OS_ARCH := if arch() == "x86_64" {
     "x64"
 } else if arch() == "aarch64" {
@@ -259,6 +267,7 @@ pack-prepare PACKAGE="divoom_cli":
     echo "package.name.pascal_case=$([regex]::Replace("{{PACKAGE}}", '(?i)(?:^|_)(\p{L})', { $args[0].Groups[1].Value.ToUpper() }))" >> "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters/parameters.txt"
     echo "package.description=$(gc {{justfile_directory()}}/{{PACKAGE}}/Cargo.toml | sls 'description = "(..+)"' | % { $_.Matches[0].Groups[1].Value })" >> "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters/parameters.txt"
     echo "package.tags=divoom;pixoo;pixoo64" >> "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters/parameters.txt"
+    echo "package.arch.snap={{SNAP_PACKAGE_ARCH}}" >> "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters/parameters.txt"
 
 pack-source:
     @Write-Host "Current invocation directory: {{invocation_directory()}}"
@@ -442,6 +451,21 @@ pack-scoop PACKAGE="divoom_cli":
 
     just eval-template "{{justfile_directory()}}/build/package-templates/scoop/scoop.json" \
       "{{PUBLISH_DIR}}/{{PACKAGE}}/scoop-source/{{replace(PACKAGE, '_', '-')}}.json" \
+      "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters" \
+      "{{PUBLISH_CHECKSUMS_DIR}}"
+
+pack-snap-all:
+    just pack-snap divoom_cli
+    just pack-snap divoom_gateway
+
+pack-snap PACKAGE="divoom_cli":
+    @Write-Host "Current invocation directory: {{invocation_directory()}}"
+
+    if (Test-Path "{{PUBLISH_DIR}}/{{PACKAGE}}/snap-source") { Remove-Item -Path "{{PUBLISH_DIR}}/{{PACKAGE}}/snap-source" -Recurse -Force }
+    New-Item -ItemType Directory -Path "{{PUBLISH_DIR}}/{{PACKAGE}}/snap-source" -Force | Out-Null
+
+    just eval-template "{{justfile_directory()}}/build/package-templates/snap/snapcraft.yaml" \
+      "{{PUBLISH_DIR}}/{{PACKAGE}}/snap-source/{{replace(PACKAGE, '_', '-')}}.{{BUILD_ARCH}}.yaml" \
       "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters" \
       "{{PUBLISH_CHECKSUMS_DIR}}"
 

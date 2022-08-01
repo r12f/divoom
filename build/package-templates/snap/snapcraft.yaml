@@ -1,0 +1,23 @@
+name: {binary.name}
+base: core22
+version: '{build.version}'
+architectures:
+  - build-on: amd64
+    build-to: {package.arch.snap}
+summary: {package.description}
+description: |
+  {package.description}
+
+grade: stable
+confinement: strict
+
+apps:
+  {binary.name}:
+    command: bin/{binary.name}
+
+parts:
+  bin:
+    plugin: dump
+    source: https://github.com/r12f/divoom/releases/download/{build.version}/{binary.name}.{build.version}.linux.{build.arch}.tar.gz
+    organize:
+      {binary.name}: bin/{binary.name}
