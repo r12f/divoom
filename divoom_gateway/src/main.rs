@@ -35,8 +35,14 @@ async fn main() -> Result<(), std::io::Error> {
     let args = CliOptions::parse();
 
     let url = format!("http://{}:{}", args.server_address, args.server_port);
-    println!("Starting divoom gateway on: {} for device {}.", url, args.device_address);
-    println!("Please open your browser with URL: {} and happy divooming!", url);
+    println!(
+        "Starting divoom gateway on: {} for device {}.",
+        url, args.device_address
+    );
+    println!(
+        "Please open your browser with URL: {} and happy divooming!",
+        url
+    );
 
     let api_server = ApiServer::new(args.server_address, args.server_port, args.device_address);
     api_server.start().await

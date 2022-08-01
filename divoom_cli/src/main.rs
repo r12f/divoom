@@ -1,17 +1,17 @@
 mod opt;
 
 use crate::opt::*;
+use clap::Parser;
 use divoom::*;
 use serde::Serialize;
 use std::time::Duration;
-use structopt::StructOpt;
 use tiny_skia::BlendMode;
 
 #[tokio::main]
 async fn main() -> DivoomAPIResult<()> {
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("debug")).init();
 
-    let opts = DivoomCliOptions::from_args();
+    let opts = DivoomCliOptions::parse();
     match opts.command {
         DivoomCliSubCommand::Discover => {
             let divoom = DivoomServiceClient::new();
@@ -41,7 +41,7 @@ async fn main() -> DivoomAPIResult<()> {
         }
 
         DivoomCliSubCommand::Raw { request } => {
-            let pixoo = new_pixoo_client(&opts.common);
+            let pixoo = new_pixoo_client(&opts.common)?;
             let response = pixoo.send_raw_request(request).await?;
             serialize_to_console(response, opts.common.output);
             Ok(())
@@ -53,7 +53,7 @@ async fn handle_channel_api(
     common: &DivoomCliDeviceCommandCommonOpts,
     channel_command: DivoomCliChannelCommand,
 ) -> DivoomAPIResult<()> {
-    let pixoo = new_pixoo_client(common);
+    let pixoo = new_pixoo_client(common)?;
 
     match channel_command {
         DivoomCliChannelCommand::Get => {
@@ -90,7 +90,7 @@ async fn handle_system_api(
     common: &DivoomCliDeviceCommandCommonOpts,
     system_command: DivoomCliSystemCommand,
 ) -> DivoomAPIResult<()> {
-    let pixoo = new_pixoo_client(common);
+    let pixoo = new_pixoo_client(common)?;
 
     match system_command {
         DivoomCliSystemCommand::GetSettings => {
@@ -150,7 +150,7 @@ async fn handle_tool_api(
     common: &DivoomCliDeviceCommandCommonOpts,
     tool_command: DivoomCliToolCommand,
 ) -> DivoomAPIResult<()> {
-    let pixoo = new_pixoo_client(common);
+    let pixoo = new_pixoo_client(common)?;
 
     match tool_command {
         DivoomCliToolCommand::Countdown {
@@ -192,7 +192,7 @@ async fn handle_animation_api(
             active_time_in_cycle,
             off_time_in_cycle,
         } => {
-            let pixoo = new_pixoo_client(common);
+            let pixoo = new_pixoo_client(common)?;
             pixoo
                 .play_buzzer(play_total_time, active_time_in_cycle, off_time_in_cycle)
                 .await
@@ -204,7 +204,7 @@ async fn handle_gif_animation_api(
     common: &DivoomCliDeviceCommandCommonOpts,
     gif_animation_command: DivoomCliGifAnimationCommand,
 ) -> DivoomAPIResult<()> {
-    let pixoo = new_pixoo_client(common);
+    let pixoo = new_pixoo_client(common)?;
 
     match gif_animation_command {
         DivoomCliGifAnimationCommand::Play(gif) => {
@@ -235,7 +235,7 @@ async fn handle_image_animation_api(
     common: &DivoomCliDeviceCommandCommonOpts,
     image_animation_command: DivoomCliImageAnimationCommand,
 ) -> DivoomAPIResult<()> {
-    let pixoo = new_pixoo_client(common);
+    let pixoo = new_pixoo_client(common)?;
 
     match image_animation_command {
         DivoomCliImageAnimationCommand::GetNextId => {
@@ -273,7 +273,7 @@ async fn handle_text_animation_api(
     common: &DivoomCliDeviceCommandCommonOpts,
     text_animation_command: DivoomCliTextAnimationCommand,
 ) -> DivoomAPIResult<()> {
-    let pixoo = new_pixoo_client(common);
+    let pixoo = new_pixoo_client(common)?;
 
     match text_animation_command {
         DivoomCliTextAnimationCommand::Clear => pixoo.clear_all_text_area().await,
@@ -288,7 +288,7 @@ async fn handle_batch_api(
     common: &DivoomCliDeviceCommandCommonOpts,
     batch_command: DivoomCliBatchCommand,
 ) -> DivoomAPIResult<()> {
-    let pixoo = new_pixoo_client(common);
+    let pixoo = new_pixoo_client(common)?;
 
     match batch_command {
         DivoomCliBatchCommand::RunUrl { command_url } => {
@@ -297,12 +297,9 @@ async fn handle_batch_api(
     }
 }
 
-fn new_pixoo_client(common: &DivoomCliDeviceCommandCommonOpts) -> PixooClient {
+fn new_pixoo_client(common: &DivoomCliDeviceCommandCommonOpts) -> DivoomAPIResult<PixooClient> {
     PixooClient::with_options(
-        common
-            .device_address
-            .as_ref()
-            .expect("Device Address is not set!"),
+        common.device_address.as_ref().unwrap_or(&"".to_string()),
         common.timeout.map(Duration::from_millis),
     )
 }

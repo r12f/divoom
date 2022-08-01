@@ -6,7 +6,7 @@ use std::str::FromStr;
 ///
 /// It can be Clock, CloudChannel, Visualizer, CustomPage. And in case we didn't have things covered, we provided `Raw(i32)` to allow us to set it
 /// to any values.
-#[derive(Debug, PartialOrd, PartialEq)]
+#[derive(Debug, PartialOrd, PartialEq, Copy, Clone)]
 pub enum DivoomChannelType {
     Clock,
     CloudChannel,
@@ -44,7 +44,7 @@ pub struct DivoomSelectedClockInfo {
 
 /// The sub channel type of cloud channel.
 /// Same as the top level channel, we provided `Raw(i32)` to help us setting to any value in case we didn't have it covered here.
-#[derive(Debug, PartialOrd, PartialEq)]
+#[derive(Debug, PartialOrd, PartialEq, Copy, Clone)]
 pub enum DivoomCloudChannelType {
     Gallery,
     Fav,

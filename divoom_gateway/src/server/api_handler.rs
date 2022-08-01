@@ -71,14 +71,14 @@ macro_rules! parse_gateway_api_arg {
 
 macro_rules! invoke_pixoo_api_no_response {
     ($self:ident, $api_name:ident) => (
-        match PixooClient::new(&$self.device_address).$api_name().await {
+        match PixooClient::new(&$self.device_address).unwrap().$api_name().await {
             Err(e) => return e.into(),
             Ok(_) => DivoomGatewayResponse::Ok(Json(DivoomGatewayResponsePayload::ok())),
         }
     );
 
     ($self:ident, $api_name:ident, $($api_arg:ident),*) => (
-        match PixooClient::new(&$self.device_address).$api_name($($api_arg),*).await {
+        match PixooClient::new(&$self.device_address).unwrap().$api_name($($api_arg),*).await {
             Err(e) => return e.into(),
             Ok(_) => DivoomGatewayResponse::Ok(Json(DivoomGatewayResponsePayload::ok())),
         }
@@ -87,14 +87,14 @@ macro_rules! invoke_pixoo_api_no_response {
 
 macro_rules! invoke_pixoo_api_respond_string {
     ($self:ident, $api_name:ident) => (
-        match PixooClient::new(&$self.device_address).$api_name().await {
+        match PixooClient::new(&$self.device_address).unwrap().$api_name().await {
             Err(e) => return e.into(),
             Ok(result) => DivoomGatewayResponse::Ok(Json(DivoomGatewayResponsePayload::ok_with_data(result.to_string()))),
         }
     );
 
     ($self:ident, $api_name:ident, $($api_arg:ident),*) => (
-        match PixooClient::new(&$self.device_address).$api_name($($api_arg),*).await {
+        match PixooClient::new(&$self.device_address).unwrap().$api_name($($api_arg),*).await {
             Err(e) => return e.into(),
             Ok(result) => DivoomGatewayResponse::Ok(Json(DivoomGatewayResponsePayload::ok_with_data(result.to_string()))),
         }
@@ -103,14 +103,14 @@ macro_rules! invoke_pixoo_api_respond_string {
 
 macro_rules! invoke_pixoo_api_respond_object {
     ($self:ident, $api_name:ident) => (
-        match PixooClient::new(&$self.device_address).$api_name().await {
+        match PixooClient::new(&$self.device_address).unwrap().$api_name().await {
             Err(e) => return e.into(),
             Ok(result) => DivoomGatewayResponse::Ok(Json(DivoomGatewayResponsePayload::ok_with_data(result.into()))),
         }
     );
 
     ($self:ident, $api_name:ident, $($api_arg:ident),*) => (
-        match PixooClient::new(&$self.device_address).$api_name($($api_arg),*).await {
+        match PixooClient::new(&$self.device_address).unwrap().$api_name($($api_arg),*).await {
             Err(e) => return e.into(),
             Ok(result) => DivoomGatewayResponse::Ok(Json(DivoomGatewayResponsePayload::ok_with_data(result.into()))),
         }
@@ -456,7 +456,7 @@ impl ApiHandler {
             )
             .build();
 
-        let pixoo = PixooClient::new(&self.device_address);
+        let pixoo = PixooClient::new(&self.device_address).unwrap();
         match pixoo.send_image_animation(animation).await {
             Err(e) => e.into(),
             Ok(_) => DivoomGatewayResponse::Ok(Json(DivoomGatewayResponsePayload::ok())),

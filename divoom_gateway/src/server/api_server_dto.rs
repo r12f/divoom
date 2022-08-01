@@ -87,9 +87,9 @@ impl<T: ParseFromJSON + ToJSON + Send + Sync> From<DivoomAPIError> for DivoomGat
             DivoomAPIError::ResourceLoadError { source: e } => DivoomGatewayResponse::BadRequest(
                 Json(DivoomGatewayResponsePayload::error(e.to_string())),
             ),
-            DivoomAPIError::ResourceDecodeError(e) => DivoomGatewayResponse::BadRequest(Json(
-                DivoomGatewayResponsePayload::error(e),
-            )),
+            DivoomAPIError::ResourceDecodeError(e) => {
+                DivoomGatewayResponse::BadRequest(Json(DivoomGatewayResponsePayload::error(e)))
+            }
             DivoomAPIError::RequestError { source: e } => {
                 DivoomGatewayResponse::ServiceUnavailable(Json(
                     DivoomGatewayResponsePayload::error(e.to_string()),
