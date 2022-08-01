@@ -13,7 +13,7 @@
       "hash": "{packages.{package.name.raw}.binary.windows.x86}"
     }
   },
-  "bin": "divoom-cli.exe",
+  "bin": "{binary.name}.exe",
   "checkver": "github",
   "autoupdate": {
     "architecture": {
