@@ -483,7 +483,7 @@ mod tests {
             .with_body("{\"error_code\": 0}")
             .create();
 
-        let pixoo = PixooClient::new(&mockito::server_address().to_string());
+        let pixoo = PixooClient::new(&mockito::server_address().to_string()).unwrap();
         pixoo
             .start_batch()
             .set_device_rotation_angle(DivoomDeviceRotationAngle::Rotate90)
