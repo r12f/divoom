@@ -458,7 +458,7 @@ mod tests {
         let frames = DivoomAnimationResourceLoader::from_gif_file(
             "test_data/animation_builder_tests/input/logo.gif",
         )
-            .unwrap();
+        .unwrap();
 
         let builder = DivoomAnimationBuilder::new(32, Duration::from_millis(100)).unwrap();
         let animation = builder.draw_frames(&frames, 0).build();

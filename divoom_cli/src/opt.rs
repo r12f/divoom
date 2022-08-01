@@ -1,6 +1,6 @@
+use clap::{Args, Parser, Subcommand};
 use divoom::*;
 use std::str::FromStr;
-use clap::{Parser, Args, Subcommand};
 
 #[derive(Debug, Parser)]
 #[clap(
@@ -20,9 +20,7 @@ pub struct DivoomCliOptions {
 #[derive(Args, Debug)]
 #[clap(rename_all = "kebab-case")]
 pub struct DivoomCliDeviceCommandCommonOpts {
-    #[clap(
-        help = "Device Address. Required when using device APIs, such as \"channel get\"."
-    )]
+    #[clap(help = "Device Address. Required when using device APIs, such as \"channel get\".")]
     pub device_address: Option<String>,
 
     #[clap(short, long, default_value = "yaml", help = "Output format.")]
@@ -91,9 +89,7 @@ pub enum DivoomCliChannelCommand {
 
     #[clap(about = "Set current channel")]
     Set {
-        #[clap(
-            help = "Channel type. It can be clock, cloud-channel, visualizer and custom-page."
-        )]
+        #[clap(help = "Channel type. It can be clock, cloud-channel, visualizer and custom-page.")]
         channel_type: DivoomChannelType,
     },
 

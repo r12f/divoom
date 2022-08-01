@@ -1,11 +1,11 @@
 mod opt;
 
 use crate::opt::*;
+use clap::Parser;
 use divoom::*;
 use serde::Serialize;
 use std::time::Duration;
 use tiny_skia::BlendMode;
-use clap::Parser;
 
 #[tokio::main]
 async fn main() -> DivoomAPIResult<()> {
@@ -19,8 +19,12 @@ async fn main() -> DivoomAPIResult<()> {
         return Ok(());
     }
 
-    if opts.common.device_address.is_none() || opts.common.device_address.as_ref().unwrap().len() == 0 {
-        return Err(DivoomAPIError::ParameterError("Device address cannot be empty!".into()));
+    if opts.common.device_address.is_none()
+        || opts.common.device_address.as_ref().unwrap().len() == 0
+    {
+        return Err(DivoomAPIError::ParameterError(
+            "Device address cannot be empty!".into(),
+        ));
     }
 
     match opts.command {
