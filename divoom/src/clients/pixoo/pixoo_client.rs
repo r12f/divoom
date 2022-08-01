@@ -73,18 +73,27 @@ macro_rules! impl_pixoo_client_api {
 /// Ctor
 impl PixooClient {
     /// Create new PixooClient
-    pub fn new(device_address: &str) -> PixooClient {
+    pub fn new(device_address: &str) -> DivoomAPIResult<PixooClient> {
         PixooClient::with_options(device_address, None)
     }
 
     /// Create new PixooClient with options
-    pub fn with_options(device_address: &str, timeout: Option<Duration>) -> PixooClient {
-        PixooClient {
+    pub fn with_options(
+        device_address: &str,
+        timeout: Option<Duration>,
+    ) -> DivoomAPIResult<PixooClient> {
+        if device_address.len() == 0 {
+            return Err(DivoomAPIError::ParameterError(
+                "Device address cannot be empty!".into(),
+            ));
+        }
+
+        Ok(PixooClient {
             client: Arc::new(DivoomRestAPIClient::new(
                 format!("http://{}", device_address),
                 timeout,
             )),
-        }
+        })
     }
 }
 
