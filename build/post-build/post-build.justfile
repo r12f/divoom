@@ -21,6 +21,7 @@ RELEASE_NUGET_FOLDER := RELEASE_FOLDER + "/nuget"
 RELEASE_GITHUB_FOLDER := RELEASE_FOLDER + "/github"
 RELEASE_CHOCO_FOLDER := RELEASE_FOLDER + "/choco"
 RELEASE_SCOOP_FOLDER := RELEASE_FOLDER + "/scoop"
+RELEASE_SNAP_FOLDER := RELEASE_FOLDER + "/snap"
 
 #
 # Preparation tasks
@@ -101,6 +102,15 @@ _pack-scoop-with-package PACKAGE="divoom_cli":
     just eval-template-dir "{{BUILD_FOLDER_PREFIX}}windowsx64/{{PACKAGE}}/scoop-source" \
         "{{RELEASE_SCOOP_FOLDER}}" \
         "{{RELEASE_TEMPLATE_PARAMETER_FOLDER}}" \
+
+#
+# Pack snap
+#
+pack-snap:
+    if (Test-Path "{{RELEASE_SNAP_FOLDER}}") { Remove-Item -Path "{{RELEASE_SNAP_FOLDER}}" -Recurse -Force }
+    New-Item -ItemType Directory -Path "{{RELEASE_SNAP_FOLDER}}" -Force | Out-Null
+
+    Get-ChildItem ./{{BUILD_FOLDER_PREFIX}}*/*/snap-source/* -Attributes Directory | Copy-Item -Destination "{{RELEASE_SNAP_FOLDER}}" -PassThru
 
 #
 # Prepare packages for crate.io release

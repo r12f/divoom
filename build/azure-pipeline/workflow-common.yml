@@ -254,6 +254,13 @@ stages:
               BUILD_PROFILE: "release"
               BUILD_ARCH: $(target_arch)
 
+          - script: just pack-snap-all
+            displayName: Pack divoom snap package sources
+            condition: and(succeeded(), eq(variables['target_os'], 'linux'))
+            env:
+              BUILD_PROFILE: "release"
+              BUILD_ARCH: $(target_arch)
+
           #
           # Copy all files to publish folder
           #
