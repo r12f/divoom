@@ -7,6 +7,8 @@ architectures:
 summary: {package.description}
 description: |
   {package.description}
+  
+  For more details, please check README.md in our project here: https://github.com/r12f/divoom.
 
 grade: stable
 confinement: strict
