@@ -413,6 +413,19 @@ mod tests {
         );
     }
 
+    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+    async fn dsl_runner_should_parse_raw_commands() {
+        let client = PixooClient::new("127.0.0.1").unwrap();
+
+        let mut dsl_runner = DivoomDslRunner::new(&client);
+        dsl_runner.parse("raw \"{ \\\"Command\\\": \\\"Tools/SetStopWatch\\\", \\\"Status\\\": 1 }\"").await.unwrap();
+
+        run_dsl_runner_parser_test(
+            dsl_runner,
+            "test_data/dsl_runner_tests/raw_commands.json",
+        );
+    }
+
     fn run_dsl_runner_parser_test(dsl_runner: DivoomDslRunner, reference_file_path: &str) {
         let (_, request_body) = dsl_runner.build();
 
