@@ -42,7 +42,7 @@ pub enum DivoomDeviceHighLightMode {
 impl_divoom_dto_enum_traits!(DivoomDeviceHighLightMode, Off: "off", On: "on");
 
 /// Hour mode, 12-hours o 24-hours.
-#[derive(Debug, PartialOrd, PartialEq)]
+#[derive(Debug, PartialOrd, PartialEq, Copy, Clone)]
 pub enum DivoomDeviceHourMode {
     Hour12,
     Hour24,
@@ -52,7 +52,7 @@ pub enum DivoomDeviceHourMode {
 impl_divoom_dto_enum_traits!(DivoomDeviceHourMode, Hour12: "12h", Hour24: "24h");
 
 /// Mirror mode.
-#[derive(Debug, PartialOrd, PartialEq)]
+#[derive(Debug, PartialOrd, PartialEq, Copy, Clone)]
 pub enum DivoomDeviceMirrorMode {
     Off,
     On,
@@ -62,7 +62,7 @@ pub enum DivoomDeviceMirrorMode {
 impl_divoom_dto_enum_traits!(DivoomDeviceMirrorMode, Off: "off", On: "on");
 
 /// Temperature unit. Used in weather report.
-#[derive(Debug, PartialOrd, PartialEq)]
+#[derive(Debug, PartialOrd, PartialEq, Copy, Clone)]
 pub enum DivoomDeviceTemperatureUnit {
     Celsius,
     Fahrenheit,
@@ -72,7 +72,7 @@ pub enum DivoomDeviceTemperatureUnit {
 impl_divoom_dto_enum_traits!(DivoomDeviceTemperatureUnit, Celsius: "c", Fahrenheit: "f");
 
 /// Device screen rotation angle.
-#[derive(Debug, PartialOrd, PartialEq)]
+#[derive(Debug, PartialOrd, PartialEq, Copy, Clone)]
 pub enum DivoomDeviceRotationAngle {
     None,
     Rotate90,
@@ -84,7 +84,7 @@ pub enum DivoomDeviceRotationAngle {
 impl_divoom_dto_enum_traits!(DivoomDeviceRotationAngle, None: "0", Rotate90: "90", Rotate180: "180", Rotate270: "270");
 
 /// Device screen power state.
-#[derive(Debug, PartialOrd, PartialEq)]
+#[derive(Debug, PartialOrd, PartialEq, Copy, Clone)]
 pub enum DivoomDeviceScreenPowerState {
     Off,
     On,

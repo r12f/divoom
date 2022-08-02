@@ -1,12 +1,12 @@
-use std::time::Duration;
-use crate::{DivoomAPIError, PixooClient, DivoomAPIResult, PixooCommandBuilder};
-use clap::Parser;
-use crate::dto::*;
 use crate::dsl::dsl_syntax::*;
+use crate::dto::*;
+use crate::{DivoomAPIError, DivoomAPIResult, PixooClient, PixooCommandBuilder};
+use std::time::Duration;
 
 #[cfg(feature = "animation-builder")]
 use crate::{DivoomAnimationBuilder, DivoomAnimationResourceLoader};
 
+use crate::dsl::DivoomDslOperation;
 #[cfg(feature = "animation-builder")]
 use tiny_skia::BlendMode;
 
@@ -25,41 +25,47 @@ impl DivoomDslRunner<'_> {
         }
     }
 
-    pub async fn parse(&mut self, command_input: &str) -> DivoomAPIResult<()> {
-        let words = match shellwords::split(command_input) {
-            Err(e) => return Err(DivoomAPIError::ParameterError(e.to_string())),
-            Ok(v) => v,
-        };
+    pub async fn batch_operations(
+        &mut self,
+        operations: &[DivoomDslOperation],
+    ) -> DivoomAPIResult<()> {
+        for operation in operations {
+            self.batch_operation(operation).await?;
+        }
 
-        let command_with_words = ["divoom".to_string()].into_iter().chain(words);
-        let command: DivoomDeviceCommand = match DivoomDeviceCommand::try_parse_from(command_with_words) {
-            Err(e) => return Err(DivoomAPIError::ParameterError(e.to_string())),
-            Ok(v) => v,
-        };
+        Ok(())
+    }
 
-        match command {
+    pub async fn batch_operation(&mut self, operation: &DivoomDslOperation) -> DivoomAPIResult<()> {
+        match &operation.command {
             DivoomDeviceCommand::Channel(channel_command) => {
-                self.parse_channel_commands(channel_command)
+                self.batch_channel_command(operation, channel_command)
             }
 
             DivoomDeviceCommand::System(system_command) => {
-                self.parse_system_commands(system_command)
+                self.batch_system_command(operation, system_command)
             }
 
             DivoomDeviceCommand::Tool(tool_command) => {
-                self.parse_tool_commands(tool_command)
+                self.batch_tool_command(operation, tool_command)
             }
 
             DivoomDeviceCommand::Animation(animation_command) => {
-                self.parse_animation_commands(animation_command).await
+                self.batch_animation_command(operation, animation_command)
+                    .await
             }
 
             DivoomDeviceCommand::Batch(batch_command) => {
-                self.parse_batch_commands(batch_command)
+                self.batch_batch_command(operation, batch_command)
             }
 
             DivoomDeviceCommand::Raw { request } => {
-                self.command_builder = Some(self.command_builder.take().unwrap().send_raw_request(request));
+                self.command_builder = Some(
+                    self.command_builder
+                        .take()
+                        .unwrap()
+                        .send_raw_request(request.clone()),
+                );
                 Ok(())
             }
         }
@@ -75,94 +81,169 @@ impl DivoomDslRunner<'_> {
         (command_count, payload)
     }
 
-    fn parse_channel_commands(
+    fn batch_channel_command(
         &mut self,
-        command: DivoomDeviceChannelCommand,
+        _: &DivoomDslOperation,
+        command: &DivoomDeviceChannelCommand,
     ) -> DivoomAPIResult<()> {
         match command {
             DivoomDeviceChannelCommand::Set { channel_type } => {
-                self.command_builder = Some(self.command_builder.take().unwrap().select_channel(channel_type))
-            },
+                self.command_builder = Some(
+                    self.command_builder
+                        .take()
+                        .unwrap()
+                        .select_channel(*channel_type),
+                )
+            }
 
             DivoomDeviceChannelCommand::SetClock { clock_id } => {
-                self.command_builder = Some(self.command_builder.take().unwrap().select_clock(clock_id))
-            },
+                self.command_builder =
+                    Some(self.command_builder.take().unwrap().select_clock(*clock_id))
+            }
 
             DivoomDeviceChannelCommand::SetCloudChannel { channel_type } => {
-                self.command_builder = Some(self.command_builder.take().unwrap().select_cloud_channel(channel_type))
+                self.command_builder = Some(
+                    self.command_builder
+                        .take()
+                        .unwrap()
+                        .select_cloud_channel(*channel_type),
+                )
             }
 
             DivoomDeviceChannelCommand::SetCustomPage { page_index } => {
-                self.command_builder = Some(self.command_builder.take().unwrap().select_custom_page(page_index))
+                self.command_builder = Some(
+                    self.command_builder
+                        .take()
+                        .unwrap()
+                        .select_custom_page(*page_index),
+                )
             }
 
             DivoomDeviceChannelCommand::SetVisualizer { visualizer_index } => {
-                self.command_builder = Some(self.command_builder.take().unwrap().select_visualizer(visualizer_index))
+                self.command_builder = Some(
+                    self.command_builder
+                        .take()
+                        .unwrap()
+                        .select_visualizer(*visualizer_index),
+                )
             }
         }
 
         Ok(())
     }
 
-    fn parse_system_commands(
+    fn batch_system_command(
         &mut self,
-        command: DivoomDeviceSystemCommand,
+        _: &DivoomDslOperation,
+        command: &DivoomDeviceSystemCommand,
     ) -> DivoomAPIResult<()> {
         match command {
             DivoomDeviceSystemCommand::SetTime { utc } => {
-                self.command_builder = Some(self.command_builder.take().unwrap().set_device_time(utc))
-            },
+                self.command_builder =
+                    Some(self.command_builder.take().unwrap().set_device_time(*utc))
+            }
 
             DivoomDeviceSystemCommand::SetBrightness { brightness } => {
-                self.command_builder = Some(self.command_builder.take().unwrap().set_device_brightness(brightness))
+                self.command_builder = Some(
+                    self.command_builder
+                        .take()
+                        .unwrap()
+                        .set_device_brightness(*brightness),
+                )
             }
 
             DivoomDeviceSystemCommand::SetHourMode { mode } => {
-                self.command_builder = Some(self.command_builder.take().unwrap().set_device_hour_mode(mode))
-            },
+                self.command_builder = Some(
+                    self.command_builder
+                        .take()
+                        .unwrap()
+                        .set_device_hour_mode(*mode),
+                )
+            }
 
             DivoomDeviceSystemCommand::SetHighLightMode { mode } => {
-                self.command_builder = Some(self.command_builder.take().unwrap().set_device_high_light_mode(mode))
+                self.command_builder = Some(
+                    self.command_builder
+                        .take()
+                        .unwrap()
+                        .set_device_high_light_mode(*mode),
+                )
             }
 
             DivoomDeviceSystemCommand::SetMirrorMode { mode } => {
-                self.command_builder = Some(self.command_builder.take().unwrap().set_device_mirror_mode(mode))
-            },
+                self.command_builder = Some(
+                    self.command_builder
+                        .take()
+                        .unwrap()
+                        .set_device_mirror_mode(*mode),
+                )
+            }
 
             DivoomDeviceSystemCommand::SetRotationAngle { mode } => {
-                self.command_builder = Some(self.command_builder.take().unwrap().set_device_rotation_angle(mode))
+                self.command_builder = Some(
+                    self.command_builder
+                        .take()
+                        .unwrap()
+                        .set_device_rotation_angle(*mode),
+                )
             }
 
             DivoomDeviceSystemCommand::SetScreenPowerState { power_state } => {
-                self.command_builder = Some(self.command_builder.take().unwrap().set_device_screen_power_state(power_state))
+                self.command_builder = Some(
+                    self.command_builder
+                        .take()
+                        .unwrap()
+                        .set_device_screen_power_state(*power_state),
+                )
             }
 
             DivoomDeviceSystemCommand::SetTemperatureUnit { unit } => {
-                self.command_builder = Some(self.command_builder.take().unwrap().set_device_temperature_unit(unit))
+                self.command_builder = Some(
+                    self.command_builder
+                        .take()
+                        .unwrap()
+                        .set_device_temperature_unit(*unit),
+                )
             }
 
             DivoomDeviceSystemCommand::SetTimeZone { time_zone } => {
-                self.command_builder = Some(self.command_builder.take().unwrap().set_device_time_zone(time_zone))
+                self.command_builder = Some(
+                    self.command_builder
+                        .take()
+                        .unwrap()
+                        .set_device_time_zone(time_zone.to_string()),
+                )
             }
 
             DivoomDeviceSystemCommand::SetWeatherArea {
                 longitude,
                 latitude,
             } => {
-                self.command_builder = Some(self.command_builder.take().unwrap().set_device_weather_area(longitude, latitude))
-            },
+                self.command_builder = Some(
+                    self.command_builder
+                        .take()
+                        .unwrap()
+                        .set_device_weather_area(longitude.to_string(), latitude.to_string()),
+                )
+            }
 
             DivoomDeviceSystemCommand::SetWhiteBalance { r, g, b } => {
-                self.command_builder = Some(self.command_builder.take().unwrap().set_device_white_balance(r, g, b))
+                self.command_builder = Some(
+                    self.command_builder
+                        .take()
+                        .unwrap()
+                        .set_device_white_balance(*r, *g, *b),
+                )
             }
         }
 
         Ok(())
     }
 
-    fn parse_tool_commands(
+    fn batch_tool_command(
         &mut self,
-        command: DivoomDeviceToolCommand,
+        _: &DivoomDslOperation,
+        command: &DivoomDeviceToolCommand,
     ) -> DivoomAPIResult<()> {
         match command {
             DivoomDeviceToolCommand::Countdown {
@@ -170,43 +251,61 @@ impl DivoomDslRunner<'_> {
                 second,
                 action,
             } => {
-                self.command_builder = Some(self.command_builder.take().unwrap().set_countdown_tool(minute, second, action))
-            },
+                self.command_builder = Some(
+                    self.command_builder
+                        .take()
+                        .unwrap()
+                        .set_countdown_tool(*minute, *second, *action),
+                )
+            }
 
             DivoomDeviceToolCommand::Noise { action } => {
-                self.command_builder = Some(self.command_builder.take().unwrap().set_noise_tool(action))
-            },
+                self.command_builder =
+                    Some(self.command_builder.take().unwrap().set_noise_tool(*action))
+            }
 
             DivoomDeviceToolCommand::Scoreboard {
                 blue_score,
                 red_score,
             } => {
-                self.command_builder = Some(self.command_builder.take().unwrap().set_scoreboard_tool(blue_score, red_score))
-            },
+                self.command_builder = Some(
+                    self.command_builder
+                        .take()
+                        .unwrap()
+                        .set_scoreboard_tool(*blue_score, *red_score),
+                )
+            }
 
             DivoomDeviceToolCommand::Stopwatch { action } => {
-                self.command_builder = Some(self.command_builder.take().unwrap().set_stopwatch_tool(action))
-            },
+                self.command_builder = Some(
+                    self.command_builder
+                        .take()
+                        .unwrap()
+                        .set_stopwatch_tool(*action),
+                )
+            }
         }
 
         Ok(())
     }
 
-    async fn parse_animation_commands(
+    async fn batch_animation_command(
         &mut self,
-        command: DivoomDeviceAnimationCommand,
+        operation: &DivoomDslOperation,
+        command: &DivoomDeviceAnimationCommand,
     ) -> DivoomAPIResult<()> {
         match command {
             DivoomDeviceAnimationCommand::Gif(gif_animation_command) => {
-                self.parse_gif_animation_commands(gif_animation_command)
+                self.batch_gif_animation_commands(operation, gif_animation_command)
             }
 
             DivoomDeviceAnimationCommand::Image(image_animation_command) => {
-                self.parse_image_animation_commands(image_animation_command).await
+                self.batch_image_animation_commands(operation, image_animation_command)
+                    .await
             }
 
             DivoomDeviceAnimationCommand::Text(text_animation_command) => {
-                self.parse_text_animation_commands(text_animation_command)
+                self.batch_text_animation_commands(operation, text_animation_command)
             }
 
             DivoomDeviceAnimationCommand::Buzzer {
@@ -214,27 +313,42 @@ impl DivoomDslRunner<'_> {
                 active_time_in_cycle,
                 off_time_in_cycle,
             } => {
-                self.command_builder = Some(self.command_builder.take().unwrap().play_buzzer(play_total_time, active_time_in_cycle, off_time_in_cycle));
+                self.command_builder = Some(self.command_builder.take().unwrap().play_buzzer(
+                    *play_total_time,
+                    *active_time_in_cycle,
+                    *off_time_in_cycle,
+                ));
                 Ok(())
             }
         }
     }
 
-    fn parse_gif_animation_commands(
+    fn batch_gif_animation_commands(
         &mut self,
-        command: DivoomDeviceGifAnimationCommand,
+        _: &DivoomDslOperation,
+        command: &DivoomDeviceGifAnimationCommand,
     ) -> DivoomAPIResult<()> {
         match command {
             DivoomDeviceGifAnimationCommand::Play(gif) => {
-                if let Some(local_gif_file) = gif.file {
-                    self.command_builder = Some(self.command_builder.take().unwrap()
-                        .play_gif_file(DivoomFileAnimationSourceType::LocalFile, local_gif_file));
-                } else if let Some(local_gif_folder) = gif.folder {
-                    self.command_builder = Some(self.command_builder.take().unwrap()
-                        .play_gif_file(DivoomFileAnimationSourceType::LocalFolder, local_gif_folder));
-                } else if let Some(gif_url) = gif.url {
-                    self.command_builder = Some(self.command_builder.take().unwrap()
-                        .play_gif_file(DivoomFileAnimationSourceType::Url, gif_url));
+                if let Some(local_gif_file) = &gif.file {
+                    self.command_builder =
+                        Some(self.command_builder.take().unwrap().play_gif_file(
+                            DivoomFileAnimationSourceType::LocalFile,
+                            local_gif_file.clone(),
+                        ));
+                } else if let Some(local_gif_folder) = &gif.folder {
+                    self.command_builder =
+                        Some(self.command_builder.take().unwrap().play_gif_file(
+                            DivoomFileAnimationSourceType::LocalFolder,
+                            local_gif_folder.clone(),
+                        ));
+                } else if let Some(gif_url) = &gif.url {
+                    self.command_builder = Some(
+                        self.command_builder
+                            .take()
+                            .unwrap()
+                            .play_gif_file(DivoomFileAnimationSourceType::Url, gif_url.clone()),
+                    );
                 } else {
                     return Err(DivoomAPIError::ParameterError(
                         "The source of GIF is not set!".into(),
@@ -246,62 +360,88 @@ impl DivoomDslRunner<'_> {
         Ok(())
     }
 
-    async fn parse_image_animation_commands(
+    async fn batch_image_animation_commands(
         &mut self,
-        image_animation_command: DivoomDeviceImageAnimationCommand,
+        operation: &DivoomDslOperation,
+        image_animation_command: &DivoomDeviceImageAnimationCommand,
     ) -> DivoomAPIResult<()> {
         match image_animation_command {
             DivoomDeviceImageAnimationCommand::ResetId => {
-                self.command_builder = Some(self.command_builder.take().unwrap().reset_next_animation_id())
-            },
+                self.command_builder = Some(
+                    self.command_builder
+                        .take()
+                        .unwrap()
+                        .reset_next_animation_id(),
+                )
+            }
 
             #[cfg(feature = "animation-builder")]
             DivoomDeviceImageAnimationCommand::SendGif {
-                file_path,
+                file_path: _,
                 size: canvas_size,
                 speed_in_ms,
                 fit,
                 rotation,
                 opacity,
             } => {
-                let animation_builder = DivoomAnimationBuilder::new(canvas_size, Duration::from_millis(speed_in_ms))?;
-                let gif = DivoomAnimationResourceLoader::from_gif_file(&file_path)?;
+                let animation_builder =
+                    DivoomAnimationBuilder::new(*canvas_size, Duration::from_millis(*speed_in_ms))?;
+                let gif_file_data = operation.resource_loader.lock().unwrap().as_mut().next()?;
+                let gif = DivoomAnimationResourceLoader::from_gif_buf(&gif_file_data.data)?;
                 let animation = animation_builder
-                    .draw_frames_fit(&gif, 0, fit, rotation, opacity, BlendMode::default())
+                    .draw_frames_fit(&gif, 0, *fit, *rotation, *opacity, BlendMode::default())
                     .build();
 
                 let animation_id = self.device_client.get_next_animation_id().await?;
-                self.command_builder = Some(self.command_builder.take().unwrap().send_image_animation(animation_id, animation));
+                self.command_builder = Some(
+                    self.command_builder
+                        .take()
+                        .unwrap()
+                        .send_image_animation(animation_id, animation),
+                );
             }
         }
 
         Ok(())
     }
 
-    fn parse_text_animation_commands(
+    fn batch_text_animation_commands(
         &mut self,
-        text_animation_command: DivoomDeviceTextAnimationCommand,
+        _: &DivoomDslOperation,
+        text_animation_command: &DivoomDeviceTextAnimationCommand,
     ) -> DivoomAPIResult<()> {
         match text_animation_command {
             DivoomDeviceTextAnimationCommand::Clear => {
-                self.command_builder = Some(self.command_builder.take().unwrap().clear_all_text_area())
-            },
+                self.command_builder =
+                    Some(self.command_builder.take().unwrap().clear_all_text_area())
+            }
 
             DivoomDeviceTextAnimationCommand::Set(text_animation) => {
-                self.command_builder = Some(self.command_builder.take().unwrap().send_text_animation(text_animation.into()))
+                self.command_builder = Some(
+                    self.command_builder
+                        .take()
+                        .unwrap()
+                        .send_text_animation(text_animation.as_animation()),
+                )
             }
         }
 
         Ok(())
     }
 
-    fn parse_batch_commands(
+    fn batch_batch_command(
         &mut self,
-        batch_command: DivoomDeviceBatchCommand,
+        _: &DivoomDslOperation,
+        batch_command: &DivoomDeviceBatchCommand,
     ) -> DivoomAPIResult<()> {
         match batch_command {
             DivoomDeviceBatchCommand::RunUrl { command_url } => {
-                self.command_builder = Some(self.command_builder.take().unwrap().execute_commands_from_url(command_url))
+                self.command_builder = Some(
+                    self.command_builder
+                        .take()
+                        .unwrap()
+                        .execute_commands_from_url(command_url.to_string()),
+                )
             }
         }
 
@@ -311,25 +451,29 @@ impl DivoomDslRunner<'_> {
 
 #[cfg(test)]
 mod tests {
-    use crate::PixooClient;
     use super::*;
+    use crate::dsl::dsl_parser::DivoomDslParser;
+    use crate::PixooClient;
     use std::{env, fs};
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-    async fn dsl_runner_should_parse_channel_commands() {
+    async fn dsl_runner_should_batch_channel_commands() {
         let client = PixooClient::new("127.0.0.1").unwrap();
 
         let mut dsl_runner = DivoomDslRunner::new(&client);
-        dsl_runner.parse("channel set clock").await.unwrap();
-        dsl_runner.parse("channel set cloud").await.unwrap();
-        dsl_runner.parse("channel set visualizer").await.unwrap();
-        dsl_runner.parse("channel set customPage").await.unwrap();
-        dsl_runner.parse("channel set-clock 100").await.unwrap();
-        dsl_runner.parse("channel set-cloud-channel gallery").await.unwrap();
-        dsl_runner.parse("channel set-cloud-channel fav").await.unwrap();
-        dsl_runner.parse("channel set-cloud-channel artist").await.unwrap();
-        dsl_runner.parse("channel set-custom-page 2").await.unwrap();
-        dsl_runner.parse("channel set-visualizer 5").await.unwrap();
+        let operations = vec![
+            DivoomDslParser::parse("channel set clock").unwrap(),
+            DivoomDslParser::parse("channel set cloud").unwrap(),
+            DivoomDslParser::parse("channel set visualizer").unwrap(),
+            DivoomDslParser::parse("channel set customPage").unwrap(),
+            DivoomDslParser::parse("channel set-clock 100").unwrap(),
+            DivoomDslParser::parse("channel set-cloud-channel gallery").unwrap(),
+            DivoomDslParser::parse("channel set-cloud-channel fav").unwrap(),
+            DivoomDslParser::parse("channel set-cloud-channel artist").unwrap(),
+            DivoomDslParser::parse("channel set-custom-page 2").unwrap(),
+            DivoomDslParser::parse("channel set-visualizer 5").unwrap(),
+        ];
+        dsl_runner.batch_operations(&operations).await.unwrap();
 
         run_dsl_runner_parser_test(
             dsl_runner,
@@ -338,21 +482,24 @@ mod tests {
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-    async fn dsl_runner_should_parse_system_commands() {
+    async fn dsl_runner_should_batch_system_commands() {
         let client = PixooClient::new("127.0.0.1").unwrap();
 
         let mut dsl_runner = DivoomDslRunner::new(&client);
-        dsl_runner.parse("system set-brightness 80").await.unwrap();
-        dsl_runner.parse("system set-time 10000").await.unwrap();
-        dsl_runner.parse("system set-high-light-mode on").await.unwrap();
-        dsl_runner.parse("system set-hour-mode 12h").await.unwrap();
-        dsl_runner.parse("system set-mirror-mode on").await.unwrap();
-        dsl_runner.parse("system set-rotation-angle 90").await.unwrap();
-        dsl_runner.parse("system set-screen-power-state off").await.unwrap();
-        dsl_runner.parse("system set-temperature-unit c").await.unwrap();
-        dsl_runner.parse("system set-time-zone \"America/Los Angeles\"").await.unwrap();
-        dsl_runner.parse("system set-weather-area \"-122.0\" 47.0").await.unwrap();
-        dsl_runner.parse("system set-white-balance 100 150 200").await.unwrap();
+        let operations = vec![
+            DivoomDslParser::parse("system set-brightness 80").unwrap(),
+            DivoomDslParser::parse("system set-time 10000").unwrap(),
+            DivoomDslParser::parse("system set-high-light-mode on").unwrap(),
+            DivoomDslParser::parse("system set-hour-mode 12h").unwrap(),
+            DivoomDslParser::parse("system set-mirror-mode on").unwrap(),
+            DivoomDslParser::parse("system set-rotation-angle 90").unwrap(),
+            DivoomDslParser::parse("system set-screen-power-state off").unwrap(),
+            DivoomDslParser::parse("system set-temperature-unit c").unwrap(),
+            DivoomDslParser::parse("system set-time-zone \"America/Los Angeles\"").unwrap(),
+            DivoomDslParser::parse("system set-weather-area \"-122.0\" 47.0").unwrap(),
+            DivoomDslParser::parse("system set-white-balance 100 150 200").unwrap(),
+        ];
+        dsl_runner.batch_operations(&operations).await.unwrap();
 
         run_dsl_runner_parser_test(
             dsl_runner,
@@ -361,38 +508,41 @@ mod tests {
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-    async fn dsl_runner_should_parse_tool_commands() {
+    async fn dsl_runner_should_batch_tool_commands() {
         let client = PixooClient::new("127.0.0.1").unwrap();
 
         let mut dsl_runner = DivoomDslRunner::new(&client);
-        dsl_runner.parse("tool countdown start 10 30").await.unwrap();
-        dsl_runner.parse("tool countdown stop").await.unwrap();
-        dsl_runner.parse("tool noise start").await.unwrap();
-        dsl_runner.parse("tool noise stop").await.unwrap();
-        dsl_runner.parse("tool scoreboard 1 2").await.unwrap();
-        dsl_runner.parse("tool stopwatch start").await.unwrap();
-        dsl_runner.parse("tool stopwatch stop").await.unwrap();
-        dsl_runner.parse("tool stopwatch reset").await.unwrap();
+        let operations = vec![
+            DivoomDslParser::parse("tool countdown start 10 30").unwrap(),
+            DivoomDslParser::parse("tool countdown stop").unwrap(),
+            DivoomDslParser::parse("tool noise start").unwrap(),
+            DivoomDslParser::parse("tool noise stop").unwrap(),
+            DivoomDslParser::parse("tool scoreboard 1 2").unwrap(),
+            DivoomDslParser::parse("tool stopwatch start").unwrap(),
+            DivoomDslParser::parse("tool stopwatch stop").unwrap(),
+            DivoomDslParser::parse("tool stopwatch reset").unwrap(),
+        ];
+        dsl_runner.batch_operations(&operations).await.unwrap();
 
-        run_dsl_runner_parser_test(
-            dsl_runner,
-            "test_data/dsl_runner_tests/tool_commands.json",
-        );
+        run_dsl_runner_parser_test(dsl_runner, "test_data/dsl_runner_tests/tool_commands.json");
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-    async fn dsl_runner_should_parse_animation_commands() {
+    async fn dsl_runner_should_batch_animation_commands() {
         let client = PixooClient::new("127.0.0.1").unwrap();
 
         let mut dsl_runner = DivoomDslRunner::new(&client);
-        dsl_runner.parse("animation gif play --file d:\\1.gif").await.unwrap();
-        dsl_runner.parse("animation gif play --folder d:\\1").await.unwrap();
-        dsl_runner.parse("animation gif play --url http://example.com/1.gif").await.unwrap();
-        dsl_runner.parse("animation image reset-id").await.unwrap();
-        dsl_runner.parse("animation text clear").await.unwrap();
-        dsl_runner.parse("animation text set 0 -x 0 -y 0 -d left -f 1 -w 32 \"test string\" -r 100 -g 150 -b 150 -a middle").await.unwrap();
-        dsl_runner.parse("animation buzzer").await.unwrap();
-        dsl_runner.parse("animation buzzer 500 -a 100 -o 200").await.unwrap();
+        let operations = vec![
+        DivoomDslParser::parse("animation gif play --file d:\\1.gif").unwrap(),
+        DivoomDslParser::parse("animation gif play --folder d:\\1").unwrap(),
+        DivoomDslParser::parse("animation gif play --url http://example.com/1.gif").unwrap(),
+        DivoomDslParser::parse("animation image reset-id").unwrap(),
+        DivoomDslParser::parse("animation text clear").unwrap(),
+        DivoomDslParser::parse("animation text set 0 -x 0 -y 0 -d left -f 1 -w 32 \"test string\" -r 100 -g 150 -b 150 -a middle").unwrap(),
+        DivoomDslParser::parse("animation buzzer").unwrap(),
+        DivoomDslParser::parse("animation buzzer 500 -a 100 -o 200").unwrap(),
+        ];
+        dsl_runner.batch_operations(&operations).await.unwrap();
 
         run_dsl_runner_parser_test(
             dsl_runner,
@@ -401,29 +551,29 @@ mod tests {
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-    async fn dsl_runner_should_parse_batch_commands() {
+    async fn dsl_runner_should_batch_batch_commands() {
         let client = PixooClient::new("127.0.0.1").unwrap();
 
         let mut dsl_runner = DivoomDslRunner::new(&client);
-        dsl_runner.parse("batch run-url http://example.com/commands.txt").await.unwrap();
+        let operations =
+            vec![DivoomDslParser::parse("batch run-url http://example.com/commands.txt").unwrap()];
+        dsl_runner.batch_operations(&operations).await.unwrap();
 
-        run_dsl_runner_parser_test(
-            dsl_runner,
-            "test_data/dsl_runner_tests/batch_commands.json",
-        );
+        run_dsl_runner_parser_test(dsl_runner, "test_data/dsl_runner_tests/batch_commands.json");
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-    async fn dsl_runner_should_parse_raw_commands() {
+    async fn dsl_runner_should_batch_raw_commands() {
         let client = PixooClient::new("127.0.0.1").unwrap();
 
         let mut dsl_runner = DivoomDslRunner::new(&client);
-        dsl_runner.parse("raw \"{ \\\"Command\\\": \\\"Tools/SetStopWatch\\\", \\\"Status\\\": 1 }\"").await.unwrap();
+        let operations = vec![DivoomDslParser::parse(
+            "raw \"{ \\\"Command\\\": \\\"Tools/SetStopWatch\\\", \\\"Status\\\": 1 }\"",
+        )
+        .unwrap()];
+        dsl_runner.batch_operations(&operations).await.unwrap();
 
-        run_dsl_runner_parser_test(
-            dsl_runner,
-            "test_data/dsl_runner_tests/raw_commands.json",
-        );
+        run_dsl_runner_parser_test(dsl_runner, "test_data/dsl_runner_tests/raw_commands.json");
     }
 
     fn run_dsl_runner_parser_test(dsl_runner: DivoomDslRunner, reference_file_path: &str) {

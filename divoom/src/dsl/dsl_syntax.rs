@@ -353,23 +353,27 @@ pub struct DivoomDeviceTextAnimationCommandArgs {
     #[clap(short, default_value = "255", help = "Font color, blue.")]
     pub b: u8,
 
-    #[clap(short = 'a', default_value = "middle", help = "Text align. Can be left, middle, right.")]
+    #[clap(
+        short = 'a',
+        default_value = "middle",
+        help = "Text align. Can be left, middle, right."
+    )]
     pub align: DivoomTextAnimationAlign,
 }
 
-impl From<DivoomDeviceTextAnimationCommandArgs> for DivoomTextAnimation {
-    fn from(opts: DivoomDeviceTextAnimationCommandArgs) -> Self {
+impl DivoomDeviceTextAnimationCommandArgs {
+    pub fn as_animation(&self) -> DivoomTextAnimation {
         DivoomTextAnimation {
-            text_id: opts.text_id,
-            x: opts.x,
-            y: opts.y,
-            scroll_direction: opts.scroll_direction,
-            font_index: opts.font_index,
-            text_width: opts.text_width,
-            speed_in_ms: opts.speed_in_ms,
-            text_string: opts.text_string,
-            color: rgb::RGB8::new(opts.r, opts.g, opts.b),
-            align: opts.align,
+            text_id: self.text_id,
+            x: self.x,
+            y: self.y,
+            scroll_direction: self.scroll_direction,
+            font_index: self.font_index,
+            text_width: self.text_width,
+            speed_in_ms: self.speed_in_ms,
+            text_string: self.text_string.to_string(),
+            color: rgb::RGB8::new(self.r, self.g, self.b),
+            align: self.align,
         }
     }
 }
