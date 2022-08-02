@@ -462,10 +462,10 @@ pack-snap PACKAGE="divoom_cli":
     @Write-Host "Current invocation directory: {{invocation_directory()}}"
 
     if (Test-Path "{{PUBLISH_DIR}}/{{PACKAGE}}/snap-source") { Remove-Item -Path "{{PUBLISH_DIR}}/{{PACKAGE}}/snap-source" -Recurse -Force }
-    New-Item -ItemType Directory -Path "{{PUBLISH_DIR}}/{{PACKAGE}}/snap-source/snap" -Force | Out-Null
+    New-Item -ItemType Directory -Path "{{PUBLISH_DIR}}/{{PACKAGE}}/snap-source/{{replace(PACKAGE, '_', '-')}}.{{BUILD_ARCH}}/snap" -Force | Out-Null
 
     just eval-template "{{justfile_directory()}}/build/package-templates/snap/snapcraft.yaml" \
-      "{{PUBLISH_DIR}}/{{PACKAGE}}/snap-source/snap/{{replace(PACKAGE, '_', '-')}}.{{BUILD_ARCH}}.yaml" \
+      "{{PUBLISH_DIR}}/{{PACKAGE}}/snap-source/{{replace(PACKAGE, '_', '-')}}.{{BUILD_ARCH}}/snap/snapcraft.yaml" \
       "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters" \
       "{{PUBLISH_CHECKSUMS_DIR}}"
 
