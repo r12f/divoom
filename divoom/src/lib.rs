@@ -16,5 +16,6 @@ mod animation;
 #[cfg(feature = "animation-builder")]
 pub use animation::*;
 
+mod dsl;
 #[cfg(test)]
 mod test_utils;

@@ -1,0 +1,45 @@
+{
+  "Command": "Draw/CommandList",
+  "CommandList": [
+    {
+      "Command": "Channel/SetIndex",
+      "SelectIndex": 0
+    },
+    {
+      "Command": "Channel/SetIndex",
+      "SelectIndex": 1
+    },
+    {
+      "Command": "Channel/SetIndex",
+      "SelectIndex": 2
+    },
+    {
+      "Command": "Channel/SetIndex",
+      "SelectIndex": 3
+    },
+    {
+      "ClockId": 100,
+      "Command": "Channel/SetClockSelectId"
+    },
+    {
+      "Command": "Channel/CloudIndex",
+      "Index": 0
+    },
+    {
+      "Command": "Channel/CloudIndex",
+      "Index": 1
+    },
+    {
+      "Command": "Channel/CloudIndex",
+      "Index": 2
+    },
+    {
+      "Command": "Channel/SetCustomPageIndex",
+      "CustomPageIndex": 2
+    },
+    {
+      "Command": "Channel/SetEqPosition",
+      "EqPosition": 5
+    }
+  ]
+}
