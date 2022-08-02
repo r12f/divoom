@@ -414,7 +414,11 @@ pub struct DivoomCliTextAnimationOpts {
     #[clap(short, default_value = "255", help = "Font color, blue.")]
     pub b: u8,
 
-    #[clap(short = 'a', default_value = "middle", help = "Text align. Can be left, middle, right.")]
+    #[clap(
+        short = 'a',
+        default_value = "middle",
+        help = "Text align. Can be left, middle, right."
+    )]
     pub align: DivoomTextAnimationAlign,
 }
 

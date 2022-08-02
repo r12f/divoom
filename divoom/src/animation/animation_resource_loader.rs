@@ -10,11 +10,13 @@ use tiny_skia::Pixmap;
 pub struct DivoomAnimationResourceLoader {}
 
 impl DivoomAnimationResourceLoader {
+    /// Load image from file
     pub fn from_image_file(file_path: &str) -> DivoomAPIResult<Pixmap> {
         let image_file = File::open(file_path)?;
         DivoomAnimationResourceLoader::from_image(image_file)
     }
 
+    /// Load image from Read trait
     pub fn from_image<R: Read>(reader: R) -> DivoomAPIResult<Pixmap> {
         let mut buf_reader = BufReader::new(reader);
 
@@ -24,6 +26,7 @@ impl DivoomAnimationResourceLoader {
         DivoomAnimationResourceLoader::from_image_buf(&image_buffer)
     }
 
+    /// Load image from memory buffer
     pub fn from_image_buf(buf: &[u8]) -> DivoomAPIResult<Pixmap> {
         let image = ImageReader::new(Cursor::new(buf))
             .with_guessed_format()?
@@ -41,6 +44,11 @@ impl DivoomAnimationResourceLoader {
     pub fn from_gif_file(file_path: &str) -> DivoomAPIResult<Vec<Pixmap>> {
         let input = File::open(file_path)?;
         DivoomAnimationResourceLoader::from_gif(input)
+    }
+
+    /// Load gif from a memory buffer
+    pub fn from_gif_buf(buf: &[u8]) -> DivoomAPIResult<Vec<Pixmap>> {
+        DivoomAnimationResourceLoader::from_gif(Cursor::new(buf))
     }
 
     /// Load gif resource from Read trait
