@@ -339,6 +339,12 @@ stages:
             env:
               BUILD_VERSION: $(Build.Version)
 
+          - script: just pack-snap
+            displayName: Pack snap package for release
+            workingDirectory: '$(System.DefaultWorkingDirectory)/r12f.divoom'
+            env:
+              BUILD_VERSION: $(Build.Version)
+
           - script: just prepare-crate-io-release
             displayName: Prepare Crate.IO release
             workingDirectory: '$(System.DefaultWorkingDirectory)/r12f.divoom'
