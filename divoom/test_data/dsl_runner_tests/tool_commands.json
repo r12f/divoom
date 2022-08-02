@@ -1,0 +1,42 @@
+{
+  "Command": "Draw/CommandList",
+  "CommandList": [
+    {
+      "Command": "Tools/SetTimer",
+      "Minute": 10,
+      "Second": 30,
+      "Status": 1
+    },
+    {
+      "Command": "Tools/SetTimer",
+      "Minute": 0,
+      "Second": 0,
+      "Status": 0
+    },
+    {
+      "Command": "Tools/SetNoiseStatus",
+      "NoiseStatus": 1
+    },
+    {
+      "Command": "Tools/SetNoiseStatus",
+      "NoiseStatus": 0
+    },
+    {
+      "BlueScore": 1,
+      "Command": "Tools/SetScoreBoard",
+      "RedScore": 2
+    },
+    {
+      "Command": "Tools/SetStopWatch",
+      "Status": 1
+    },
+    {
+      "Command": "Tools/SetStopWatch",
+      "Status": 0
+    },
+    {
+      "Command": "Tools/SetStopWatch",
+      "Status": 2
+    }
+  ]
+}

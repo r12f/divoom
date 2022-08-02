@@ -1,3 +1,4 @@
+mod schedule;
 mod server;
 
 use crate::server::*;
@@ -30,7 +31,7 @@ struct CliOptions {
 
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
-    env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("debug")).init();
+    env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("warn")).init();
 
     let args = CliOptions::parse();
 

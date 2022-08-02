@@ -1,73 +1,26 @@
+use crate::dto::*;
 use clap::{Args, Parser, Subcommand};
-use divoom::*;
-use std::str::FromStr;
 
-#[derive(Debug, Parser)]
-#[clap(
-    name = "divoom-cli",
-    author = "r12f",
-    about = "https://github.com/r12f/divoom"
-)]
+#[cfg(feature = "animation-builder")]
+use crate::animation::*;
+
+#[derive(Parser, Debug)]
 #[clap(rename_all = "kebab-case")]
-pub struct DivoomCliOptions {
-    #[clap(flatten)]
-    pub common: DivoomCliDeviceCommandCommonOpts,
-
-    #[clap(subcommand)]
-    pub command: DivoomCliSubCommand,
-}
-
-#[derive(Args, Debug)]
-#[clap(rename_all = "kebab-case")]
-pub struct DivoomCliDeviceCommandCommonOpts {
-    #[clap(help = "Device Address. Required when using device APIs, such as \"channel get\".")]
-    pub device_address: Option<String>,
-
-    #[clap(short, long, default_value = "yaml", help = "Output format.")]
-    pub output: DivoomCliOutputFormat,
-
-    #[clap(short, long, help = "Timeout in milliseconds.")]
-    pub timeout: Option<u64>,
-}
-
-#[derive(Subcommand, Debug, Copy, Clone)]
-#[clap(rename_all = "kebab-case")]
-pub enum DivoomCliOutputFormat {
-    Yaml,
-    Json,
-}
-
-impl FromStr for DivoomCliOutputFormat {
-    type Err = &'static str;
-    fn from_str(src: &str) -> Result<Self, Self::Err> {
-        match src {
-            "yaml" => Ok(DivoomCliOutputFormat::Yaml),
-            "json" => Ok(DivoomCliOutputFormat::Json),
-            _ => Err("Invalid output format"),
-        }
-    }
-}
-
-#[derive(Subcommand, Debug)]
-#[clap(rename_all = "kebab-case")]
-pub enum DivoomCliSubCommand {
-    #[clap(about = "Discover divoom devices by calling into divoom service API")]
-    Discover,
-
+pub enum DivoomDeviceCommand {
     #[clap(subcommand, about = "Channel related APIs")]
-    Channel(DivoomCliChannelCommand),
+    Channel(DivoomDeviceChannelCommand),
 
     #[clap(subcommand, about = "System/device related APIs")]
-    System(DivoomCliSystemCommand),
+    System(DivoomDeviceSystemCommand),
 
     #[clap(subcommand, about = "APIs to launch some tools")]
-    Tool(DivoomCliToolCommand),
+    Tool(DivoomDeviceToolCommand),
 
     #[clap(subcommand, about = "Animation related APIs")]
-    Animation(DivoomCliAnimationCommand),
+    Animation(DivoomDeviceAnimationCommand),
 
     #[clap(subcommand, about = "Batch related APIs")]
-    Batch(DivoomCliBatchCommand),
+    Batch(DivoomDeviceBatchCommand),
 
     #[clap(about = "Sending raw request")]
     Raw {
@@ -80,13 +33,7 @@ pub enum DivoomCliSubCommand {
 
 #[derive(Subcommand, Debug)]
 #[clap(rename_all = "kebab-case")]
-pub enum DivoomCliChannelCommand {
-    #[clap(about = "Get current selected channel type")]
-    Get,
-
-    #[clap(about = "Get current selected clock type")]
-    GetClock,
-
+pub enum DivoomDeviceChannelCommand {
     #[clap(about = "Set current channel")]
     Set {
         #[clap(help = "Channel type. It can be clock, cloud, visualizer and customPage.")]
@@ -119,13 +66,7 @@ pub enum DivoomCliChannelCommand {
 }
 
 #[derive(Subcommand, Debug)]
-pub enum DivoomCliSystemCommand {
-    #[clap(about = "Get all settings")]
-    GetSettings,
-
-    #[clap(about = "Get device time")]
-    GetTime,
-
+pub enum DivoomDeviceSystemCommand {
     #[clap(about = "Set device brightness")]
     SetBrightness {
         #[clap(help = "Brightness (0-100)")]
@@ -203,7 +144,7 @@ pub enum DivoomCliSystemCommand {
 }
 
 #[derive(Subcommand, Debug)]
-pub enum DivoomCliToolCommand {
+pub enum DivoomDeviceToolCommand {
     #[clap(about = "Countdown tool")]
     Countdown {
         #[clap(help = "Action, can be start, stop")]
@@ -239,15 +180,15 @@ pub enum DivoomCliToolCommand {
 }
 
 #[derive(Subcommand, Debug)]
-pub enum DivoomCliAnimationCommand {
+pub enum DivoomDeviceAnimationCommand {
     #[clap(subcommand, about = "Play GIF from Internet")]
-    Gif(DivoomCliGifAnimationCommand),
+    Gif(DivoomDeviceGifAnimationCommand),
 
     #[clap(subcommand, about = "Create image animation")]
-    Image(DivoomCliImageAnimationCommand),
+    Image(DivoomDeviceImageAnimationCommand),
 
     #[clap(subcommand, about = "Create text animation")]
-    Text(DivoomCliTextAnimationCommand),
+    Text(DivoomDeviceTextAnimationCommand),
 
     #[clap(about = "Play buzzer")]
     Buzzer {
@@ -271,13 +212,13 @@ pub enum DivoomCliAnimationCommand {
 }
 
 #[derive(Subcommand, Debug)]
-pub enum DivoomCliGifAnimationCommand {
+pub enum DivoomDeviceGifAnimationCommand {
     #[clap(about = "Play gif file. Only supports 16x16, 32x32, 64x64 gifs")]
-    Play(DivoomCliPlayGifAnimationOpts),
+    Play(DivoomDevicePlayGifAnimationCommandArgs),
 }
 
 #[derive(Args, Debug)]
-pub struct DivoomCliPlayGifAnimationOpts {
+pub struct DivoomDevicePlayGifAnimationCommandArgs {
     #[clap(
         long,
         help = "Specify a local file on *pixoo device*. Only supports 16x16, 32x32, 64x64 gifs"
@@ -298,13 +239,11 @@ pub struct DivoomCliPlayGifAnimationOpts {
 }
 
 #[derive(Subcommand, Debug)]
-pub enum DivoomCliImageAnimationCommand {
-    #[clap(about = "Get next animation id")]
-    GetNextId,
-
+pub enum DivoomDeviceImageAnimationCommand {
     #[clap(about = "Reset next animation id")]
     ResetId,
 
+    #[cfg(feature = "animation-builder")]
     #[clap(
         about = "Send gif as animation. This is different from \"gif play\" command, which is provided directly by Divoom device. This command will create a regular animation and load the gif file and draw the frames into it in order to play it."
     )]
@@ -353,16 +292,16 @@ pub enum DivoomCliImageAnimationCommand {
 }
 
 #[derive(Subcommand, Debug)]
-pub enum DivoomCliTextAnimationCommand {
+pub enum DivoomDeviceTextAnimationCommand {
     #[clap(about = "Clear all text area")]
     Clear,
 
     #[clap(about = "Send text animation.")]
-    Set(DivoomCliTextAnimationOpts),
+    Set(DivoomDeviceTextAnimationCommandArgs),
 }
 
 #[derive(Args, Debug)]
-pub struct DivoomCliTextAnimationOpts {
+pub struct DivoomDeviceTextAnimationCommandArgs {
     #[clap(help = "Text id to create/update. Must be <= 20.")]
     pub text_id: i32,
 
@@ -418,8 +357,8 @@ pub struct DivoomCliTextAnimationOpts {
     pub align: DivoomTextAnimationAlign,
 }
 
-impl From<DivoomCliTextAnimationOpts> for DivoomTextAnimation {
-    fn from(opts: DivoomCliTextAnimationOpts) -> Self {
+impl From<DivoomDeviceTextAnimationCommandArgs> for DivoomTextAnimation {
+    fn from(opts: DivoomDeviceTextAnimationCommandArgs) -> Self {
         DivoomTextAnimation {
             text_id: opts.text_id,
             x: opts.x,
@@ -436,7 +375,7 @@ impl From<DivoomCliTextAnimationOpts> for DivoomTextAnimation {
 }
 
 #[derive(Subcommand, Debug)]
-pub enum DivoomCliBatchCommand {
+pub enum DivoomDeviceBatchCommand {
     #[clap(about = "Run commands from a URL")]
     RunUrl {
         #[clap(help = "URL to the command list file")]

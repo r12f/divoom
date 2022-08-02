@@ -1,0 +1,51 @@
+{
+  "Command": "Draw/CommandList",
+  "CommandList": [
+    {
+      "Command": "Device/PlayTFGif",
+      "FileName": "d:1.gif",
+      "FileType": 0
+    },
+    {
+      "Command": "Device/PlayTFGif",
+      "FileName": "d:1",
+      "FileType": 1
+    },
+    {
+      "Command": "Device/PlayTFGif",
+      "FileName": "http://example.com/1.gif",
+      "FileType": 2
+    },
+    {
+      "Command": "Draw/ResetHttpGifId"
+    },
+    {
+      "Command": "Draw/ClearHttpText"
+    },
+    {
+      "Command": "Draw/SendHttpText",
+      "TextId": 0,
+      "TextString": "test string",
+      "TextWidth": 32,
+      "align": 2,
+      "color": "#649696",
+      "dir": 0,
+      "font": 1,
+      "speed": 100,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "ActiveTimeInCycle": 50,
+      "Command": "Device/PlayBuzzer",
+      "OffTimeInCycle": 100,
+      "PlayTotalTime": 1000
+    },
+    {
+      "ActiveTimeInCycle": 100,
+      "Command": "Device/PlayBuzzer",
+      "OffTimeInCycle": 200,
+      "PlayTotalTime": 500
+    }
+  ]
+}

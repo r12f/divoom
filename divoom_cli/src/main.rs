@@ -9,7 +9,7 @@ use tiny_skia::BlendMode;
 
 #[tokio::main]
 async fn main() -> DivoomAPIResult<()> {
-    env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("debug")).init();
+    env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("warn")).init();
 
     let opts = DivoomCliOptions::parse();
     match opts.command {
