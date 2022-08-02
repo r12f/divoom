@@ -110,7 +110,7 @@ pack-snap:
     if (Test-Path "{{RELEASE_SNAP_FOLDER}}") { Remove-Item -Path "{{RELEASE_SNAP_FOLDER}}" -Recurse -Force }
     New-Item -ItemType Directory -Path "{{RELEASE_SNAP_FOLDER}}" -Force | Out-Null
 
-    Get-ChildItem ./{{BUILD_FOLDER_PREFIX}}*/*/snap-source/* -Attributes Directory | Copy-Item -Destination "{{RELEASE_SNAP_FOLDER}}" -PassThru
+    Get-ChildItem ./{{BUILD_FOLDER_PREFIX}}*/*/snap-source/* -Attributes Directory | Copy-Item -Destination "{{RELEASE_SNAP_FOLDER}}" -Recurse -PassThru
 
 #
 # Prepare packages for crate.io release
