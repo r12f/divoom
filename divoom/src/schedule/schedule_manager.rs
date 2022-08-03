@@ -1,11 +1,11 @@
+use crate::dsl::{DivoomDslOperation, DivoomDslParser, DivoomDslRunner};
+use crate::schedule::schedule_config::*;
+use crate::{DivoomAPIResult, PixooClient};
+use log::error;
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
-use log::error;
-use crate::{DivoomAPIResult, PixooClient};
-use crate::dsl::{DivoomDslOperation, DivoomDslParser, DivoomDslRunner};
-use crate::schedule::schedule_config::*;
-use tokio_cron_scheduler::{JobScheduler, Job};
+use tokio_cron_scheduler::{Job, JobScheduler};
 
 pub struct DivoomScheduledJob {
     cron: String,
@@ -19,15 +19,29 @@ pub struct DivoomScheduleManager {
 }
 
 impl DivoomScheduleManager {
-    pub fn from_config(device_address: String, schedules: Vec<DivoomScheduleConfigCronJob>) -> DivoomAPIResult<Self> {
+    pub fn from_config(
+        device_address: String,
+        schedules: Vec<DivoomScheduleConfigCronJob>,
+    ) -> DivoomAPIResult<Self> {
         let mut jobs: Vec<Arc<DivoomScheduledJob>> = Vec::new();
 
         for schedule in schedules {
-            let parsed_operations: DivoomAPIResult<Vec<DivoomDslOperation>> = schedule.operations.iter().map(|x| DivoomDslParser::parse(x)).collect();
-            jobs.push(Arc::new(DivoomScheduledJob { cron: schedule.cron, operations: parsed_operations? }));
+            let parsed_operations: DivoomAPIResult<Vec<DivoomDslOperation>> = schedule
+                .operations
+                .iter()
+                .map(|x| DivoomDslParser::parse(x))
+                .collect();
+            jobs.push(Arc::new(DivoomScheduledJob {
+                cron: schedule.cron,
+                operations: parsed_operations?,
+            }));
         }
 
-        Ok(DivoomScheduleManager { device_address, jobs, job_scheduler: JobScheduler::new().unwrap() })
+        Ok(DivoomScheduleManager {
+            device_address,
+            jobs,
+            job_scheduler: JobScheduler::new().unwrap(),
+        })
     }
 
     pub fn start(&mut self) {
@@ -37,15 +51,18 @@ impl DivoomScheduleManager {
             let device_address_for_closure = self.device_address.clone();
             let job_for_closure = job.clone();
 
-            let job_closure = move |_, _| -> Pin<Box<dyn Future<Output=()> + Send>> {
+            let job_closure = move |_, _| -> Pin<Box<dyn Future<Output = ()> + Send>> {
                 let device_address_for_async = device_address_for_closure.clone();
                 let job_for_async = job_for_closure.clone();
                 Box::pin(async move {
                     let pixoo = match PixooClient::new(&device_address_for_async) {
                         Err(e) => {
-                            error!("Failing to create device client: DeviceAddress = {}, Error = {:?}", &device_address_for_async, e);
-                            return
-                        },
+                            error!(
+                                "Failing to create device client: DeviceAddress = {}, Error = {:?}",
+                                &device_address_for_async, e
+                            );
+                            return;
+                        }
                         Ok(v) => v,
                     };
 
@@ -61,7 +78,9 @@ impl DivoomScheduleManager {
                 })
             };
 
-            self.job_scheduler.add(Job::new_async(cron.as_ref(), job_closure).unwrap()).unwrap();
+            self.job_scheduler
+                .add(Job::new_async(cron.as_ref(), job_closure).unwrap())
+                .unwrap();
         }
 
         self.job_scheduler.start().unwrap();

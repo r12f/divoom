@@ -10,8 +10,8 @@ mod schedule;
 pub(crate) mod divoom_contracts;
 
 pub use clients::*;
-pub use dto::*;
 pub use dsl::*;
+pub use dto::*;
 pub use schedule::*;
 
 #[cfg(feature = "animation-builder")]
