@@ -245,7 +245,8 @@ mod tests {
     ) {
         for expected_resource_name_suffix in expected_resource_name_suffixes {
             let resource = loader.next().unwrap();
-            assert!(resource.name.ends_with(expected_resource_name_suffix));
+            let normalized_resource_name = resource.name.replace('\\', "/");
+            assert!(normalized_resource_name.ends_with(expected_resource_name_suffix));
             assert!(!resource.data.is_empty());
         }
     }
