@@ -377,12 +377,12 @@ impl DivoomDslRunner<'_> {
 
             #[cfg(feature = "animation-builder")]
             DivoomDeviceImageAnimationCommand::RenderGif {
-                file_path: _,
                 size: canvas_size,
                 speed_in_ms,
                 fit,
                 rotation,
                 opacity,
+                ..
             } => {
                 let animation_builder =
                     DivoomAnimationBuilder::new(*canvas_size, Duration::from_millis(*speed_in_ms))?;
@@ -391,6 +391,41 @@ impl DivoomDslRunner<'_> {
                 let animation = animation_builder
                     .draw_frames_fit(&gif, 0, *fit, *rotation, *opacity, BlendMode::default())
                     .build();
+
+                let animation_id = self.device_client.get_next_animation_id().await?;
+                self.command_builder = Some(
+                    self.command_builder
+                        .take()
+                        .unwrap()
+                        .send_image_animation(animation_id, animation),
+                );
+            }
+
+            #[cfg(feature = "animation-builder")]
+            DivoomDeviceImageAnimationCommand::RenderFiles {
+                size: canvas_size,
+                speed_in_ms,
+                fit,
+                rotation,
+                opacity,
+                ..
+            } => {
+                let animation: DivoomImageAnimation;
+
+                let mut animation_builder =
+                    DivoomAnimationBuilder::new(*canvas_size, Duration::from_millis(*speed_in_ms))?;
+
+                let file_resource = operation.resource_loader.lock().unwrap().as_mut().next()?;
+                if file_resource.name.ends_with(".gif") {
+                    let gif = DivoomAnimationResourceLoader::from_gif_buf(&file_resource.data)?;
+                    animation = animation_builder
+                        .draw_frames_fit(&gif, 0, *fit, *rotation, *opacity, BlendMode::default())
+                        .build();
+                } else {
+                    let image = DivoomAnimationResourceLoader::from_image_buf(&file_resource.data)?;
+                    animation_builder.build_frame(0).draw_frame_fit(&image, *fit, *rotation, *opacity, BlendMode::default());
+                    animation = animation_builder.build();
+                }
 
                 let animation_id = self.device_client.get_next_animation_id().await?;
                 self.command_builder = Some(

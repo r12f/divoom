@@ -245,7 +245,7 @@ pub enum DivoomDeviceImageAnimationCommand {
 
     #[cfg(feature = "animation-builder")]
     #[clap(
-        about = "Send gif as animation. This is different from \"gif play\" command, which is provided directly by Divoom device. This command will create a regular animation and load the gif file and draw the frames into it in order to play it."
+        about = "Render gif as animation. This is different from \"gif play\" command, which is provided directly by Divoom device. This command will create a regular animation and render the specified file, then send to the device to play."
     )]
     RenderGif {
         #[clap(help = "Gif file path")]
@@ -288,6 +288,68 @@ pub enum DivoomDeviceImageAnimationCommand {
             help = "Animation opacity"
         )]
         opacity: f32,
+    },
+
+    #[cfg(feature = "animation-builder")]
+    #[clap(
+        about = "Render file as animation. This is different from \"gif play\" command, which is provided directly by Divoom device. This command will create a regular animation and render the specified files one at a time, then send to the device to play."
+    )]
+    RenderFiles{
+        #[clap(help = "File glob")]
+        file_pattern: String,
+
+        #[clap(
+            default_value = "64",
+            help = "Animation size in pixels. Only 16 and 32 and 64 are allowed."
+        )]
+        size: u32,
+
+        #[clap(
+            short,
+            long = "speed",
+            default_value = "100",
+            help = "Animation play speed in milliseconds"
+        )]
+        speed_in_ms: u64,
+
+        #[clap(
+            short,
+            long = "fit",
+            default_value = "center",
+            help = "Animation fit mode. Can be center, stretch, fitX and fitY"
+        )]
+        fit: DivoomDrawFitMode,
+
+        #[clap(
+            short,
+            long = "rotate",
+            default_value = "0.0",
+            help = "Animation rotate angle"
+        )]
+        rotation: f32,
+
+        #[clap(
+            short,
+            long = "opacity",
+            default_value = "1.0",
+            help = "Animation opacity"
+        )]
+        opacity: f32,
+
+        #[clap(
+            long = "random",
+            help = "Render in random order"
+        )]
+        random: bool,
+
+        #[clap(
+            short,
+            long = "prefetch",
+            value_parser,
+            default_value_t = 10,
+            help = "Number of gifs to prefetch to memory."
+        )]
+        prefetch_count: usize,
     },
 }
 
