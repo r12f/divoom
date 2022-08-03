@@ -37,6 +37,18 @@
     {
       "Command": "Tools/SetStopWatch",
       "Status": 2
+    },
+    {
+      "ActiveTimeInCycle": 50,
+      "Command": "Device/PlayBuzzer",
+      "OffTimeInCycle": 100,
+      "PlayTotalTime": 1000
+    },
+    {
+      "ActiveTimeInCycle": 100,
+      "Command": "Device/PlayBuzzer",
+      "OffTimeInCycle": 200,
+      "PlayTotalTime": 500
     }
   ]
 }

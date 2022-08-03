@@ -285,6 +285,18 @@ impl DivoomDslRunner<'_> {
                         .set_stopwatch_tool(*action),
                 )
             }
+
+            DivoomDeviceToolCommand::Buzzer {
+                play_total_time,
+                active_time_in_cycle,
+                off_time_in_cycle,
+            } => {
+                self.command_builder = Some(self.command_builder.take().unwrap().play_buzzer(
+                    *play_total_time,
+                    *active_time_in_cycle,
+                    *off_time_in_cycle,
+                ));
+            }
         }
 
         Ok(())
@@ -307,19 +319,6 @@ impl DivoomDslRunner<'_> {
 
             DivoomDeviceAnimationCommand::Text(text_animation_command) => {
                 self.batch_text_animation_commands(operation, text_animation_command)
-            }
-
-            DivoomDeviceAnimationCommand::Buzzer {
-                play_total_time,
-                active_time_in_cycle,
-                off_time_in_cycle,
-            } => {
-                self.command_builder = Some(self.command_builder.take().unwrap().play_buzzer(
-                    *play_total_time,
-                    *active_time_in_cycle,
-                    *off_time_in_cycle,
-                ));
-                Ok(())
             }
         }
     }
@@ -522,6 +521,8 @@ mod tests {
             DivoomDslParser::parse("tool stopwatch start").unwrap(),
             DivoomDslParser::parse("tool stopwatch stop").unwrap(),
             DivoomDslParser::parse("tool stopwatch reset").unwrap(),
+            DivoomDslParser::parse("tool buzzer").unwrap(),
+            DivoomDslParser::parse("tool buzzer 500 -a 100 -o 200").unwrap(),
         ];
         dsl_runner.batch_operations(&operations).await.unwrap();
 
@@ -534,14 +535,12 @@ mod tests {
 
         let mut dsl_runner = DivoomDslRunner::new(&client);
         let operations = vec![
-        DivoomDslParser::parse("animation gif play --file d:\\1.gif").unwrap(),
-        DivoomDslParser::parse("animation gif play --folder d:\\1").unwrap(),
-        DivoomDslParser::parse("animation gif play --url http://example.com/1.gif").unwrap(),
-        DivoomDslParser::parse("animation image reset-id").unwrap(),
-        DivoomDslParser::parse("animation text clear").unwrap(),
-        DivoomDslParser::parse("animation text set 0 -x 0 -y 0 -d left -f 1 -w 32 \"test string\" -r 100 -g 150 -b 150 -a middle").unwrap(),
-        DivoomDslParser::parse("animation buzzer").unwrap(),
-        DivoomDslParser::parse("animation buzzer 500 -a 100 -o 200").unwrap(),
+            DivoomDslParser::parse("animation gif play --file d:\\1.gif").unwrap(),
+            DivoomDslParser::parse("animation gif play --folder d:\\1").unwrap(),
+            DivoomDslParser::parse("animation gif play --url http://example.com/1.gif").unwrap(),
+            DivoomDslParser::parse("animation image reset-id").unwrap(),
+            DivoomDslParser::parse("animation text clear").unwrap(),
+            DivoomDslParser::parse("animation text set 0 -x 0 -y 0 -d left -f 1 -w 32 \"test string\" -r 100 -g 150 -b 150 -a middle").unwrap(),
         ];
         dsl_runner.batch_operations(&operations).await.unwrap();
 
