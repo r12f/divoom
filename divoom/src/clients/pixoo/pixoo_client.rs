@@ -82,7 +82,7 @@ impl PixooClient {
         device_address: &str,
         timeout: Option<Duration>,
     ) -> DivoomAPIResult<PixooClient> {
-        if device_address.len() == 0 {
+        if device_address.is_empty() {
             return Err(DivoomAPIError::ParameterError(
                 "Device address cannot be empty!".into(),
             ));

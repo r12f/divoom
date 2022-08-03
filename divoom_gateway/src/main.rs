@@ -120,7 +120,7 @@ fn load_gateway_config_from_file(
             let config_file = File::open(path)?;
             let mut config: DivoomGatewayConfig = serde_yaml::from_reader(config_file)
                 .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))?;
-            if config.server_address.len() == 0 {
+            if config.server_address.is_empty() {
                 config.server_address = "127.0.0.1".to_string();
             }
             if config.server_port == 0 {
