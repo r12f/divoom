@@ -1,7 +1,7 @@
 use crate::dsl::{DivoomDslOperationResource, DivoomDslOperationResourceLoader};
 use crate::{DivoomAPIError, DivoomAPIResult};
 use log::{debug, warn};
-use rand;
+
 use rand::Rng;
 use std::cmp::min;
 use std::fs;
