@@ -246,7 +246,7 @@ async fn handle_image_animation_api(
 
         DivoomCliImageAnimationCommand::ResetId => pixoo.reset_next_animation_id().await,
 
-        DivoomCliImageAnimationCommand::SendGif {
+        DivoomCliImageAnimationCommand::RenderGif {
             file_path,
             size,
             speed_in_ms,
@@ -255,7 +255,7 @@ async fn handle_image_animation_api(
             opacity,
         } => {
             pixoo
-                .send_gif_as_animation_with_options(
+                .render_gif_as_animation_with_options(
                     size,
                     Duration::from_millis(speed_in_ms),
                     &file_path,

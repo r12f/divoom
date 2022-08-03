@@ -327,10 +327,10 @@ impl PixooClient {
     /// This API is different from `play_gif_file`, which is provided by divoom device directly. This API will try to leverage the animation API,
     /// create a new animation, load the gif files and draw all the frames into the animation, and send the to device to play.
     ///
-    /// The API `play_gif_file` doesn't seems to be very stable when the package is published, hence `send_gif_as_animation` is more preferred
+    /// The API `play_gif_file` doesn't seems to be very stable when the package is published, hence `render_gif_as_animation` is more preferred
     /// as of now.
     #[cfg(feature = "animation-builder")]
-    pub async fn send_gif_as_animation(
+    pub async fn render_gif_as_animation(
         &self,
         canvas_size: u32,
         speed: Duration,
@@ -356,10 +356,10 @@ impl PixooClient {
     /// This API is different from `play_gif_file`, which is provided by divoom device directly. This API will try to leverage the animation API,
     /// create a new animation, load the gif files and draw all the frames into the animation, and send the to device to play.
     ///
-    /// The API `play_gif_file` doesn't seems to be very stable when the package is published, hence `send_gif_as_animation` is more preferred
+    /// The API `play_gif_file` doesn't seems to be very stable when the package is published, hence `render_gif_as_animation` is more preferred
     /// as of now.
     #[cfg(feature = "animation-builder")]
-    pub async fn send_gif_as_animation_with_options(
+    pub async fn render_gif_as_animation_with_options(
         &self,
         canvas_size: u32,
         speed: Duration,

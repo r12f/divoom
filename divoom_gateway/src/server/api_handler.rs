@@ -411,13 +411,13 @@ impl ApiHandler {
     }
 
     #[oai(
-        path = "/animation/send-gif",
+        path = "/animation/render-gif",
         method = "post",
         tag = "ApiTags::Animation"
     )]
-    async fn send_gif_as_animation(
+    async fn render_gif_as_animation(
         &self,
-        request: DivoomGatewaySendGifAsAnimationRequest,
+        request: DivoomGatewayRenderGifAsAnimationRequest,
     ) -> DivoomGatewayResponse<String> {
         let gif_data = match request.file.into_vec().await {
             Err(_) => return DivoomAPIError::ParameterError("file".to_string()).into(),

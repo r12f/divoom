@@ -154,7 +154,7 @@ Or even simpler:
 ```rust
 use divoom::*;
 let pixoo = PixooClient::new("192.168.0.123");
-pixoo.send_gif_as_animation(16, Duration::from_millis(100), "test_data/animation_builder_tests/logo-16-rotate-4-frames.gif").await
+pixoo.render_gif_as_animation(16, Duration::from_millis(100), "test_data/animation_builder_tests/logo-16-rotate-4-frames.gif").await
 ```
 
 Besides gif, we also support png and jpeg format. And besides reading from file, we also support loading resource from any `Read` trait. For more on how to use it, feel free to check our doc here: <https://docs.rs/divoom/latest/divoom/struct.DivoomAnimationBuilder.html>.
