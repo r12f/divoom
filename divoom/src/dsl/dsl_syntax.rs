@@ -177,18 +177,6 @@ pub enum DivoomDeviceToolCommand {
         #[clap(help = "Action, can be start, stop, reset")]
         action: DivoomToolStopwatchAction,
     },
-}
-
-#[derive(Subcommand, Debug)]
-pub enum DivoomDeviceAnimationCommand {
-    #[clap(subcommand, about = "Play GIF from Internet")]
-    Gif(DivoomDeviceGifAnimationCommand),
-
-    #[clap(subcommand, about = "Create image animation")]
-    Image(DivoomDeviceImageAnimationCommand),
-
-    #[clap(subcommand, about = "Create text animation")]
-    Text(DivoomDeviceTextAnimationCommand),
 
     #[clap(about = "Play buzzer")]
     Buzzer {
@@ -209,6 +197,18 @@ pub enum DivoomDeviceAnimationCommand {
         )]
         off_time_in_cycle: i32,
     },
+}
+
+#[derive(Subcommand, Debug)]
+pub enum DivoomDeviceAnimationCommand {
+    #[clap(subcommand, about = "Play GIF from Internet")]
+    Gif(DivoomDeviceGifAnimationCommand),
+
+    #[clap(subcommand, about = "Create image animation")]
+    Image(DivoomDeviceImageAnimationCommand),
+
+    #[clap(subcommand, about = "Create text animation")]
+    Text(DivoomDeviceTextAnimationCommand),
 }
 
 #[derive(Subcommand, Debug)]
