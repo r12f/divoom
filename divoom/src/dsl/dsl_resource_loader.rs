@@ -210,9 +210,10 @@ mod tests {
         let mut loader = DivoomDslOperationFileResourceLoader::new(
             "test_data/dsl_runner_tests/system_commands.json",
         );
+
         run_dsl_resource_loader_test(
             &mut loader,
-            "test_data/dsl_runner_tests/system_commands.json",
+            &vec!["test_data/dsl_runner_tests/system_commands.json".to_string()],
         );
     }
 
@@ -223,36 +224,29 @@ mod tests {
             false,
             5,
         );
+
         run_dsl_resource_loader_test(
             &mut loader,
-            "test_data/dsl_runner_tests/animation_commands.json",
-        );
-        run_dsl_resource_loader_test(
-            &mut loader,
-            "test_data/dsl_runner_tests/batch_commands.json",
-        );
-        run_dsl_resource_loader_test(
-            &mut loader,
-            "test_data/dsl_runner_tests/channel_commands.json",
-        );
-        run_dsl_resource_loader_test(&mut loader, "test_data/dsl_runner_tests/raw_commands.json");
-        run_dsl_resource_loader_test(
-            &mut loader,
-            "test_data/dsl_runner_tests/system_commands.json",
-        );
-        run_dsl_resource_loader_test(&mut loader, "test_data/dsl_runner_tests/tool_commands.json");
-        run_dsl_resource_loader_test(
-            &mut loader,
-            "test_data/dsl_runner_tests/animation_commands.json",
+            &vec![
+                "test_data/dsl_runner_tests/animation_commands.json".to_string(),
+                "test_data/dsl_runner_tests/batch_commands.json".to_string(),
+                "test_data/dsl_runner_tests/channel_commands.json".to_string(),
+                "test_data/dsl_runner_tests/raw_commands.json".to_string(),
+                "test_data/dsl_runner_tests/system_commands.json".to_string(),
+                "test_data/dsl_runner_tests/tool_commands.json".to_string(),
+                "test_data/dsl_runner_tests/animation_commands.json".to_string(),
+            ],
         );
     }
 
     fn run_dsl_resource_loader_test(
         loader: &mut Box<dyn DivoomDslOperationResourceLoader + Send>,
-        expected_resource_name_suffix: &str,
+        expected_resource_name_suffixes: &Vec<String>,
     ) {
-        let resource = loader.next().unwrap();
-        assert!(resource.name.ends_with(expected_resource_name_suffix));
-        assert!(!resource.data.is_empty());
+        for expected_resource_name_suffix in expected_resource_name_suffixes {
+            let resource = loader.next().unwrap();
+            assert!(resource.name.ends_with(expected_resource_name_suffix));
+            assert!(!resource.data.is_empty());
+        }
     }
 }
