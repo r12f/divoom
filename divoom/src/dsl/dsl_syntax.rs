@@ -294,7 +294,7 @@ pub enum DivoomDeviceImageAnimationCommand {
     #[clap(
         about = "Render file as animation. This is different from \"gif play\" command, which is provided directly by Divoom device. This command will create a regular animation and render the specified files one at a time, then send to the device to play."
     )]
-    RenderFiles{
+    RenderFiles {
         #[clap(help = "File glob")]
         file_pattern: String,
 
@@ -336,10 +336,7 @@ pub enum DivoomDeviceImageAnimationCommand {
         )]
         opacity: f32,
 
-        #[clap(
-            long = "random",
-            help = "Render in random order"
-        )]
+        #[clap(long = "random", help = "Render in random order")]
         random: bool,
 
         #[clap(

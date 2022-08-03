@@ -423,7 +423,13 @@ impl DivoomDslRunner<'_> {
                         .build();
                 } else {
                     let image = DivoomAnimationResourceLoader::from_image_buf(&file_resource.data)?;
-                    animation_builder.build_frame(0).draw_frame_fit(&image, *fit, *rotation, *opacity, BlendMode::default());
+                    animation_builder.build_frame(0).draw_frame_fit(
+                        &image,
+                        *fit,
+                        *rotation,
+                        *opacity,
+                        BlendMode::default(),
+                    );
                     animation = animation_builder.build();
                 }
 

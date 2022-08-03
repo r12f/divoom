@@ -1,13 +1,13 @@
-use std::cmp::min;
 use crate::dsl::{DivoomDslOperationResource, DivoomDslOperationResourceLoader};
 use crate::{DivoomAPIError, DivoomAPIResult};
+use log::{debug, warn};
+use rand;
+use rand::Rng;
+use std::cmp::min;
 use std::fs;
 use std::mem::swap;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
-use log::{debug, warn};
-use rand;
-use rand::Rng;
 
 /// No op resource loader.
 /// - It doesn't load anything and always return failure when being called.
@@ -22,7 +22,10 @@ impl DivoomDslOperationNoOpResourceLoader {
 impl DivoomDslOperationResourceLoader for DivoomDslOperationNoOpResourceLoader {
     fn next(&mut self) -> DivoomAPIResult<Arc<DivoomDslOperationResource>> {
         Err(DivoomAPIError::ResourceLoadError {
-            source: std::io::Error::new(std::io::ErrorKind::Unsupported, "This operation doesn't support loading any resources."),
+            source: std::io::Error::new(
+                std::io::ErrorKind::Unsupported,
+                "This operation doesn't support loading any resources.",
+            ),
         })
     }
 }
@@ -73,9 +76,13 @@ pub(crate) struct DivoomDslOperationGlobResourceLoader {
 }
 
 impl DivoomDslOperationGlobResourceLoader {
-    pub fn new(file_pattern: String, random: bool, prefetch_count: usize) -> Box<dyn DivoomDslOperationResourceLoader + Send> {
+    pub fn new(
+        file_pattern: &str,
+        random: bool,
+        prefetch_count: usize,
+    ) -> Box<dyn DivoomDslOperationResourceLoader + Send> {
         Box::new(DivoomDslOperationGlobResourceLoader {
-            file_pattern,
+            file_pattern: file_pattern.to_string(),
             random,
             prefetch_count,
             file_path_candidates: Mutex::new(Vec::new()),
@@ -89,7 +96,10 @@ impl DivoomDslOperationGlobResourceLoader {
         fetch_count: usize,
         file_path_candidates: &mut Vec<PathBuf>,
     ) -> DivoomAPIResult<Vec<Arc<DivoomDslOperationResource>>> {
-        debug!("Loading new batch of file paths: Pattern = {}, Random = {}, FetchCount = {}", file_pattern, random, fetch_count);
+        debug!(
+            "Loading new batch of file paths: Pattern = {}, Random = {}, FetchCount = {}",
+            file_pattern, random, fetch_count
+        );
 
         // If we don't have any more candidates, we scan the files and load the latest status again.
         if file_path_candidates.is_empty() {
@@ -106,7 +116,11 @@ impl DivoomDslOperationGlobResourceLoader {
                 }
             }
 
-            debug!("{} files found with file pattern: {}", file_path_candidates.len(), file_pattern);
+            debug!(
+                "{} files found with file pattern: {}",
+                file_path_candidates.len(),
+                file_pattern
+            );
         }
 
         // If we still cannot find any new candidate, it means, we don't have a match, hence return here.
@@ -138,14 +152,14 @@ impl DivoomDslOperationGlobResourceLoader {
             let file_content = match fs::read(&file_path) {
                 Err(e) => {
                     warn!("Failed to load file, skip failed and continue loading more: Path = {:?}, Error = {:?}", file_path, e);
-                    continue
-                },
+                    continue;
+                }
                 Ok(v) => v,
             };
 
             let file_resource = Arc::new(DivoomDslOperationResource::new(
                 file_path.to_str().unwrap(),
-                file_content
+                file_content,
             ));
 
             file_resources.push(file_resource);
@@ -163,17 +177,82 @@ impl DivoomDslOperationResourceLoader for DivoomDslOperationGlobResourceLoader {
         let mut guarded_file_resources = self.file_resources.lock().unwrap();
         if guarded_file_resources.is_empty() {
             let mut guarded_file_path_candidates = self.file_path_candidates.lock().unwrap();
-            *guarded_file_resources = DivoomDslOperationGlobResourceLoader::load_next_file_content_batch(&self.file_pattern, self.random, self.prefetch_count, &mut guarded_file_path_candidates)?;
+            *guarded_file_resources =
+                DivoomDslOperationGlobResourceLoader::load_next_file_content_batch(
+                    &self.file_pattern,
+                    self.random,
+                    self.prefetch_count,
+                    &mut guarded_file_path_candidates,
+                )?;
         }
 
         if guarded_file_resources.is_empty() {
             return Err(DivoomAPIError::ResourceLoadError {
-                source: std::io::Error::new(std::io::ErrorKind::NotFound, "Unable to load any resources, no files are found."),
+                source: std::io::Error::new(
+                    std::io::ErrorKind::NotFound,
+                    "Unable to load any resources, no files are found.",
+                ),
             });
         }
 
         let last_file_index = guarded_file_resources.len() - 1;
         let resource = guarded_file_resources.remove(last_file_index);
         Ok(resource)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn dsl_resource_loader_can_load_single_file() {
+        let mut loader = DivoomDslOperationFileResourceLoader::new(
+            "test_data/dsl_runner_tests/system_commands.json",
+        );
+        run_dsl_resource_loader_test(
+            &mut loader,
+            "test_data/dsl_runner_tests/system_commands.json",
+        );
+    }
+
+    #[test]
+    fn dsl_resource_loader_can_load_file_with_pattern() {
+        let mut loader = DivoomDslOperationGlobResourceLoader::new(
+            "test_data/dsl_runner_tests/*.json",
+            false,
+            5,
+        );
+        run_dsl_resource_loader_test(
+            &mut loader,
+            "test_data/dsl_runner_tests/animation_commands.json",
+        );
+        run_dsl_resource_loader_test(
+            &mut loader,
+            "test_data/dsl_runner_tests/batch_commands.json",
+        );
+        run_dsl_resource_loader_test(
+            &mut loader,
+            "test_data/dsl_runner_tests/channel_commands.json",
+        );
+        run_dsl_resource_loader_test(&mut loader, "test_data/dsl_runner_tests/raw_commands.json");
+        run_dsl_resource_loader_test(
+            &mut loader,
+            "test_data/dsl_runner_tests/system_commands.json",
+        );
+        run_dsl_resource_loader_test(&mut loader, "test_data/dsl_runner_tests/tool_commands.json");
+        run_dsl_resource_loader_test(
+            &mut loader,
+            "test_data/dsl_runner_tests/animation_commands.json",
+        );
+    }
+
+    fn run_dsl_resource_loader_test(
+        loader: &mut Box<dyn DivoomDslOperationResourceLoader + Send>,
+        expected_resource_name_suffix: &str,
+    ) {
+        let resource = loader.next().unwrap();
+        assert!(resource.name.ends_with(expected_resource_name_suffix));
+        assert!(!resource.data.is_empty());
     }
 }

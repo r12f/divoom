@@ -30,9 +30,18 @@ impl DivoomDslParser {
                     animation_image_command
                 {
                     resource_loader = DivoomDslOperationFileResourceLoader::new(file_path);
-                }
-                else if let DivoomDeviceImageAnimationCommand::RenderFiles { file_pattern, random, prefetch_count , .. } = animation_image_command {
-                    resource_loader = DivoomDslOperationGlobResourceLoader::new(file_pattern.to_string(), *random, *prefetch_count);
+                } else if let DivoomDeviceImageAnimationCommand::RenderFiles {
+                    file_pattern,
+                    random,
+                    prefetch_count,
+                    ..
+                } = animation_image_command
+                {
+                    resource_loader = DivoomDslOperationGlobResourceLoader::new(
+                        file_pattern,
+                        *random,
+                        *prefetch_count,
+                    );
                 }
             }
         }
