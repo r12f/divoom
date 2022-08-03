@@ -26,7 +26,7 @@ impl DivoomDslParser {
         if let DivoomDeviceCommand::Animation(animation_command) = &command {
             if let DivoomDeviceAnimationCommand::Image(animation_image_command) = animation_command
             {
-                if let DivoomDeviceImageAnimationCommand::SendGif { file_path, .. } =
+                if let DivoomDeviceImageAnimationCommand::RenderGif { file_path, .. } =
                     animation_image_command
                 {
                     resource_loader = DivoomDslOperationFileResourceLoader::new(file_path);

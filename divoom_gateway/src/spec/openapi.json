@@ -1706,7 +1706,7 @@
         }
       }
     },
-    "/animation/send-gif": {
+    "/animation/render-gif": {
       "post": {
         "tags": [
           "Animation"

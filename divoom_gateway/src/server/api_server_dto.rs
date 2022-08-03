@@ -320,7 +320,7 @@ impl DivoomGatewaySendTextAnimationRequest {
 }
 
 #[derive(Debug, Multipart)]
-pub struct DivoomGatewaySendGifAsAnimationRequest {
+pub struct DivoomGatewayRenderGifAsAnimationRequest {
     pub canvas_size: u32,
     pub speed_in_ms: u64,
     pub file: Upload,

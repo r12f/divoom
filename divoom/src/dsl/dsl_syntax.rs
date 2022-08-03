@@ -247,7 +247,7 @@ pub enum DivoomDeviceImageAnimationCommand {
     #[clap(
         about = "Send gif as animation. This is different from \"gif play\" command, which is provided directly by Divoom device. This command will create a regular animation and load the gif file and draw the frames into it in order to play it."
     )]
-    SendGif {
+    RenderGif {
         #[clap(help = "Gif file path")]
         file_path: String,
 

@@ -104,13 +104,13 @@ provided an API on `/api/animation/play-gif`.
 ![image](https://user-images.githubusercontent.com/1533278/182063159-5851d354-7305-41cd-9efe-e395b1cff91a.png)
 
 However, this API is very restricted on the image size and not very stable. It could end up with crashing your device. Hence, we added another API
-called `/api/animation/send-gif`, which allow us to upload a GIF file and generate an animation to play, which is much more stable.
+called `/api/animation/render-gif`, which allow us to upload a GIF file and generate an animation to play, which is much more stable.
 
 ![image](https://user-images.githubusercontent.com/1533278/182063297-ab7cebb6-1a87-42bb-a8bc-d4c63982c7fd.png)
 
 ### Play text animation
 
-Once we have used the `/api/animation/send-gif` command to play any animation, we can start use text animation APIs, otherwise these APIs will be
+Once we have used the `/api/animation/render-gif` command to play any animation, we can start use text animation APIs, otherwise these APIs will be
 no-op'ed by the device.
 
 ![image](https://user-images.githubusercontent.com/1533278/182063848-e3ac6409-f3f8-4228-932f-d661f782e16d.png)
