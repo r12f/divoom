@@ -377,7 +377,7 @@ impl DivoomDslRunner<'_> {
             }
 
             #[cfg(feature = "animation-builder")]
-            DivoomDeviceImageAnimationCommand::SendGif {
+            DivoomDeviceImageAnimationCommand::RenderGif {
                 file_path: _,
                 size: canvas_size,
                 speed_in_ms,
