@@ -76,6 +76,7 @@ impl DivoomDslRunner<'_> {
         self.command_builder.take().unwrap().execute().await
     }
 
+    #[allow(dead_code)]
     pub(crate) fn build(mut self) -> (usize, String) {
         let (_, command_count, payload) = self.command_builder.take().unwrap().build();
         (command_count, payload)

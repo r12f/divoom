@@ -1,14 +1,18 @@
 extern crate core;
 
-mod clients;
-
 #[macro_use]
 mod dto;
+
+mod clients;
+mod dsl;
+mod schedule;
 
 pub(crate) mod divoom_contracts;
 
 pub use clients::*;
 pub use dto::*;
+pub use dsl::*;
+pub use schedule::*;
 
 #[cfg(feature = "animation-builder")]
 mod animation;
@@ -16,7 +20,5 @@ mod animation;
 #[cfg(feature = "animation-builder")]
 pub use animation::*;
 
-mod dsl;
 #[cfg(test)]
 mod test_utils;
-mod schedule;

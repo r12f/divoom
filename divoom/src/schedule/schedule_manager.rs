@@ -19,10 +19,10 @@ pub struct DivoomScheduleManager {
 }
 
 impl DivoomScheduleManager {
-    pub fn from_config(device_address: String, config: DivoomScheduleConfig) -> DivoomAPIResult<Self> {
+    pub fn from_config(device_address: String, schedules: Vec<DivoomScheduleConfigCronJob>) -> DivoomAPIResult<Self> {
         let mut jobs: Vec<Arc<DivoomScheduledJob>> = Vec::new();
 
-        for schedule in config.schedules {
+        for schedule in schedules {
             let parsed_operations: DivoomAPIResult<Vec<DivoomDslOperation>> = schedule.operations.iter().map(|x| DivoomDslParser::parse(x)).collect();
             jobs.push(Arc::new(DivoomScheduledJob { cron: schedule.cron, operations: parsed_operations? }));
         }
@@ -37,7 +37,7 @@ impl DivoomScheduleManager {
             let device_address_for_closure = self.device_address.clone();
             let job_for_closure = job.clone();
 
-            let mut job_closure = move |_, _| -> Pin<Box<dyn Future<Output=()> + Send>> {
+            let job_closure = move |_, _| -> Pin<Box<dyn Future<Output=()> + Send>> {
                 let device_address_for_async = device_address_for_closure.clone();
                 let job_for_async = job_for_closure.clone();
                 Box::pin(async move {
