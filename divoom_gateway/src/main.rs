@@ -30,9 +30,16 @@ struct CliOptions {
 #[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct DivoomGatewayConfig {
+    #[serde(default)]
     pub device_address: String,
+
+    #[serde(default)]
     pub server_address: String,
+
+    #[serde(default)]
     pub server_port: u16,
+
+    #[serde(default)]
     pub schedules: Vec<DivoomScheduleConfigCronJob>,
 }
 
@@ -58,7 +65,7 @@ async fn main() -> Result<(), std::io::Error> {
     if schedule_count != 0 {
         schedule_manager =
             DivoomScheduleManager::from_config(config.device_address.clone(), config.schedules)
-                .map_err(|_| std::io::Error::from(std::io::ErrorKind::InvalidInput))?;
+                .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidInput, e))?;
 
         println!(
             "Found {} schedules in gateway config, starting divoom scheduler device {}.",
@@ -111,8 +118,15 @@ fn load_gateway_config_from_file(
         None => DivoomGatewayConfig::default(),
         Some(path) => {
             let config_file = File::open(path)?;
-            serde_yaml::from_reader(config_file)
-                .map_err(|_| std::io::Error::from(std::io::ErrorKind::InvalidData))?
+            let mut config: DivoomGatewayConfig = serde_yaml::from_reader(config_file)
+                .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))?;
+            if config.server_address.len() == 0 {
+                config.server_address = "127.0.0.1".to_string();
+            }
+            if config.server_port == 0 {
+                config.server_port = 20821;
+            }
+            config
         }
     };
 
