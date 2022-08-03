@@ -19,3 +19,4 @@ pub use animation::*;
 mod dsl;
 #[cfg(test)]
 mod test_utils;
+mod schedule;
