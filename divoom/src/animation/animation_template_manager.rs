@@ -115,7 +115,7 @@ mod tests {
 
     #[test]
     #[cfg(target_os = "windows")]
-    fn animation_template_manager_can_render_text_without_parameter() {
+    fn animation_template_manager_can_render_text() {
         // Text are rendered based on fonts and other anti-aliasing/truetype algorithms on each OS. Even we use the same font, the result can be different.
         // Hence we only run the text test on windows, but nowhere else.
         let mut manager = DivoomAnimationTemplateManager::new("test_data/animation_template_tests/input").unwrap();
