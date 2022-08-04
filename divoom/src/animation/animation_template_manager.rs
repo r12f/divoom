@@ -121,7 +121,8 @@ mod tests {
         let mut manager = DivoomAnimationTemplateManager::new("test_data/animation_template_tests/input").unwrap();
         manager.add_template_file(&"test_data/animation_template_tests/input/template_simple_text.yaml".into()).unwrap();
 
-        let animation = manager.render_template("template_simple_text", &HashMap::new()).unwrap();
+        let parameters = [("text".to_string(), "Simple text".to_string())].into_iter().collect();
+        let animation = manager.render_template("template_simple_text", &parameters).unwrap();
         test_utils::assert_animation_equal_with_baseline(&animation, "test_data/animation_template_tests/expected_generated_simple_text.png");
     }
 }
