@@ -79,17 +79,17 @@ async fn main() -> Result<(), std::io::Error> {
 
     let config = load_gateway_config()?;
 
+    let animation_template_manager: Arc<DivoomAnimationTemplateManager>;
+    if Path::new(&config.animation_template_dir).is_dir() {
+        animation_template_manager = Arc::new(DivoomAnimationTemplateManager::from_dir(&config.animation_template_dir)
+            .map_err(|e| std::io::Error::new(ErrorKind::NotFound, format!("Failed to load templates: Error = {:?}", e)))?);
+    } else {
+        animation_template_manager = Arc::new(DivoomAnimationTemplateManager::new(&config.animation_template_dir).unwrap());
+    }
+
     let schedule_count = config.schedules.len();
     let mut schedule_manager: DivoomScheduleManager;
     if schedule_count != 0 {
-        let animation_template_manager: Arc<DivoomAnimationTemplateManager>;
-        if Path::new(&config.animation_template_dir).is_dir() {
-            animation_template_manager = Arc::new(DivoomAnimationTemplateManager::from_dir(&config.animation_template_dir)
-                .map_err(|e| std::io::Error::new(ErrorKind::NotFound, format!("Failed to load templates: Error = {:?}", e)))?);
-        } else {
-            animation_template_manager = Arc::new(DivoomAnimationTemplateManager::new(&config.animation_template_dir).unwrap());
-        }
-
         schedule_manager =
             DivoomScheduleManager::from_config(config.device_address.clone(), config.schedules, animation_template_manager)
                 .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidInput, e))?;
@@ -158,7 +158,7 @@ fn load_gateway_config_from_file(
 
         Some(path) => {
             let config_file = File::open(path)?;
-            let mut config: DivoomGatewayConfig = serde_yaml::from_reader(config_file)
+            let config: DivoomGatewayConfig = serde_yaml::from_reader(config_file)
                 .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))?;
             config
         }

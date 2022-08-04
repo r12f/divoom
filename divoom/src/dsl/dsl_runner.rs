@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::sync::Arc;
 use crate::dsl::dsl_syntax::*;
 use crate::dto::*;
@@ -458,9 +459,20 @@ impl DivoomDslRunner<'_> {
                 );
             }
 
+            #[cfg(feature = "animation-builder")]
             DivoomDeviceImageAnimationCommand::RenderTemplate {
                 template_name, parameters
             } => {
+                let parsed_parameters: HashMap<String, String> = serde_json::from_str(parameters)?;
+                let animation = self.template_manager.render_template(template_name, &parsed_parameters)?;
+
+                let animation_id = self.device_client.get_next_animation_id().await?;
+                self.command_builder = Some(
+                    self.command_builder
+                        .take()
+                        .unwrap()
+                        .send_image_animation(animation_id, animation),
+                );
             }
         }
 
