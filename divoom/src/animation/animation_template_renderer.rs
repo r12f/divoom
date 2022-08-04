@@ -1,5 +1,6 @@
 use std::path::PathBuf;
 use tiny_skia::Pixmap;
+use crate::{DivoomAPIError, DivoomAPIResult};
 
 pub struct DivoomAnimationTemplateRenderer {
     render_opt: usvg::Options,
@@ -14,8 +15,12 @@ impl DivoomAnimationTemplateRenderer {
         DivoomAnimationTemplateRenderer { render_opt: opt }
     }
 
-    pub fn render(&self, svg_text: &str) -> Pixmap {
-        let rtree = usvg::Tree::from_str(svg_text, &self.render_opt.to_ref()).unwrap();
+    pub fn render(&self, svg_text: &str) -> DivoomAPIResult<Pixmap> {
+        let rtree = match usvg::Tree::from_str(svg_text, &self.render_opt.to_ref()) {
+            Err(e) => return Err(DivoomAPIError::ParameterError(format!("Parsing SVG failed! Error = {:?}", e))),
+            Ok(v) => v,
+        };
+
         let pixmap_size = rtree.svg_node().size.to_screen_size();
         let mut pixmap = tiny_skia::Pixmap::new(pixmap_size.width(), pixmap_size.height()).unwrap();
         resvg::render(
@@ -23,8 +28,8 @@ impl DivoomAnimationTemplateRenderer {
             usvg::FitTo::Original,
             tiny_skia::Transform::default(),
             pixmap.as_mut(),
-        )
-        .unwrap();
-        pixmap
+        ).unwrap();
+
+        Ok(pixmap)
     }
 }

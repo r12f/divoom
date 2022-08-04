@@ -59,6 +59,10 @@ impl DivoomAnimationBuilder {
 
         DivoomAnimationFrameBuilder::new(&mut self.frames[index])
     }
+
+    pub fn new_frame(&mut self) -> DivoomAnimationFrameBuilder {
+        self.build_frame(self.frames.len())
+    }
 }
 
 // Draw functions
