@@ -30,7 +30,7 @@ Besides the SDK, a few more tools are provided to help people enjoy the device a
   clock
   ```
 
-- A REST API with Swagger UI and OpenAPI spec json provided, so we can control the device, build cron-like schedule, render customized animation and play it on the device: <https://github.com/r12f/divoom/tree/main/divoom_gateway>.
+- A REST gateway `divoom-gateway` with Swagger UI and OpenAPI spec json provided, so we can control the device, build cron-like schedule, render customized animation and play it on the device: <https://github.com/r12f/divoom/tree/main/divoom_gateway>.
 
 ## How to use
 
