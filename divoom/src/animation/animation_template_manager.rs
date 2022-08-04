@@ -3,6 +3,7 @@ use crate::animation::animation_template::{
 };
 use crate::{DivoomAnimationBuilder, DivoomAPIError, DivoomAPIResult, DivoomDrawFitMode, DivoomImageAnimation};
 use std::collections::HashMap;
+use std::ffi::OsStr;
 use std::fs;
 use std::fs::File;
 use std::path::PathBuf;
@@ -41,11 +42,13 @@ impl DivoomAnimationTemplateManager {
             };
 
             let path = entry.path();
-            if !path.is_file() || !path.ends_with(".yaml") {
+            if !path.is_file() {
                 continue;
             }
 
-            self.add_template_file(&path)?;
+            if let Some("yaml") = path.extension().and_then(OsStr::to_str) {
+                self.add_template_file(&path)?;
+            }
         }
 
         Ok(())
