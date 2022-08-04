@@ -1,5 +1,6 @@
 use crate::{DivoomAPIError, DivoomAPIResult};
 use std::path::PathBuf;
+use log::debug;
 use tiny_skia::Pixmap;
 
 pub(crate) struct DivoomAnimationTemplateRenderer {
@@ -11,6 +12,9 @@ impl DivoomAnimationTemplateRenderer {
         let mut opt = usvg::Options::default();
         opt.resources_dir = Some(PathBuf::from(resource_dir));
         opt.fontdb.load_system_fonts();
+
+        debug!("Loading font completed! {} fonts are loaded.", opt.fontdb.len());
+        debug!("All loaded font families: {}", opt.fontdb.faces().iter().map(|f| f.family).collect());
 
         DivoomAnimationTemplateRenderer { render_opt: opt }
     }
