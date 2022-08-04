@@ -5,6 +5,9 @@ use clap::Parser;
 use divoom::*;
 use serde::{Deserialize, Serialize};
 use std::fs::File;
+use std::io::ErrorKind;
+use std::path::Path;
+use std::sync::Arc;
 
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
@@ -25,6 +28,14 @@ struct CliOptions {
         value_parser
     )]
     config_file_path: Option<String>,
+
+    #[clap(
+        short = 't',
+        long = "animation-template-dir",
+        help = "Animation template file paths.",
+        value_parser
+    )]
+    animation_template_dir: Option<String>,
 }
 
 #[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize)]
@@ -41,15 +52,23 @@ pub struct DivoomGatewayConfig {
 
     #[serde(default)]
     pub schedules: Vec<DivoomScheduleConfigCronJob>,
+
+    #[serde(default)]
+    pub animation_template_dir: String,
 }
 
-impl Default for DivoomGatewayConfig {
-    fn default() -> Self {
-        DivoomGatewayConfig {
-            device_address: "".to_string(),
-            server_address: "127.0.0.1".to_string(),
-            server_port: 20821,
-            schedules: Vec::new(),
+impl DivoomGatewayConfig {
+    pub fn fill_default(&mut self) {
+        if self.server_address.is_empty() {
+            self.server_address = "127.0.0.1".to_string();
+        }
+
+        if self.server_port == 0 {
+            self.server_port = 20821;
+        }
+
+        if self.animation_template_dir.is_empty() {
+            self.animation_template_dir = "./animation-templates".to_string();
         }
     }
 }
@@ -60,11 +79,19 @@ async fn main() -> Result<(), std::io::Error> {
 
     let config = load_gateway_config()?;
 
+    let animation_template_manager: Arc<DivoomAnimationTemplateManager>;
+    if Path::new(&config.animation_template_dir).is_dir() {
+        animation_template_manager = Arc::new(DivoomAnimationTemplateManager::from_dir(&config.animation_template_dir)
+            .map_err(|e| std::io::Error::new(ErrorKind::NotFound, format!("Failed to load templates: Error = {:?}", e)))?);
+    } else {
+        animation_template_manager = Arc::new(DivoomAnimationTemplateManager::new(&config.animation_template_dir).unwrap());
+    }
+
     let schedule_count = config.schedules.len();
     let mut schedule_manager: DivoomScheduleManager;
     if schedule_count != 0 {
         schedule_manager =
-            DivoomScheduleManager::from_config(config.device_address.clone(), config.schedules)
+            DivoomScheduleManager::from_config(config.device_address.clone(), config.schedules, animation_template_manager)
                 .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidInput, e))?;
 
         println!(
@@ -108,6 +135,12 @@ fn load_gateway_config() -> std::io::Result<DivoomGatewayConfig> {
         config.server_port = server_port;
     }
 
+    if let Some(animation_template_dir) = args.animation_template_dir {
+        config.animation_template_dir = animation_template_dir;
+    }
+
+    config.fill_default();
+
     Ok(config)
 }
 
@@ -115,17 +148,18 @@ fn load_gateway_config_from_file(
     config_file_path: &Option<String>,
 ) -> std::io::Result<DivoomGatewayConfig> {
     let config = match config_file_path {
-        None => DivoomGatewayConfig::default(),
+        None => DivoomGatewayConfig {
+            device_address: "".to_string(),
+            server_address: "".to_string(),
+            server_port: 0,
+            schedules: vec![],
+            animation_template_dir: "".to_string()
+        },
+
         Some(path) => {
             let config_file = File::open(path)?;
-            let mut config: DivoomGatewayConfig = serde_yaml::from_reader(config_file)
+            let config: DivoomGatewayConfig = serde_yaml::from_reader(config_file)
                 .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))?;
-            if config.server_address.is_empty() {
-                config.server_address = "127.0.0.1".to_string();
-            }
-            if config.server_port == 0 {
-                config.server_port = 20821;
-            }
             config
         }
     };

@@ -1,10 +1,12 @@
+use std::collections::HashMap;
+use std::sync::Arc;
 use crate::dsl::dsl_syntax::*;
 use crate::dto::*;
 use crate::{DivoomAPIError, DivoomAPIResult, PixooClient, PixooCommandBuilder};
 use std::time::Duration;
 
 #[cfg(feature = "animation-builder")]
-use crate::{DivoomAnimationBuilder, DivoomAnimationResourceLoader};
+use crate::{DivoomAnimationBuilder, DivoomAnimationResourceLoader, DivoomAnimationTemplateManager};
 
 use crate::dsl::DivoomDslOperation;
 #[cfg(feature = "animation-builder")]
@@ -13,9 +15,24 @@ use tiny_skia::BlendMode;
 pub struct DivoomDslRunner<'a> {
     device_client: &'a PixooClient,
     command_builder: Option<PixooCommandBuilder>,
+
+    #[cfg(feature = "animation-builder")]
+    template_manager: Arc<DivoomAnimationTemplateManager>,
 }
 
 impl DivoomDslRunner<'_> {
+    #[cfg(feature = "animation-builder")]
+    pub fn new(device_client: &PixooClient, template_manager: Arc<DivoomAnimationTemplateManager>) -> DivoomDslRunner {
+        let command_builder = device_client.start_batch();
+
+        DivoomDslRunner {
+            device_client,
+            command_builder: Some(command_builder),
+            template_manager,
+        }
+    }
+
+    #[cfg(not(feature = "animation-builder"))]
     pub fn new(device_client: &PixooClient) -> DivoomDslRunner {
         let command_builder = device_client.start_batch();
 
@@ -441,6 +458,22 @@ impl DivoomDslRunner<'_> {
                         .send_image_animation(animation_id, animation),
                 );
             }
+
+            #[cfg(feature = "animation-builder")]
+            DivoomDeviceImageAnimationCommand::RenderTemplate {
+                template_name, parameters
+            } => {
+                let parsed_parameters: HashMap<String, String> = serde_json::from_str(parameters)?;
+                let animation = self.template_manager.render_template(template_name, &parsed_parameters)?;
+
+                let animation_id = self.device_client.get_next_animation_id().await?;
+                self.command_builder = Some(
+                    self.command_builder
+                        .take()
+                        .unwrap()
+                        .send_image_animation(animation_id, animation),
+                );
+            }
         }
 
         Ok(())
@@ -501,7 +534,7 @@ mod tests {
     async fn dsl_runner_should_batch_channel_commands() {
         let client = PixooClient::new("127.0.0.1").unwrap();
 
-        let mut dsl_runner = DivoomDslRunner::new(&client);
+        let mut dsl_runner = new_divoom_dsl_runner(&client);
         let operations = vec![
             DivoomDslParser::parse("channel set clock").unwrap(),
             DivoomDslParser::parse("channel set cloud").unwrap(),
@@ -526,7 +559,7 @@ mod tests {
     async fn dsl_runner_should_batch_system_commands() {
         let client = PixooClient::new("127.0.0.1").unwrap();
 
-        let mut dsl_runner = DivoomDslRunner::new(&client);
+        let mut dsl_runner = new_divoom_dsl_runner(&client);
         let operations = vec![
             DivoomDslParser::parse("system set-brightness 80").unwrap(),
             DivoomDslParser::parse("system set-time 10000").unwrap(),
@@ -552,7 +585,7 @@ mod tests {
     async fn dsl_runner_should_batch_tool_commands() {
         let client = PixooClient::new("127.0.0.1").unwrap();
 
-        let mut dsl_runner = DivoomDslRunner::new(&client);
+        let mut dsl_runner = new_divoom_dsl_runner(&client);
         let operations = vec![
             DivoomDslParser::parse("tool countdown start 10 30").unwrap(),
             DivoomDslParser::parse("tool countdown stop").unwrap(),
@@ -574,7 +607,7 @@ mod tests {
     async fn dsl_runner_should_batch_animation_commands() {
         let client = PixooClient::new("127.0.0.1").unwrap();
 
-        let mut dsl_runner = DivoomDslRunner::new(&client);
+        let mut dsl_runner = new_divoom_dsl_runner(&client);
         let operations = vec![
             DivoomDslParser::parse("animation gif play --file d:\\1.gif").unwrap(),
             DivoomDslParser::parse("animation gif play --folder d:\\1").unwrap(),
@@ -595,7 +628,7 @@ mod tests {
     async fn dsl_runner_should_batch_batch_commands() {
         let client = PixooClient::new("127.0.0.1").unwrap();
 
-        let mut dsl_runner = DivoomDslRunner::new(&client);
+        let mut dsl_runner = new_divoom_dsl_runner(&client);
         let operations =
             vec![DivoomDslParser::parse("batch run-url http://example.com/commands.txt").unwrap()];
         dsl_runner.batch_operations(&operations).await.unwrap();
@@ -607,7 +640,7 @@ mod tests {
     async fn dsl_runner_should_batch_raw_commands() {
         let client = PixooClient::new("127.0.0.1").unwrap();
 
-        let mut dsl_runner = DivoomDslRunner::new(&client);
+        let mut dsl_runner = new_divoom_dsl_runner(&client);
         let operations = vec![DivoomDslParser::parse(
             "raw \"{ \\\"Command\\\": \\\"Tools/SetStopWatch\\\", \\\"Status\\\": 1 }\"",
         )
@@ -615,6 +648,12 @@ mod tests {
         dsl_runner.batch_operations(&operations).await.unwrap();
 
         run_dsl_runner_parser_test(dsl_runner, "test_data/dsl_runner_tests/raw_commands.json");
+    }
+
+    #[cfg(feature = "animation-builder")]
+    fn new_divoom_dsl_runner(pixoo_client: &PixooClient) -> DivoomDslRunner {
+        let template_manager = Arc::new(DivoomAnimationTemplateManager::new(".").unwrap());
+        DivoomDslRunner::new(&pixoo_client, template_manager)
     }
 
     fn run_dsl_runner_parser_test(dsl_runner: DivoomDslRunner, reference_file_path: &str) {

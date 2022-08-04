@@ -24,14 +24,14 @@ pub struct DivoomAnimationTemplateConfig {
     pub frames: Vec<String>,
 }
 
-pub struct DivoomAnimationTemplate {
+pub(crate) struct DivoomAnimationTemplate {
     name: String,
     canvas_size: u32,
     speed: Duration,
     frames: Vec<DivoomAnimationFrameTemplate>,
 }
 
-pub struct DivoomEvaluatedAnimationTemplate {
+pub(crate) struct DivoomEvaluatedAnimationTemplate {
     pub canvas_size: u32,
     pub speed: Duration,
     pub frames: Vec<String>,
@@ -80,7 +80,7 @@ impl DivoomAnimationTemplate {
     }
 }
 
-pub struct DivoomAnimationFrameTemplate {
+pub(crate) struct DivoomAnimationFrameTemplate {
     file_path: String,
     file_content: String,
     param_name_to_pattern_map: HashMap<String, String>,
