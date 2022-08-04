@@ -14,9 +14,6 @@ lazy_static! {
 #[derive(Debug, PartialOrd, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct DivoomAnimationTemplateConfig {
-    /// Template name
-    pub name: String,
-
     /// Canvas size
     pub canvas_size: u32,
 
@@ -41,7 +38,7 @@ pub struct DivoomEvaluatedAnimationTemplate {
 }
 
 impl DivoomAnimationTemplate {
-    pub fn from_config(config: &DivoomAnimationTemplateConfig) -> DivoomAPIResult<Self> {
+    pub fn from_config(name: String, config: &DivoomAnimationTemplateConfig) -> DivoomAPIResult<Self> {
         let parsed_templates_result: DivoomAPIResult<Vec<DivoomAnimationFrameTemplate>> = config
             .frames
             .iter()
@@ -49,7 +46,7 @@ impl DivoomAnimationTemplate {
             .collect();
 
         Ok(DivoomAnimationTemplate {
-            name: config.name.clone(),
+            name,
             canvas_size: config.canvas_size,
             speed: Duration::from_millis(config.speed_in_ms),
             frames: parsed_templates_result?,

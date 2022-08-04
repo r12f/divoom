@@ -1,0 +1,4 @@
+canvas-size: 16
+speed-in-ms: 100
+frames:
+  - svgs/simple-frame.svg

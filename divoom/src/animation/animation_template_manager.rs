@@ -3,6 +3,10 @@ use crate::animation::animation_template::{
 };
 use crate::{DivoomAnimationBuilder, DivoomAPIError, DivoomAPIResult, DivoomDrawFitMode, DivoomImageAnimation};
 use std::collections::HashMap;
+use std::fs;
+use std::fs::File;
+use std::path::PathBuf;
+use log::debug;
 use tiny_skia::BlendMode;
 use crate::animation::animation_template_renderer::DivoomAnimationTemplateRenderer;
 
@@ -12,26 +16,58 @@ pub struct DivoomAnimationTemplateManager {
 }
 
 impl DivoomAnimationTemplateManager {
-    pub fn new(template_configs: &[DivoomAnimationTemplateConfig], resource_dir: String) -> DivoomAPIResult<Self> {
-        let parsed_template_result: DivoomAPIResult<Vec<DivoomAnimationTemplate>> =
-            template_configs
-                .iter()
-                .map(DivoomAnimationTemplate::from_config)
-                .collect();
-
-        let mut manager = DivoomAnimationTemplateManager {
+    pub fn new(resource_dir: &str) -> DivoomAPIResult<Self> {
+        Ok(DivoomAnimationTemplateManager {
             templates: HashMap::new(),
-            renderer: DivoomAnimationTemplateRenderer::new(resource_dir),
-        };
+            renderer: DivoomAnimationTemplateRenderer::new(resource_dir.to_string()),
+        })
+    }
 
-        for template in parsed_template_result? {
-            manager
-                .templates
-                .entry(template.name().to_string())
-                .or_insert(template);
+    pub fn from_dir(template_folder: &str) -> DivoomAPIResult<Self> {
+        let mut manager = DivoomAnimationTemplateManager::new(template_folder)?;
+        manager.add_template_in_folder(template_folder)?;
+        Ok(manager)
+    }
+
+    pub fn add_template_in_folder(&mut self, template_folder: &str) -> DivoomAPIResult<()> {
+        debug!("Loading all animation templates in folder: {}", template_folder);
+
+        for entry in fs::read_dir(template_folder)? {
+            let entry = match entry {
+                Err(_) => continue,
+                Ok(v) => v,
+            };
+
+            let path = entry.path();
+            if !path.is_file() || !path.ends_with(".yaml") {
+                continue;
+            }
+
+            self.add_template_file(&path)?;
         }
 
-        Ok(manager)
+        Ok(())
+    }
+
+    pub fn add_template_file(&mut self, template_path: &PathBuf) -> DivoomAPIResult<()> {
+        debug!("Loading animation template file: {:?}", template_path);
+
+        let template_name = template_path.file_stem().unwrap().to_os_string().into_string().unwrap();
+        let template_file = File::open(template_path)?;
+        let template_config: DivoomAnimationTemplateConfig = serde_yaml::from_reader(template_file)
+            .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))?;
+        self.add_template_config(template_name, &template_config)?;
+
+        Ok(())
+    }
+
+    pub fn add_template_config(&mut self, template_name: String, template_config: &DivoomAnimationTemplateConfig) -> DivoomAPIResult<()> {
+        debug!("Adding animation template: Name = {}", template_name);
+
+        let parsed_template_config = DivoomAnimationTemplate::from_config(template_name, template_config)?;
+        self.templates.entry(parsed_template_config.name().to_string()).or_insert(parsed_template_config);
+
+        Ok(())
     }
 
     pub fn render_template(
@@ -58,5 +94,16 @@ impl DivoomAnimationTemplateManager {
 
         let animation = animation_builder.build();
         Ok(animation)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn animation_template_manager_can_load_template() {
+        let mut manager = DivoomAnimationTemplateManager::new("test_data/animation_template_tests/input").unwrap();
+        manager.add_template_file(&"test_data/animation_template_tests/input/template_simple.yaml".into()).unwrap();
     }
 }
