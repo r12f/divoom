@@ -11,6 +11,7 @@ use tiny_skia::BlendMode;
 use crate::animation::animation_template_renderer::DivoomAnimationTemplateRenderer;
 
 pub struct DivoomAnimationTemplateManager {
+    resource_dir: String,
     templates: HashMap<String, DivoomAnimationTemplate>,
     renderer: DivoomAnimationTemplateRenderer,
 }
@@ -18,6 +19,7 @@ pub struct DivoomAnimationTemplateManager {
 impl DivoomAnimationTemplateManager {
     pub fn new(resource_dir: &str) -> DivoomAPIResult<Self> {
         Ok(DivoomAnimationTemplateManager {
+            resource_dir: resource_dir.to_string(),
             templates: HashMap::new(),
             renderer: DivoomAnimationTemplateRenderer::new(resource_dir.to_string()),
         })
@@ -64,7 +66,7 @@ impl DivoomAnimationTemplateManager {
     pub fn add_template_config(&mut self, template_name: String, template_config: &DivoomAnimationTemplateConfig) -> DivoomAPIResult<()> {
         debug!("Adding animation template: Name = {}", template_name);
 
-        let parsed_template_config = DivoomAnimationTemplate::from_config(template_name, template_config)?;
+        let parsed_template_config = DivoomAnimationTemplate::from_config(template_name, template_config, &self.resource_dir)?;
         self.templates.entry(parsed_template_config.name().to_string()).or_insert(parsed_template_config);
 
         Ok(())

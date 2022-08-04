@@ -38,11 +38,11 @@ pub struct DivoomEvaluatedAnimationTemplate {
 }
 
 impl DivoomAnimationTemplate {
-    pub fn from_config(name: String, config: &DivoomAnimationTemplateConfig) -> DivoomAPIResult<Self> {
+    pub fn from_config(name: String, config: &DivoomAnimationTemplateConfig, resource_dir: &str) -> DivoomAPIResult<Self> {
         let parsed_templates_result: DivoomAPIResult<Vec<DivoomAnimationFrameTemplate>> = config
             .frames
             .iter()
-            .map(|v| DivoomAnimationFrameTemplate::from_file(v.clone()))
+            .map(|v| DivoomAnimationFrameTemplate::from_file(format!("{}/{}", resource_dir, v)))
             .collect();
 
         Ok(DivoomAnimationTemplate {
