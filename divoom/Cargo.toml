@@ -23,16 +23,21 @@ thiserror = "1.0"
 async-trait = "0.1"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+serde_yaml = "0.9"
 rgb = "0.8"
 base64 = "0.13"
-tiny-skia = { version = "0.7", optional = true, features = ["std", "simd"]}
 anyhow = "1.0"
-image = { version = "0.24", optional = true }
 clap = { version = "3.2", features = ["derive"] }
 shellwords = "1.1"
 tokio-cron-scheduler = "*"
 glob = "0.3"
 rand = "0.8"
+tiny-skia = { version = "0.6", optional = true, features = ["std", "simd"]}
+image = { version = "0.24", optional = true }
+resvg = { version = "0.23", optional = true }
+usvg = { version = "0.23", optional = true }
+regex = { version = "1", optional = true }
+lazy_static = "1.4"
 
 [target.'cfg(unix)'.dependencies]
 openssl = { version = "0.10.29", features = ["vendored"] }
@@ -43,4 +48,4 @@ mockito = "0.31"
 
 [features]
 default = ["animation-builder"]
-animation-builder = ["dep:tiny-skia", "dep:image"]
+animation-builder = ["dep:tiny-skia", "dep:image", "dep:resvg", "dep:usvg", "dep:regex"]

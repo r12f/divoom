@@ -20,6 +20,14 @@ impl DivoomAnimationBuilder {
     ///
     /// For Divoom devices, only 16, 32 and 64 pixels canvas are allowed. When other value is specified, we will return failure.
     pub fn new(canvas_size: u32, speed: Duration) -> DivoomAPIResult<DivoomAnimationBuilder> {
+        DivoomAnimationBuilder::with_frames(canvas_size, speed, vec![])
+    }
+
+    pub(crate) fn with_frames(
+        canvas_size: u32,
+        speed: Duration,
+        frames: Vec<Pixmap>,
+    ) -> DivoomAPIResult<DivoomAnimationBuilder> {
         if canvas_size != 16 && canvas_size != 32 && canvas_size != 64 {
             return Err(DivoomAPIError::ParameterError(format!(
                 "Invalid canvas size: {}. Only 16, 32 and 64 are supported.",
@@ -30,7 +38,7 @@ impl DivoomAnimationBuilder {
         Ok(DivoomAnimationBuilder {
             canvas_size,
             speed,
-            frames: vec![],
+            frames,
         })
     }
 
@@ -50,6 +58,10 @@ impl DivoomAnimationBuilder {
         }
 
         DivoomAnimationFrameBuilder::new(&mut self.frames[index])
+    }
+
+    pub fn new_frame(&mut self) -> DivoomAnimationFrameBuilder {
+        self.build_frame(self.frames.len())
     }
 }
 
