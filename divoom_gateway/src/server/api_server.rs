@@ -28,7 +28,10 @@ impl ApiServer {
 
     pub async fn start(&self) -> std::io::Result<()> {
         let api_service = OpenApiService::new(
-            ApiHandler::new(self.device_address.clone(), self.animation_template_manager.clone()),
+            ApiHandler::new(
+                self.device_address.clone(),
+                self.animation_template_manager.clone(),
+            ),
             "Divoom Gateway",
             "1.0",
         )

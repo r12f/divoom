@@ -243,16 +243,16 @@ pub enum DivoomCliToolCommand {
         play_total_time: i32,
 
         #[clap(
-        short,
-        default_value = "50",
-        help = "Time to play in every buzz cycle in milliseconds"
+            short,
+            default_value = "50",
+            help = "Time to play in every buzz cycle in milliseconds"
         )]
         active_time_in_cycle: i32,
 
         #[clap(
-        short,
-        default_value = "100",
-        help = "Time to off after every buzz in milliseconds"
+            short,
+            default_value = "100",
+            help = "Time to off after every buzz in milliseconds"
         )]
         off_time_in_cycle: i32,
     },

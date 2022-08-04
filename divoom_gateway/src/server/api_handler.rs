@@ -121,8 +121,14 @@ macro_rules! invoke_pixoo_api_respond_object {
 
 #[OpenApi]
 impl ApiHandler {
-    pub fn new(device_address: String, animation_template_manager: Arc<DivoomAnimationTemplateManager>) -> ApiHandler {
-        ApiHandler { device_address, animation_template_manager }
+    pub fn new(
+        device_address: String,
+        animation_template_manager: Arc<DivoomAnimationTemplateManager>,
+    ) -> ApiHandler {
+        ApiHandler {
+            device_address,
+            animation_template_manager,
+        }
     }
 
     #[oai(path = "/channel", method = "put", tag = "ApiTags::Channel")]
@@ -474,7 +480,10 @@ impl ApiHandler {
         &self,
         request: Json<DivoomGatewayRenderTemplateAsAnimationRequest>,
     ) -> DivoomGatewayResponse<String> {
-        let animation = match self.animation_template_manager.render_template(&request.name, &request.parameters) {
+        let animation = match self
+            .animation_template_manager
+            .render_template(&request.name, &request.parameters)
+        {
             Err(e) => {
                 return DivoomGatewayResponse::BadRequest(Json(
                     DivoomGatewayResponsePayload::error(format!("{:?}", e)),

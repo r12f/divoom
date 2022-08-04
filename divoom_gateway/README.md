@@ -92,7 +92,7 @@ Please open your browser with URL: http://192.168.0.151:20822 and happy divoomin
 
 ![image](https://user-images.githubusercontent.com/1533278/182061620-2a0724cf-a153-4dc5-8330-63a1a49b5eb0.png)
 
-## Supported commands
+## Supported commands and more
 
 Currently, we support all commands that documented in divoom's public API doc. For details, please check it [here](https://github.com/r12f/divoom#pixoo-device-apis).
 
@@ -115,6 +115,17 @@ no-op'ed by the device.
 
 ![image](https://user-images.githubusercontent.com/1533278/182063848-e3ac6409-f3f8-4228-932f-d661f782e16d.png)
 
+### Animation template
+
+To make building animation easier, Divoom Gateway support using YAML and SVG to create a template, then generate animation by passing the parameters.
+
+For more information, please check it here: <https://github.com/r12f/divoom/wiki/Animation-template>.
+
+### Device Schedule
+
+To help better controlling the device automatically, Divoom Gateway supports schedule config to create tasks based on cron expressions.
+
+For more information, please check it here: <https://github.com/r12f/divoom/wiki/Device-schedule>.
 
 ## More help
 
