@@ -167,6 +167,17 @@ async fn handle_tool_api(
         } => pixoo.set_scoreboard_tool(blue_score, red_score).await,
 
         DivoomCliToolCommand::Stopwatch { action } => pixoo.set_stopwatch_tool(action).await,
+
+        DivoomCliToolCommand::Buzzer {
+            play_total_time,
+            active_time_in_cycle,
+            off_time_in_cycle,
+        } => {
+            let pixoo = new_pixoo_client(common)?;
+            pixoo
+                .play_buzzer(play_total_time, active_time_in_cycle, off_time_in_cycle)
+                .await
+        }
     }
 }
 
@@ -185,17 +196,6 @@ async fn handle_animation_api(
 
         DivoomCliAnimationCommand::Text(text_animation_command) => {
             handle_text_animation_api(common, text_animation_command).await
-        }
-
-        DivoomCliAnimationCommand::Buzzer {
-            play_total_time,
-            active_time_in_cycle,
-            off_time_in_cycle,
-        } => {
-            let pixoo = new_pixoo_client(common)?;
-            pixoo
-                .play_buzzer(play_total_time, active_time_in_cycle, off_time_in_cycle)
-                .await
         }
     }
 }

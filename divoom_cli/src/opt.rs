@@ -236,6 +236,26 @@ pub enum DivoomCliToolCommand {
         #[clap(help = "Action, can be start, stop, reset")]
         action: DivoomToolStopwatchAction,
     },
+
+    #[clap(about = "Play buzzer")]
+    Buzzer {
+        #[clap(default_value = "1000", help = "Total time to play in milliseconds")]
+        play_total_time: i32,
+
+        #[clap(
+        short,
+        default_value = "50",
+        help = "Time to play in every buzz cycle in milliseconds"
+        )]
+        active_time_in_cycle: i32,
+
+        #[clap(
+        short,
+        default_value = "100",
+        help = "Time to off after every buzz in milliseconds"
+        )]
+        off_time_in_cycle: i32,
+    },
 }
 
 #[derive(Subcommand, Debug)]
@@ -248,26 +268,6 @@ pub enum DivoomCliAnimationCommand {
 
     #[clap(subcommand, about = "Create text animation")]
     Text(DivoomCliTextAnimationCommand),
-
-    #[clap(about = "Play buzzer")]
-    Buzzer {
-        #[clap(default_value = "1000", help = "Total time to play in milliseconds")]
-        play_total_time: i32,
-
-        #[clap(
-            short,
-            default_value = "50",
-            help = "Time to play in every buzz cycle in milliseconds"
-        )]
-        active_time_in_cycle: i32,
-
-        #[clap(
-            short,
-            default_value = "100",
-            help = "Time to off after every buzz in milliseconds"
-        )]
-        off_time_in_cycle: i32,
-    },
 }
 
 #[derive(Subcommand, Debug)]
