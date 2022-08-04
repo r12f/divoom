@@ -21,14 +21,16 @@ println!(
 // Output: clock
 ```
 
-We have a command line tool as well to help people use and serve as demo! For more docs, feel free to check it here: <https://github.com/r12f/divoom/tree/main/divoom_cli>.
+Besides the SDK, a few more tools are provided to help people enjoy the device as well as serving as demo! 
+- A command line tool `divoom-cli` for controlling the device: <https://github.com/r12f/divoom/tree/main/divoom_cli>.
+  ```bash
+  # Check current channel
+  > divoom-cli 192.168.0.123 channel get
+  ---
+  clock
+  ```
 
-```bash
-# Check current channel
-> divoom-cli 192.168.0.123 channel get
----
-clock
-```
+- A REST gateway `divoom-gateway` with Swagger UI and OpenAPI spec json provided, so we can control the device, build cron-like schedule, render customized animation and play it on the device: <https://github.com/r12f/divoom/tree/main/divoom_gateway>.
 
 ## How to use
 

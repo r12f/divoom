@@ -101,7 +101,10 @@ impl DivoomAnimationTemplateManager {
         template_name: &str,
         parameters: &HashMap<String, String>,
     ) -> DivoomAPIResult<DivoomImageAnimation> {
-        debug!("Start rendering animation template: Name = {}, Parameters = {:?}", template_name, parameters);
+        debug!(
+            "Start rendering animation template: Name = {}, Parameters = {:?}",
+            template_name, parameters
+        );
 
         let template = match self.templates.get(template_name) {
             None => {
