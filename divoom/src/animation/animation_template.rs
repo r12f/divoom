@@ -1,5 +1,5 @@
-use crate::animation::animation_template_renderer::DivoomAnimationTemplateRenderer;
-use crate::{DivoomAPIError, DivoomAPIResult, DivoomImageAnimation};
+
+use crate::{DivoomAPIError, DivoomAPIResult};
 use lazy_static::lazy_static;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
@@ -59,9 +59,11 @@ impl DivoomAnimationTemplate {
     pub fn name(&self) -> &str {
         &self.name
     }
+
     pub fn canvas_size(&self) -> u32 {
         self.canvas_size
     }
+
     pub fn speed(&self) -> Duration {
         self.speed
     }

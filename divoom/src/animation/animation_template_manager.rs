@@ -3,13 +3,15 @@ use crate::animation::animation_template::{
 };
 use crate::DivoomAPIResult;
 use std::collections::HashMap;
+use crate::animation::animation_template_renderer::DivoomAnimationTemplateRenderer;
 
 pub struct DivoomAnimationTemplateManager {
     templates: HashMap<String, DivoomAnimationTemplate>,
+    renderer: DivoomAnimationTemplateRenderer,
 }
 
 impl DivoomAnimationTemplateManager {
-    pub fn new(template_configs: &[DivoomAnimationTemplateConfig]) -> DivoomAPIResult<Self> {
+    pub fn new(template_configs: &[DivoomAnimationTemplateConfig], resource_dir: String) -> DivoomAPIResult<Self> {
         let parsed_template_result: DivoomAPIResult<Vec<DivoomAnimationTemplate>> =
             template_configs
                 .iter()
@@ -18,6 +20,7 @@ impl DivoomAnimationTemplateManager {
 
         let mut manager = DivoomAnimationTemplateManager {
             templates: HashMap::new(),
+            renderer: DivoomAnimationTemplateRenderer::new(resource_dir),
         };
 
         for template in parsed_template_result? {

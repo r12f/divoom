@@ -20,7 +20,7 @@ impl DivoomAnimationBuilder {
     ///
     /// For Divoom devices, only 16, 32 and 64 pixels canvas are allowed. When other value is specified, we will return failure.
     pub fn new(canvas_size: u32, speed: Duration) -> DivoomAPIResult<DivoomAnimationBuilder> {
-        return DivoomAnimationBuilder::with_frames(canvas_size, speed, vec![]);
+        DivoomAnimationBuilder::with_frames(canvas_size, speed, vec![])
     }
 
     pub(crate) fn with_frames(
