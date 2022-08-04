@@ -1,4 +1,3 @@
-
 use crate::{DivoomAPIError, DivoomAPIResult};
 use lazy_static::lazy_static;
 use regex::Regex;
@@ -38,7 +37,11 @@ pub(crate) struct DivoomEvaluatedAnimationTemplate {
 }
 
 impl DivoomAnimationTemplate {
-    pub fn from_config(name: String, config: &DivoomAnimationTemplateConfig, resource_dir: &str) -> DivoomAPIResult<Self> {
+    pub fn from_config(
+        name: String,
+        config: &DivoomAnimationTemplateConfig,
+        resource_dir: &str,
+    ) -> DivoomAPIResult<Self> {
         let parsed_templates_result: DivoomAPIResult<Vec<DivoomAnimationFrameTemplate>> = config
             .frames
             .iter()

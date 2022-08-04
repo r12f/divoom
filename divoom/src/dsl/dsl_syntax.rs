@@ -357,7 +357,12 @@ pub enum DivoomDeviceImageAnimationCommand {
         #[clap(help = "Template name")]
         template_name: String,
 
-        #[clap(short, long, default_value = "{}", help = "Template parameters. We use a string to string json dictionary as the format. E.g. {\"foo\":\"bar\"}")]
+        #[clap(
+            short,
+            long,
+            default_value = "{}",
+            help = "Template parameters. We use a string to string json dictionary as the format. E.g. {\"foo\":\"bar\"}"
+        )]
         parameters: String,
     },
 }
