@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use divoom::*;
 use poem::Error;
 use poem_openapi::payload::Json;
@@ -324,4 +325,10 @@ pub struct DivoomGatewayRenderGifAsAnimationRequest {
     pub canvas_size: u32,
     pub speed_in_ms: u64,
     pub file: Upload,
+}
+
+#[derive(Debug, PartialEq, Serialize, Deserialize, Object)]
+pub struct DivoomGatewayRenderTemplateAsAnimationRequest {
+    pub name: String,
+    pub parameters: HashMap<String, String>,
 }

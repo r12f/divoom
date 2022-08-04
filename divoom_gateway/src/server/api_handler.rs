@@ -3,11 +3,13 @@ use divoom::*;
 use poem_openapi::payload::Json;
 use poem_openapi::{OpenApi, Tags};
 use std::io::Cursor;
+use std::sync::Arc;
 use std::time::Duration;
 use tiny_skia::BlendMode;
 
 pub struct ApiHandler {
     device_address: String,
+    animation_template_manager: Arc<DivoomAnimationTemplateManager>,
 }
 
 #[derive(Tags)]
@@ -119,8 +121,8 @@ macro_rules! invoke_pixoo_api_respond_object {
 
 #[OpenApi]
 impl ApiHandler {
-    pub fn new(device_address: String) -> ApiHandler {
-        ApiHandler { device_address }
+    pub fn new(device_address: String, animation_template_manager: Arc<DivoomAnimationTemplateManager>) -> ApiHandler {
+        ApiHandler { device_address, animation_template_manager }
     }
 
     #[oai(path = "/channel", method = "put", tag = "ApiTags::Channel")]
@@ -455,6 +457,31 @@ impl ApiHandler {
                 BlendMode::default(),
             )
             .build();
+
+        let pixoo = PixooClient::new(&self.device_address).unwrap();
+        match pixoo.send_image_animation(animation).await {
+            Err(e) => e.into(),
+            Ok(_) => DivoomGatewayResponse::Ok(Json(DivoomGatewayResponsePayload::ok())),
+        }
+    }
+
+    #[oai(
+        path = "/animation/render-template",
+        method = "post",
+        tag = "ApiTags::Animation"
+    )]
+    async fn render_template_as_animation(
+        &self,
+        request: Json<DivoomGatewayRenderTemplateAsAnimationRequest>,
+    ) -> DivoomGatewayResponse<String> {
+        let animation = match self.animation_template_manager.render_template(&request.name, &request.parameters) {
+            Err(e) => {
+                return DivoomGatewayResponse::BadRequest(Json(
+                    DivoomGatewayResponsePayload::error(format!("{:?}", e)),
+                ))
+            }
+            Ok(v) => v,
+        };
 
         let pixoo = PixooClient::new(&self.device_address).unwrap();
         match pixoo.send_image_animation(animation).await {

@@ -78,21 +78,17 @@ async fn main() -> Result<(), std::io::Error> {
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("warn")).init();
 
     let config = load_gateway_config()?;
-
-    let animation_template_manager: Arc<DivoomAnimationTemplateManager>;
-    if Path::new(&config.animation_template_dir).is_dir() {
-        animation_template_manager = Arc::new(DivoomAnimationTemplateManager::from_dir(&config.animation_template_dir)
-            .map_err(|e| std::io::Error::new(ErrorKind::NotFound, format!("Failed to load templates: Error = {:?}", e)))?);
-    } else {
-        animation_template_manager = Arc::new(DivoomAnimationTemplateManager::new(&config.animation_template_dir).unwrap());
-    }
+    let animation_template_manager = create_animation_template_manager(&config)?;
 
     let schedule_count = config.schedules.len();
     let mut schedule_manager: DivoomScheduleManager;
     if schedule_count != 0 {
-        schedule_manager =
-            DivoomScheduleManager::from_config(config.device_address.clone(), config.schedules, animation_template_manager)
-                .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidInput, e))?;
+        schedule_manager = DivoomScheduleManager::from_config(
+            config.device_address.clone(),
+            config.schedules,
+            animation_template_manager.clone(),
+        )
+        .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidInput, e))?;
 
         println!(
             "Found {} schedules in gateway config, starting divoom scheduler device {}.",
@@ -116,6 +112,7 @@ async fn main() -> Result<(), std::io::Error> {
         config.server_address,
         config.server_port,
         config.device_address,
+        animation_template_manager,
     );
     api_server.start().await
 }
@@ -153,7 +150,7 @@ fn load_gateway_config_from_file(
             server_address: "".to_string(),
             server_port: 0,
             schedules: vec![],
-            animation_template_dir: "".to_string()
+            animation_template_dir: "".to_string(),
         },
 
         Some(path) => {
@@ -165,4 +162,25 @@ fn load_gateway_config_from_file(
     };
 
     Ok(config)
+}
+
+fn create_animation_template_manager(
+    config: &DivoomGatewayConfig,
+) -> std::io::Result<Arc<DivoomAnimationTemplateManager>> {
+    if Path::new(&config.animation_template_dir).is_dir() {
+        Ok(Arc::new(
+            DivoomAnimationTemplateManager::from_dir(&config.animation_template_dir).map_err(
+                |e| {
+                    std::io::Error::new(
+                        ErrorKind::NotFound,
+                        format!("Failed to load templates: Error = {:?}", e),
+                    )
+                },
+            )?,
+        ))
+    } else {
+        Ok(Arc::new(
+            DivoomAnimationTemplateManager::new(&config.animation_template_dir).unwrap(),
+        ))
+    }
 }

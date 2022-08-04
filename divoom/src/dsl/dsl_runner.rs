@@ -1,12 +1,14 @@
-use std::collections::HashMap;
-use std::sync::Arc;
 use crate::dsl::dsl_syntax::*;
 use crate::dto::*;
 use crate::{DivoomAPIError, DivoomAPIResult, PixooClient, PixooCommandBuilder};
+use std::collections::HashMap;
+use std::sync::Arc;
 use std::time::Duration;
 
 #[cfg(feature = "animation-builder")]
-use crate::{DivoomAnimationBuilder, DivoomAnimationResourceLoader, DivoomAnimationTemplateManager};
+use crate::{
+    DivoomAnimationBuilder, DivoomAnimationResourceLoader, DivoomAnimationTemplateManager,
+};
 
 use crate::dsl::DivoomDslOperation;
 #[cfg(feature = "animation-builder")]
@@ -22,7 +24,10 @@ pub struct DivoomDslRunner<'a> {
 
 impl DivoomDslRunner<'_> {
     #[cfg(feature = "animation-builder")]
-    pub fn new(device_client: &PixooClient, template_manager: Arc<DivoomAnimationTemplateManager>) -> DivoomDslRunner {
+    pub fn new(
+        device_client: &PixooClient,
+        template_manager: Arc<DivoomAnimationTemplateManager>,
+    ) -> DivoomDslRunner {
         let command_builder = device_client.start_batch();
 
         DivoomDslRunner {
@@ -461,10 +466,13 @@ impl DivoomDslRunner<'_> {
 
             #[cfg(feature = "animation-builder")]
             DivoomDeviceImageAnimationCommand::RenderTemplate {
-                template_name, parameters
+                template_name,
+                parameters,
             } => {
                 let parsed_parameters: HashMap<String, String> = serde_json::from_str(parameters)?;
-                let animation = self.template_manager.render_template(template_name, &parsed_parameters)?;
+                let animation = self
+                    .template_manager
+                    .render_template(template_name, &parsed_parameters)?;
 
                 let animation_id = self.device_client.get_next_animation_id().await?;
                 self.command_builder = Some(
