@@ -125,4 +125,13 @@ mod tests {
         let animation = manager.render_template("template_simple_text", &parameters).unwrap();
         test_utils::assert_animation_equal_with_baseline(&animation, "test_data/animation_template_tests/expected_generated_simple_text.png");
     }
+
+    #[test]
+    fn animation_template_manager_can_render_image() {
+        let mut manager = DivoomAnimationTemplateManager::new("test_data/animation_template_tests/input").unwrap();
+        manager.add_template_file(&"test_data/animation_template_tests/input/template_image.yaml".into()).unwrap();
+
+        let animation = manager.render_template("template_image", &HashMap::new()).unwrap();
+        test_utils::assert_animation_equal_with_baseline(&animation, "test_data/animation_template_tests/expected_generated_image.png");
+    }
 }
