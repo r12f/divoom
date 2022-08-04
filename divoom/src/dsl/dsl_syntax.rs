@@ -348,6 +348,18 @@ pub enum DivoomDeviceImageAnimationCommand {
         )]
         prefetch_count: usize,
     },
+
+    #[cfg(feature = "animation-builder")]
+    #[clap(
+        about = "Render animation template. This is different from \"gif play\" command, which is provided directly by Divoom device. This command will create a regular animation and render the specified template, then send to the device to play."
+    )]
+    RenderTemplate {
+        #[clap(help = "Template name")]
+        template_name: String,
+
+        #[clap(short, long, default_value = "{}", help = "Template parameters. We use a string to string json dictionary as the format. E.g. {\"foo\":\"bar\"}")]
+        parameters: String,
+    },
 }
 
 #[derive(Subcommand, Debug)]

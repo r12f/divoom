@@ -2,7 +2,7 @@ use std::path::PathBuf;
 use tiny_skia::Pixmap;
 use crate::{DivoomAPIError, DivoomAPIResult};
 
-pub struct DivoomAnimationTemplateRenderer {
+pub(crate) struct DivoomAnimationTemplateRenderer {
     render_opt: usvg::Options,
 }
 
