@@ -105,7 +105,7 @@ mod tests {
     use crate::test_utils;
 
     #[test]
-    fn animation_template_manager_can_load_template() {
+    fn animation_template_manager_can_render_template_without_parameter() {
         let mut manager = DivoomAnimationTemplateManager::new("test_data/animation_template_tests/input").unwrap();
         manager.add_template_file(&"test_data/animation_template_tests/input/template_simple.yaml".into()).unwrap();
 
