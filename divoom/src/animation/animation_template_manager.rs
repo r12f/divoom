@@ -105,11 +105,24 @@ mod tests {
     use crate::test_utils;
 
     #[test]
-    fn animation_template_manager_can_render_template_without_parameter() {
+    fn animation_template_manager_can_render_simple_graph_without_parameter() {
         let mut manager = DivoomAnimationTemplateManager::new("test_data/animation_template_tests/input").unwrap();
         manager.add_template_file(&"test_data/animation_template_tests/input/template_simple.yaml".into()).unwrap();
 
         let animation = manager.render_template("template_simple", &HashMap::new()).unwrap();
-        test_utils::assert_animation_equal_with_baseline(&animation, "test_data/animation_template_tests/expected_template_simple.png");
+        test_utils::assert_animation_equal_with_baseline(&animation, "test_data/animation_template_tests/expected_generated_simple.png");
+    }
+
+    #[test]
+    #[cfg(target_os = "windows")]
+    fn animation_template_manager_can_render_text() {
+        // Text are rendered based on fonts and other anti-aliasing/truetype algorithms on each OS. Even we use the same font, the result can be different.
+        // Hence we only run the text test on windows, but nowhere else.
+        let mut manager = DivoomAnimationTemplateManager::new("test_data/animation_template_tests/input").unwrap();
+        manager.add_template_file(&"test_data/animation_template_tests/input/template_simple_text.yaml".into()).unwrap();
+
+        let parameters = [("text".to_string(), "Simple text".to_string())].into_iter().collect();
+        let animation = manager.render_template("template_simple_text", &parameters).unwrap();
+        test_utils::assert_animation_equal_with_baseline(&animation, "test_data/animation_template_tests/expected_generated_simple_text.png");
     }
 }

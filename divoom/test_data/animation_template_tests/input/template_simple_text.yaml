@@ -1,4 +1,4 @@
 canvas-size: 64
 speed-in-ms: 100
 frames:
-  - svgs/simple_frame.svg
+  - svgs/simple_text.svg
