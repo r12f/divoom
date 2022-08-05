@@ -261,6 +261,13 @@ stages:
               BUILD_PROFILE: "release"
               BUILD_ARCH: $(target_arch)
 
+          - script: just pack-docker-all
+            displayName: Pack divoom docker package sources
+            condition: and(succeeded(), eq(variables['target_os'], 'linux'))
+            env:
+              BUILD_PROFILE: "release"
+              BUILD_ARCH: $(target_arch)
+
           #
           # Copy all files to publish folder
           #
@@ -341,6 +348,12 @@ stages:
 
           - script: just pack-snap
             displayName: Pack snap package for release
+            workingDirectory: '$(System.DefaultWorkingDirectory)/r12f.divoom'
+            env:
+              BUILD_VERSION: $(Build.Version)
+
+          - script: just pack-docker
+            displayName: Pack docker package for release
             workingDirectory: '$(System.DefaultWorkingDirectory)/r12f.divoom'
             env:
               BUILD_VERSION: $(Build.Version)

@@ -22,6 +22,7 @@ RELEASE_GITHUB_FOLDER := RELEASE_FOLDER + "/github"
 RELEASE_CHOCO_FOLDER := RELEASE_FOLDER + "/choco"
 RELEASE_SCOOP_FOLDER := RELEASE_FOLDER + "/scoop"
 RELEASE_SNAP_FOLDER := RELEASE_FOLDER + "/snap"
+RELEASE_DOCKER_FOLDER := RELEASE_FOLDER + "/docker"
 
 #
 # Preparation tasks
@@ -111,6 +112,15 @@ pack-snap:
     New-Item -ItemType Directory -Path "{{RELEASE_SNAP_FOLDER}}" -Force | Out-Null
 
     Get-ChildItem ./{{BUILD_FOLDER_PREFIX}}*/*/snap-source/* -Attributes Directory | Copy-Item -Destination "{{RELEASE_SNAP_FOLDER}}" -Recurse -PassThru
+
+#
+# Pack snap
+#
+pack-docker:
+    if (Test-Path "{{RELEASE_DOCKER_FOLDER}}") { Remove-Item -Path "{{RELEASE_DOCKER_FOLDER}}" -Recurse -Force }
+    New-Item -ItemType Directory -Path "{{RELEASE_DOCKER_FOLDER}}" -Force | Out-Null
+
+    Get-ChildItem ./{{BUILD_FOLDER_PREFIX}}*/*/docker-source/* -Attributes Directory | Copy-Item -Destination "{{RELEASE_DOCKER_FOLDER}}" -Recurse -PassThru
 
 #
 # Prepare packages for crate.io release
