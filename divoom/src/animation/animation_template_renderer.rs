@@ -14,7 +14,7 @@ impl DivoomAnimationTemplateRenderer {
         opt.fontdb.load_system_fonts();
 
         debug!("Loading font completed! {} fonts are loaded.", opt.fontdb.len());
-        debug!("All loaded font families: {}.", opt.fontdb.faces().iter().map(|f| f.family).collect());
+        debug!("All loaded font families: {:?}.", opt.fontdb.faces().iter().map(|f| f.family.as_ref()).collect::<Vec<&str>>());
 
         DivoomAnimationTemplateRenderer { render_opt: opt }
     }

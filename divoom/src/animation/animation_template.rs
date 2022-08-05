@@ -60,14 +60,6 @@ impl DivoomAnimationTemplate {
         &self.name
     }
 
-    pub fn canvas_size(&self) -> u32 {
-        self.canvas_size
-    }
-
-    pub fn speed(&self) -> Duration {
-        self.speed
-    }
-
     pub fn eval(
         &self,
         parameters: &HashMap<String, String>,
@@ -108,6 +100,9 @@ impl DivoomAnimationFrameTemplate {
 
         Ok(parsed_template)
     }
+
+    #[allow(dead_code)]
+    pub fn file_path(&self) -> &str { self.file_path.as_ref() }
 
     pub fn eval(&self, parameters: &HashMap<String, String>) -> DivoomAPIResult<String> {
         let mut evaled_file_content = self.file_content.clone();
