@@ -3,11 +3,10 @@
 #
 # To create the container and specify the device to control on the runtime, we can use the following command to specify the environment variables:
 #
-#     docker container create -e DEVICE_ADDRESS=192.168.0.164 <image-name>
+#     docker container create -e DEVICE_ADDRESS=192.168.0.123 <image-name>
 #
 # To enable debug logs, we can add this additional environment variable in the command line: -e RUST_LOG=debug
 #
-
 
 #
 # Global definitions
@@ -21,6 +20,7 @@ FROM busybox
 ENV DEVICE_ADDRESS=127.0.0.1
 ENV GATEWAY_ADDRESS=0.0.0.0
 ENV GATEWAY_PORT=20821
+ENV GATEWAY_ARGS=
 
 #
 # Build container
@@ -44,4 +44,4 @@ COPY divoom-gateway /
 EXPOSE $GATEWAY_PORT/tcp
 
 # Entrypoint
-CMD ["sh", "-c", "./divoom-gateway ${DEVICE_ADDRESS} -s ${GATEWAY_ADDRESS} -p ${GATEWAY_PORT}"]
+CMD ["sh", "-c", "./divoom-gateway ${DEVICE_ADDRESS} -s ${GATEWAY_ADDRESS} -p ${GATEWAY_PORT} ${GATEWAY_ARGS}"]
