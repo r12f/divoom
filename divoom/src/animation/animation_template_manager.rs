@@ -100,6 +100,7 @@ impl DivoomAnimationTemplateManager {
         &self,
         template_name: &str,
         parameters: &HashMap<String, String>,
+        per_frame_parameters: &HashMap<usize, HashMap<String, String>>,
     ) -> DivoomAPIResult<DivoomImageAnimation> {
         debug!(
             "Start rendering animation template: Name = {}, Parameters = {:?}",
@@ -115,7 +116,7 @@ impl DivoomAnimationTemplateManager {
             Some(v) => v,
         };
 
-        let evaled_template = template.eval(parameters)?;
+        let evaled_template = template.eval(parameters, per_frame_parameters)?;
         let mut animation_builder =
             DivoomAnimationBuilder::new(evaled_template.canvas_size, evaled_template.speed)?;
         for evaled_frame in evaled_template.frames {
@@ -151,7 +152,7 @@ mod tests {
             .unwrap();
 
         let animation = manager
-            .render_template("template_simple", &HashMap::new())
+            .render_template("template_simple", &HashMap::new(), &HashMap::new())
             .unwrap();
         test_utils::assert_animation_equal_with_baseline(
             &animation,
@@ -177,7 +178,7 @@ mod tests {
             .into_iter()
             .collect();
         let animation = manager
-            .render_template("template_simple_text", &parameters)
+            .render_template("template_simple_text", &parameters, &HashMap::new())
             .unwrap();
         test_utils::assert_animation_equal_with_baseline(
             &animation,
@@ -197,7 +198,7 @@ mod tests {
             .unwrap();
 
         let animation = manager
-            .render_template("template_image", &HashMap::new())
+            .render_template("template_image", &HashMap::new(), &HashMap::new())
             .unwrap();
         test_utils::assert_animation_equal_with_baseline(
             &animation,

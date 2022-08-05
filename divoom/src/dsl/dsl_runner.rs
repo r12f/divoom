@@ -468,11 +468,14 @@ impl DivoomDslRunner<'_> {
             DivoomDeviceImageAnimationCommand::RenderTemplate {
                 template_name,
                 parameters,
+                per_frame_parameters,
             } => {
                 let parsed_parameters: HashMap<String, String> = serde_json::from_str(parameters)?;
+                let parsed_per_frame_parameters: HashMap<usize, HashMap<String, String>> = serde_json::from_str(per_frame_parameters)?;
+
                 let animation = self
                     .template_manager
-                    .render_template(template_name, &parsed_parameters)?;
+                    .render_template(template_name, &parsed_parameters, &parsed_per_frame_parameters)?;
 
                 let animation_id = self.device_client.get_next_animation_id().await?;
                 self.command_builder = Some(

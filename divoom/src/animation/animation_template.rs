@@ -63,9 +63,13 @@ impl DivoomAnimationTemplate {
     pub fn eval(
         &self,
         parameters: &HashMap<String, String>,
+        per_frame_parameters: &HashMap<usize, HashMap<String, String>>,
     ) -> DivoomAPIResult<DivoomEvaluatedAnimationTemplate> {
         let evaled_template_result: DivoomAPIResult<Vec<String>> =
-            self.frames.iter().map(|f| f.eval(parameters)).collect();
+            self.frames.iter().enumerate().map(|(index, f)| {
+                let frame_only_parameters = per_frame_parameters.get(&index);
+                f.eval(parameters, frame_only_parameters)
+            }).collect();
 
         Ok(DivoomEvaluatedAnimationTemplate {
             canvas_size: self.canvas_size,
@@ -104,20 +108,30 @@ impl DivoomAnimationFrameTemplate {
     #[allow(dead_code)]
     pub fn file_path(&self) -> &str { self.file_path.as_ref() }
 
-    pub fn eval(&self, parameters: &HashMap<String, String>) -> DivoomAPIResult<String> {
+    pub fn eval(&self, parameters: &HashMap<String, String>, frame_only_parameters: Option<&HashMap<String, String>>) -> DivoomAPIResult<String> {
         let mut evaled_file_content = self.file_content.clone();
 
         for template_parameter_definition in &self.param_name_to_pattern_map {
+            if frame_only_parameters.is_some() {
+                if let Some(parameter) = frame_only_parameters.get(template_parameter_definition.0) {
+                    evaled_file_content =
+                        evaled_file_content.replace(template_parameter_definition.1, parameter);
+
+                    continue;
+                }
+            }
+
             match parameters.get(template_parameter_definition.0) {
                 None => {
                     return Err(DivoomAPIError::ParameterError(format!(
                         "Missing template parameter: {}",
                         template_parameter_definition.0
-                    )))
-                }
+                    )));
+                },
+
                 Some(parameter) => {
                     evaled_file_content =
-                        evaled_file_content.replace(template_parameter_definition.1, parameter)
+                        evaled_file_content.replace(template_parameter_definition.1, parameter);
                 }
             }
         }

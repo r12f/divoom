@@ -482,7 +482,7 @@ impl ApiHandler {
     ) -> DivoomGatewayResponse<String> {
         let animation = match self
             .animation_template_manager
-            .render_template(&request.name, &request.parameters)
+            .render_template(&request.name, &request.parameters, &request.per_frame_parameters)
         {
             Err(e) => {
                 return DivoomGatewayResponse::BadRequest(Json(

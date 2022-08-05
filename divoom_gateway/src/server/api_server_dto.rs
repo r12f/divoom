@@ -331,4 +331,5 @@ pub struct DivoomGatewayRenderGifAsAnimationRequest {
 pub struct DivoomGatewayRenderTemplateAsAnimationRequest {
     pub name: String,
     pub parameters: HashMap<String, String>,
+    pub per_frame_parameters: HashMap<usize, HashMap<String, String>>,
 }

@@ -364,6 +364,14 @@ pub enum DivoomDeviceImageAnimationCommand {
             help = "Template parameters. We use a string to string json dictionary as the format. E.g. {\"foo\":\"bar\"}"
         )]
         parameters: String,
+
+        #[clap(
+            short,
+            long,
+            default_value = "{}",
+            help = "Per frame template parameters. We use a 0-indexed int to string to string json dictionary as the format. E.g. {0:{\"foo\":\"bar\"},1:{\"foo\":\"bar2\"}}"
+        )]
+        per_frame_parameters: String,
     },
 }
 
