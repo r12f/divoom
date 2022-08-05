@@ -478,8 +478,6 @@ pack-docker PACKAGE="divoom_gateway":
     if (Test-Path "{{PUBLISH_DIR}}/{{PACKAGE}}/docker-source") { Remove-Item -Path "{{PUBLISH_DIR}}/{{PACKAGE}}/docker-source" -Recurse -Force }
     New-Item -ItemType Directory -Path "{{PUBLISH_DIR}}/{{PACKAGE}}/docker-source/{{replace(PACKAGE, '_', '-')}}.{{BUILD_ARCH}}" -Force | Out-Null
 
-    Copy-Item -Path "{{PUBLISH_DIR}}/{{PACKAGE}}/bin/*" -Destination "{{PUBLISH_DIR}}/{{PACKAGE}}/docker-source/{{replace(PACKAGE, '_', '-')}}.{{BUILD_ARCH}}"
-
     just eval-template "{{justfile_directory()}}/build/package-templates/docker/Dockerfile" \
       "{{PUBLISH_DIR}}/{{PACKAGE}}/docker-source/{{replace(PACKAGE, '_', '-')}}.{{BUILD_ARCH}}/Dockerfile" \
       "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters" \
