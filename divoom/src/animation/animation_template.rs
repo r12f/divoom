@@ -113,7 +113,7 @@ impl DivoomAnimationFrameTemplate {
 
         for template_parameter_definition in &self.param_name_to_pattern_map {
             if frame_only_parameters.is_some() {
-                if let Some(parameter) = frame_only_parameters.get(template_parameter_definition.0) {
+                if let Some(parameter) = frame_only_parameters.as_ref().unwrap().get(template_parameter_definition.0) {
                     evaled_file_content =
                         evaled_file_content.replace(template_parameter_definition.1, parameter);
 
