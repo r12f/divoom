@@ -23,6 +23,7 @@ RELEASE_CHOCO_FOLDER := RELEASE_FOLDER + "/choco"
 RELEASE_SCOOP_FOLDER := RELEASE_FOLDER + "/scoop"
 RELEASE_SNAP_FOLDER := RELEASE_FOLDER + "/snap"
 RELEASE_DOCKER_FOLDER := RELEASE_FOLDER + "/docker"
+RELEASE_FONT_FOLDER := RELEASE_FOLDER + "/fonts"
 
 #
 # Preparation tasks
@@ -61,6 +62,15 @@ _pack-symbols-with-arch BUILD_OS BUILD_ARCH:
     New-Item -ItemType Directory -Path "{{INTERMEDIATE_SYMBOL_PACKAGE_FOLDER}}/{{BUILD_OS}}.{{BUILD_ARCH}}" -Force | Out-Null
 
     Copy-Item -Path "{{BUILD_FOLDER_PREFIX}}{{BUILD_OS}}{{BUILD_ARCH}}/*/symbols/*" -Destination "{{INTERMEDIATE_SYMBOL_PACKAGE_FOLDER}}/{{BUILD_OS}}.{{BUILD_ARCH}}" -Force -PassThru
+
+#
+# Pack fonts
+#
+pack-fonts:
+    if (Test-Path "{{RELEASE_FONT_FOLDER}}") { Remove-Item -Path "{{RELEASE_FONT_FOLDER}}" -Recurse -Force }
+    New-Item -ItemType Directory -Path "{{RELEASE_FONT_FOLDER}}" -Force | Out-Null
+
+    Copy-Item -Path ./{{BUILD_FOLDER_PREFIX}}windowsx64/fonts/* -Destination "{{RELEASE_FONT_FOLDER}}" -Force -PassThru
 
 #
 # Pack choco

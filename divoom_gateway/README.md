@@ -200,5 +200,11 @@ To revert it back, we can use the same way to set the `RUST_LOG` to `warn` level
 
 If you are interested in the APIs that this tool is calling and the rust SDK that it uses, please check it here: <https://github.com/r12f/divoom/blob/main/README.md>.
 
+# Appreciation
+
+- Thanks to [@farique1](https://github.com/farique1) for allowing me to bundle the classic 8-bits fonts, that generated via his project
+  [Chartotype](https://github.com/farique1/Chartotype), as part of the [Divoom Gateway](https://github.com/r12f/divoom/tree/main/divoom_gateway), which
+  helps generate text animations.
+
 ## License
 Apache-2.0: <https://www.apache.org/licenses/LICENSE-2.0>

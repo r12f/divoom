@@ -364,6 +364,14 @@ pack-binary-zip PACKAGE="divoom_cli":
         just gen-checksum "packages.{{PACKAGE}}.binary.{{BUILD_OS}}.{{BUILD_ARCH}}" "{{PUBLISH_PACKAGES_DIR}}/${packageName}"; \
     }
 
+pack-fonts:
+    @Write-Host "Current invocation directory: {{invocation_directory()}}"
+
+    if (Test-Path "{{PUBLISH_DIR}}/fonts") { Remove-Item -Path "{{PUBLISH_DIR}}/fonts" -Recurse -Force }
+    New-Item -ItemType Directory -Path "{{PUBLISH_DIR}}/fonts" -Force | Out-Null
+
+    Get-ChildItem "{{justfile_directory()}}/third_party/Chartotype" -Recurse -Include *.ttf | Copy-Item -Destination "{{PUBLISH_DIR}}/fonts" -Force
+
 pack-msix-all:
     just pack-msix divoom_cli
     just pack-msix divoom_gateway
