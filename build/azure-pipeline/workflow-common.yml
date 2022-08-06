@@ -271,7 +271,7 @@ stages:
 
           - script: just pack-docker-all
             displayName: Pack divoom docker package sources
-            condition: and(succeeded(), eq(variables['target_os'], 'linux'))
+            condition: and(succeeded(), eq(variables['target_os'], 'linux'), eq(variables['target_arch'], 'x86_64'))
             env:
               BUILD_PROFILE: "release"
               BUILD_ARCH: $(target_arch)
