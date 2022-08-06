@@ -26,8 +26,9 @@ RUN tar zxvf divoom-gateway.tar.gz
 RUN rm divoom-gateway.tar.gz
 
 #
-# Runtime
+# Final container
 #
+
 # It is always better to have a shell and support for basic tools, such as wget and etc.
 # This only adds ~1.2MB to the final image, which worths every single penny.
 FROM busybox
@@ -38,8 +39,13 @@ ENV GATEWAY_ADDRESS=0.0.0.0
 ENV GATEWAY_PORT=20821
 
 # Copy key binaries and resource files
-COPY --from=builder /*.ttf /
+RUN mkdir -p /usr/share/fonts/
+COPY --from=builder /usr/share/fonts/truetype /usr/share/fonts/truetype
 COPY --from=builder /divoom-gateway /bin
+
+#
+# Runtime
+#
 
 # Expose port
 EXPOSE $GATEWAY_PORT/tcp
