@@ -263,7 +263,7 @@ stages:
 
           - script: just pack-snap-all
             displayName: Pack divoom snap package sources
-            condition: and(succeeded(), eq(variables['target_os'], 'linux'))
+            condition: and(succeeded(), eq(variables['target_os'], 'linux'), ne(variables['target_arch'], 'x86'))
             env:
               BUILD_PROFILE: "release"
               BUILD_ARCH: $(target_arch)
