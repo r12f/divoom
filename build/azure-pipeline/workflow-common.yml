@@ -367,10 +367,8 @@ stages:
 
           - script: just pack-fonts
             displayName: Pack fonts
-            condition: and(succeeded(), eq(variables['target_os'], 'windows'), eq(variables['target_arch'], 'x86_64'))
             env:
-              BUILD_PROFILE: "release"
-              BUILD_ARCH: $(target_arch)
+              BUILD_VERSION: $(Build.Version)
 
           - script: just prepare-crate-io-release
             displayName: Prepare Crate.IO release
