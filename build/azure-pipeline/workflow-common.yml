@@ -85,6 +85,7 @@ stages:
           #
           - checkout: self
             clean: true
+            submodules: true
 
           #
           # Environment variable updates
