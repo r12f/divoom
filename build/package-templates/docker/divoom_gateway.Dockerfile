@@ -16,7 +16,7 @@ FROM busybox AS builder
 # Install fonts
 RUN mkdir -p /usr/share/fonts/truetype/
 
-COPY *.ttf /
+COPY Dockerfile *.ttf /
 RUN if [ -f *.ttf ]; then install -m644 *.ttf /usr/share/fonts/truetype; fi
 RUN if [ -f *.ttf ]; then rm ./*.ttf; fi
 
