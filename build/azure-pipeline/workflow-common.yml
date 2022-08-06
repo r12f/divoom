@@ -366,7 +366,8 @@ stages:
               BUILD_VERSION: $(Build.Version)
 
           - script: just pack-fonts
-            displayName: Pack fonts
+            displayName: Pack fonts for release
+            workingDirectory: '$(System.DefaultWorkingDirectory)/r12f.divoom'
             env:
               BUILD_VERSION: $(Build.Version)
 
