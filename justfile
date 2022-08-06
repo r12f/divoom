@@ -484,10 +484,10 @@ pack-docker PACKAGE="divoom_gateway":
     @Write-Host "Current invocation directory: {{invocation_directory()}}"
 
     if (Test-Path "{{PUBLISH_DIR}}/{{PACKAGE}}/docker-source") { Remove-Item -Path "{{PUBLISH_DIR}}/{{PACKAGE}}/docker-source" -Recurse -Force }
-    New-Item -ItemType Directory -Path "{{PUBLISH_DIR}}/{{PACKAGE}}/docker-source/{{replace(PACKAGE, '_', '-')}}.{{BUILD_ARCH}}" -Force | Out-Null
+    New-Item -ItemType Directory -Path "{{PUBLISH_DIR}}/{{PACKAGE}}/docker-source/{{replace(PACKAGE, '_', '-')}}" -Force | Out-Null
 
     just eval-template "{{justfile_directory()}}/build/package-templates/docker/{{PACKAGE}}.Dockerfile" \
-      "{{PUBLISH_DIR}}/{{PACKAGE}}/docker-source/{{replace(PACKAGE, '_', '-')}}.{{BUILD_ARCH}}/Dockerfile" \
+      "{{PUBLISH_DIR}}/{{PACKAGE}}/docker-source/{{replace(PACKAGE, '_', '-')}}/Dockerfile" \
       "{{PUBLISH_DIR}}/{{PACKAGE}}/template-parameters" \
       "{{PUBLISH_CHECKSUMS_DIR}}"
 

@@ -11,7 +11,10 @@
 #
 # Build container
 #
-FROM busybox AS builder
+FROM --platform=$BUILDPLATFORM busybox AS builder
+
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
 
 # Install fonts
 RUN mkdir -p /usr/share/fonts/truetype/
@@ -21,7 +24,7 @@ RUN if [ -f *.ttf ]; then install -m644 *.ttf /usr/share/fonts/truetype; fi
 RUN if [ -f *.ttf ]; then rm ./*.ttf; fi
 
 # Install divoom-gateway binary
-RUN wget http://github.com/r12f/divoom/releases/download/{build.version}/divoom-gateway.{build.version}.linux.{build.arch}.tar.gz -O divoom-gateway.tar.gz
+RUN case "${TARGETPLATFORM}" in "linux/386") PKG_ARCH="x86"; ;; "linux/amd64") PKG_ARCH="x64"; ;; "linux/arm64") PKG_ARCH="arm64"; ;; *) PKG_ARCH="arm"; ;; esac; wget "http://github.com/r12f/divoom/releases/download/{build.version}/divoom-gateway.{build.version}.linux.${PKG_ARCH}.tar.gz" -O divoom-gateway.tar.gz
 RUN tar zxvf divoom-gateway.tar.gz
 RUN rm divoom-gateway.tar.gz
 

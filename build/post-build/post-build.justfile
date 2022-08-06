@@ -130,7 +130,7 @@ pack-docker:
     if (Test-Path "{{RELEASE_DOCKER_FOLDER}}") { Remove-Item -Path "{{RELEASE_DOCKER_FOLDER}}" -Recurse -Force }
     New-Item -ItemType Directory -Path "{{RELEASE_DOCKER_FOLDER}}" -Force | Out-Null
 
-    Get-ChildItem ./{{BUILD_FOLDER_PREFIX}}*/*/docker-source/* -Attributes Directory | Copy-Item -Destination "{{RELEASE_DOCKER_FOLDER}}" -Recurse -PassThru
+    Get-ChildItem ./{{BUILD_FOLDER_PREFIX}}linuxx64/*/docker-source/* -Attributes Directory | Copy-Item -Destination "{{RELEASE_DOCKER_FOLDER}}" -Recurse -PassThru
 
 #
 # Prepare packages for crate.io release
