@@ -3,7 +3,7 @@ base: core22
 version: '{build.version}'
 architectures:
   - build-on: amd64
-    build-to: {package.arch.snap}
+    build-for: {package.arch.snap}
 summary: {package.description}
 description: |
   {package.description}
