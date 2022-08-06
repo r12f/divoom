@@ -100,6 +100,7 @@ impl DivoomAnimationTemplateManager {
         &self,
         template_name: &str,
         parameters: &HashMap<String, String>,
+        per_frame_parameters: &HashMap<usize, HashMap<String, String>>,
     ) -> DivoomAPIResult<DivoomImageAnimation> {
         debug!(
             "Start rendering animation template: Name = {}, Parameters = {:?}",
@@ -115,7 +116,7 @@ impl DivoomAnimationTemplateManager {
             Some(v) => v,
         };
 
-        let evaled_template = template.eval(parameters)?;
+        let evaled_template = template.eval(parameters, per_frame_parameters)?;
         let mut animation_builder =
             DivoomAnimationBuilder::new(evaled_template.canvas_size, evaled_template.speed)?;
         for evaled_frame in evaled_template.frames {
@@ -151,11 +152,11 @@ mod tests {
             .unwrap();
 
         let animation = manager
-            .render_template("template_simple", &HashMap::new())
+            .render_template("template_simple", &HashMap::new(), &HashMap::new())
             .unwrap();
         test_utils::assert_animation_equal_with_baseline(
             &animation,
-            "test_data/animation_template_tests/expected_generated_simple.png",
+            "test_data/animation_template_tests/expected_generated_simple.gif",
         );
     }
 
@@ -177,11 +178,42 @@ mod tests {
             .into_iter()
             .collect();
         let animation = manager
-            .render_template("template_simple_text", &parameters)
+            .render_template("template_simple_text", &parameters, &HashMap::new())
             .unwrap();
         test_utils::assert_animation_equal_with_baseline(
             &animation,
-            "test_data/animation_template_tests/expected_generated_simple_text.png",
+            "test_data/animation_template_tests/expected_generated_simple_text.gif",
+        );
+    }
+
+    #[test]
+    #[cfg(target_os = "windows")]
+    fn animation_template_manager_can_render_multi_frames_with_svg_reuse() {
+        // Text are rendered based on fonts and other anti-aliasing/truetype algorithms on each OS. Even we use the same font, the result can be different.
+        // Hence we only run the text test on windows, but nowhere else.
+        let mut manager =
+            DivoomAnimationTemplateManager::new("test_data/animation_template_tests/input")
+                .unwrap();
+        manager
+            .add_template_file(
+                &"test_data/animation_template_tests/input/template_multi_frame_text.yaml".into(),
+            )
+            .unwrap();
+
+        let parameters = [("text".to_string(), "Simple text".to_string())]
+            .into_iter()
+            .collect();
+        let per_frame_parameters = [
+            (0, [("text".to_string(), "Foo".to_string())].into_iter().collect()),
+            (1, [("text".to_string(), "Bar".to_string())].into_iter().collect()),
+        ].into_iter().collect();
+
+        let animation = manager
+            .render_template("template_multi_frame_text", &parameters, &per_frame_parameters)
+            .unwrap();
+        test_utils::assert_animation_equal_with_baseline(
+            &animation,
+            "test_data/animation_template_tests/expected_generated_multi_frame_text.gif",
         );
     }
 
@@ -197,11 +229,11 @@ mod tests {
             .unwrap();
 
         let animation = manager
-            .render_template("template_image", &HashMap::new())
+            .render_template("template_image", &HashMap::new(), &HashMap::new())
             .unwrap();
         test_utils::assert_animation_equal_with_baseline(
             &animation,
-            "test_data/animation_template_tests/expected_generated_image.png",
+            "test_data/animation_template_tests/expected_generated_image.gif",
         );
     }
 }
