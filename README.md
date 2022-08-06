@@ -269,5 +269,11 @@ To revert it back:
 customPage
 ```
 
+# Appreciation
+
+- Thanks to [@farique1](https://github.com/farique1) for allow me to bundle the classic 8-bits fonts, that generated via his project
+  [Chartotype](https://github.com/farique1/Chartotype), as part of the [Divoom Gateway](https://github.com/r12f/divoom/tree/main/divoom_gateway), which
+  helps generate text animations.
+
 ## License
 Apache-2.0: <https://www.apache.org/licenses/LICENSE-2.0>
