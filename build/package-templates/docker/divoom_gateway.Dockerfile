@@ -40,6 +40,7 @@ FROM busybox
 ENV DEVICE_ADDRESS=127.0.0.1
 ENV GATEWAY_ADDRESS=0.0.0.0
 ENV GATEWAY_PORT=20821
+ENV GATEWAY_EXTRA_ARGS=""
 
 # Copy key binaries and resource files
 RUN mkdir -p /usr/share/fonts/
@@ -54,4 +55,4 @@ COPY --from=builder /divoom-gateway /bin
 EXPOSE $GATEWAY_PORT/tcp
 
 # Entrypoint
-CMD ["sh", "-c", "/bin/divoom-gateway ${DEVICE_ADDRESS} -s ${GATEWAY_ADDRESS} -p ${GATEWAY_PORT}"]
+CMD ["sh", "-c", "/bin/divoom-gateway ${DEVICE_ADDRESS} -s ${GATEWAY_ADDRESS} -p ${GATEWAY_PORT} ${GATEWAY_EXTRA_ARGS}"]
