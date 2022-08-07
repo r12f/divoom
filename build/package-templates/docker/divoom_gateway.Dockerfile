@@ -20,8 +20,8 @@ ARG BUILDPLATFORM
 RUN mkdir -p /usr/share/fonts/truetype/
 
 COPY Dockerfile *.ttf /
-RUN if [ -f *.ttf ]; then install -m644 *.ttf /usr/share/fonts/truetype; fi
-RUN if [ -f *.ttf ]; then rm ./*.ttf; fi
+RUN if [ -f "Amiga 1200.ttf" ]; then install -m644 *.ttf /usr/share/fonts/truetype; fi
+RUN if [ -f "Amiga 1200.ttf" ]; then rm ./*.ttf; fi
 
 # Install divoom-gateway binary
 RUN case "${TARGETPLATFORM}" in "linux/386") PKG_ARCH="x86"; ;; "linux/amd64") PKG_ARCH="x64"; ;; "linux/arm64") PKG_ARCH="arm64"; ;; *) PKG_ARCH="arm"; ;; esac; wget "http://github.com/r12f/divoom/releases/download/{build.version}/divoom-gateway.{build.version}.linux.${PKG_ARCH}.tar.gz" -O divoom-gateway.tar.gz
@@ -32,9 +32,9 @@ RUN rm divoom-gateway.tar.gz
 # Final container
 #
 
-# It is always better to have a shell and support for basic tools, such as wget and etc.
-# This only adds ~1.2MB to the final image, which worths every single penny.
-FROM busybox
+# We use alpine to start with, because it is always better to have a shell and support for basic tools, such as wget and etc.
+# We have tried to use busybox, but it turns out it somehow kills the network for the server, so we need a "more real" linux to start with.
+FROM alpine:3.15.5
 
 # Environment variables
 ENV DEVICE_ADDRESS=127.0.0.1
