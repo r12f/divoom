@@ -1,6 +1,6 @@
 use super::api_handler::*;
 use divoom::DivoomAnimationTemplateManager;
-use poem::{listener::TcpListener, Route};
+use poem::{listener::TcpListener, Route, handler};
 use poem_openapi::OpenApiService;
 use std::sync::Arc;
 
@@ -45,10 +45,16 @@ impl ApiServer {
         let app = Route::new()
             .nest("/api", api_service)
             .nest("/openapi.json", spec)
-            .nest("/", ui);
+            .nest("/", ui)
+            .at("/probe", poem::get(probe));
 
         let server_endpoint = format!("{}:{}", self.server_address, self.server_port);
         let server_listener = TcpListener::bind(server_endpoint);
         poem::Server::new(server_listener).run(app).await
     }
+}
+
+#[handler]
+fn probe() -> String {
+    "ok".to_string()
 }

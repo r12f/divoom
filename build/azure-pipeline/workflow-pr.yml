@@ -17,6 +17,8 @@ pr:
       - divoom/Cargo.toml
       - divoom_cli/src
       - divoom_cli/Cargo.toml
+      - divoom_gateway/src
+      - divoom_gateway/Cargo.toml
 
 #
 # Version and jobs
