@@ -11,7 +11,7 @@
 #
 # Build container
 #
-FROM --platform=$BUILDPLATFORM busybox AS builder
+FROM --platform=$BUILDPLATFORM alpine:3.15.5 AS builder
 
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM

@@ -370,7 +370,7 @@ pack-fonts:
     if (Test-Path "{{PUBLISH_DIR}}/fonts") { Remove-Item -Path "{{PUBLISH_DIR}}/fonts" -Recurse -Force }
     New-Item -ItemType Directory -Path "{{PUBLISH_DIR}}/fonts" -Force | Out-Null
 
-    Get-ChildItem "{{justfile_directory()}}/third_party/Chartotype" -Recurse -Include *.ttf | Copy-Item -Destination "{{PUBLISH_DIR}}/fonts" -Force
+    Get-ChildItem "{{justfile_directory()}}/third_party/Chartotype" -Recurse -Include *.ttf | Copy-Item -Destination "{{PUBLISH_DIR}}/fonts" -PassThru -Force
 
 pack-msix-all:
     just pack-msix divoom_cli
