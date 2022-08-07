@@ -25,7 +25,7 @@ variables:
   - name: buildVersionMajor
     value: 0
   - name: buildVersionMinor
-    value: 1
+    value: 2
   - name: buildVersionRevision
     value: $[counter(format('v{0}.{1}.{2}', variables['Build.SourceBranch'], variables['buildVersionMajor'], variables['buildVersionMinor']), 3)]
 
