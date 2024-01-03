@@ -57,6 +57,8 @@ BUILD_TOOL_TARGET := if BUILD_TARGET == "windows-x86" {
     "aarch64-unknown-linux-gnu"
   } else if BUILD_TARGET == "macos-x64" {
     "x86_64-apple-darwin"
+  } else if BUILD_TARGET == "macos-arm64" {
+      "aarch64-apple-darwin"
   } else {
     error("Unsupported platform")
   }
