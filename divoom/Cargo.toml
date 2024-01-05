@@ -40,7 +40,8 @@ regex = { version = "1", optional = true }
 lazy_static = "1.4"
 
 [target.'cfg(unix)'.dependencies]
-openssl = { version = "0.10.29", features = ["vendored"] }
+openssl-sys = "0.9"
+openssl = "0.10"
 
 [dev-dependencies]
 pretty_assertions = "1.0"
