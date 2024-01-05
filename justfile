@@ -110,7 +110,7 @@ init-linux:
 
     # Install GCC and required libs/tools
     @echo "Installing build tools and required libs."
-    sudo apt install -y build-essential libc6-dev libssl-dev p7zip-full
+    sudo apt install -y build-essential libc6-dev libssl-dev p7zip-full openssl pkg-config
 
     case "{{BUILD_TOOL_TARGET}}" in
         "i686-unknown-linux-gnu")
