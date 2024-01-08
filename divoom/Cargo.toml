@@ -13,7 +13,7 @@ exclude = [
 ]
 
 [dependencies]
-reqwest = "0.11"
+reqwest = { version = "0.11", default-features = false, features = ["rustls-tls", "rustls-tls-webpki-roots"] }
 log = "0.4"
 tracing = { version = "0.1", features = ["log"] }
 env_logger = "0.9"
@@ -38,10 +38,6 @@ resvg = { version = "0.23", optional = true }
 usvg = { version = "0.23", optional = true }
 regex = { version = "1", optional = true }
 lazy_static = "1.4"
-
-[target.'cfg(unix)'.dependencies]
-openssl-sys = "0.9"
-openssl = "0.10"
 
 [dev-dependencies]
 pretty_assertions = "1.0"
