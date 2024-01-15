@@ -13,7 +13,7 @@ exclude = [
 ]
 
 [dependencies]
-reqwest = "0.11"
+reqwest = { version = "0.11", default-features = false, features = ["rustls-tls", "rustls-tls-webpki-roots"] }
 log = "0.4"
 tracing = { version = "0.1", features = ["log"] }
 env_logger = "0.9"
@@ -29,7 +29,7 @@ base64 = "0.13"
 anyhow = "1.0"
 clap = { version = "3.2", features = ["derive"] }
 shellwords = "1.1"
-tokio-cron-scheduler = "0.7"
+tokio-cron-scheduler = "0.9.4"
 glob = "0.3"
 rand = "0.8"
 tiny-skia = { version = "0.6", optional = true, features = ["std", "simd"]}
@@ -38,9 +38,6 @@ resvg = { version = "0.23", optional = true }
 usvg = { version = "0.23", optional = true }
 regex = { version = "1", optional = true }
 lazy_static = "1.4"
-
-[target.'cfg(unix)'.dependencies]
-openssl = { version = "0.10.29", features = ["vendored"] }
 
 [dev-dependencies]
 pretty_assertions = "1.0"

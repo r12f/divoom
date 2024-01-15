@@ -88,14 +88,14 @@ async fn main() -> Result<(), std::io::Error> {
             config.schedules,
             animation_template_manager.clone(),
         )
-        .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidInput, e))?;
+        .await.map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidInput, e))?;
 
         println!(
             "Found {} schedules in gateway config, starting divoom scheduler device {}.",
             schedule_count, config.device_address
         );
 
-        schedule_manager.start();
+        schedule_manager.start().await;
     }
 
     let url = format!("http://{}:{}", config.server_address, config.server_port);
